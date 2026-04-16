@@ -153,8 +153,11 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="border-t border-gray-100 flex">
-                  <button className="flex-1 py-2 text-xs font-bold text-[#2B3FBE] border-r border-gray-100">⬇️ โหลด</button>
-                  <button className="flex-1 py-2 text-xs font-bold text-[#2B3FBE] border-r border-gray-100">📤 แชร์</button>
+                  <button onClick={() => router.push(`/resume/${r.id}`)} className="flex-1 py-2 text-xs font-bold text-[#2B3FBE] border-r border-gray-100">⬇️ ดู/พิมพ์</button>
+                  <button onClick={() => {
+                    const url = `${window.location.origin}/resume/${r.id}`
+                    navigator.clipboard.writeText(url).then(() => alert('คัดลอกลิงก์แล้ว!'))
+                  }} className="flex-1 py-2 text-xs font-bold text-[#2B3FBE] border-r border-gray-100">📤 แชร์</button>
                   <button onClick={() => togglePublic(r)} className="flex-1 py-2 text-xs font-bold text-gray-500 border-r border-gray-100">
                     {r.is_public?'🔒':'🌐'}
                   </button>

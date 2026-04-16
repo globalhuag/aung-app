@@ -27,7 +27,6 @@ export default function ChatPage() {
     setUser(parsed)
     loadMessages(parsed.id)
 
-    // Realtime subscription
     const channel = supabase
       .channel('chat')
       .on('postgres_changes', {
@@ -77,12 +76,7 @@ export default function ChatPage() {
 
   if (!user) return null
 
-  const QUICK_MESSAGES = [
-    'สอบถามงาน',
-    'ปัญหาเครดิต',
-    'ช่วยด้วย',
-    'ถามเรซูเม่',
-  ]
+  const QUICK_MESSAGES = ['สอบถามงาน', 'ปัญหาเครดิต', 'ช่วยด้วย', 'ถามเรซูเม่']
 
   return (
     <div className="min-h-screen bg-[#F4F5FB] flex flex-col items-center">
@@ -108,8 +102,6 @@ export default function ChatPage() {
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-
-          {/* Welcome bubble */}
           {messages.length === 0 && (
             <div className="flex gap-2">
               <div className="w-8 h-8 rounded-full bg-[#2B3FBE] flex items-center justify-center text-white text-sm flex-shrink-0">A</div>
@@ -145,7 +137,7 @@ export default function ChatPage() {
 
         {/* Quick replies */}
         {messages.length === 0 && (
-          <div className="px-4 pb-2 flex gap-2 overflow-x-auto scrollbar-hide flex-shrink-0">
+          <div className="px-4 pb-2 flex gap-2 overflow-x-auto flex-shrink-0">
             {QUICK_MESSAGES.map(q => (
               <button key={q} onClick={() => setText(q)}
                 className="flex-shrink-0 bg-white border border-gray-200 rounded-full px-3 py-1.5 text-xs font-bold text-gray-600">

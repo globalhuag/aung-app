@@ -63,7 +63,6 @@ export default function ProfilePage() {
           <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 text-white font-black text-lg">โปรไฟล์</div>
           </div>
-          {/* Avatar card */}
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-white/20 border-2 border-white/40 flex items-center justify-center text-3xl">
               👤

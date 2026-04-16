@@ -137,12 +137,12 @@ export default function TopupPage() {
               <div className="font-bold mb-1">📌 ขั้นตอน</div>
               <div className="space-y-1">
                 <div>1. โอนเงินตามจำนวนข้างต้น</div>
-                <div>2. กดปุ่ม "โอนแล้ว ยืนยัน" ด้านล่าง</div>
+                <div>2. กดปุ่ม &quot;โอนแล้ว ยืนยัน&quot; ด้านล่าง</div>
                 <div>3. รอ 15-30 นาที เครดิตจะเพิ่มอัตโนมัติ</div>
               </div>
               <div className="mt-1.5 opacity-70 space-y-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>
                 <div>၁. ငွေပမာဏ လွှဲပေးပါ</div>
-                <div>၂. "လွှဲပြီး အတည်ပြု" ခလုတ် နှိပ်ပါ</div>
+                <div>၂. &quot;လွှဲပြီး အတည်ပြု&quot; ခလုတ် နှိပ်ပါ</div>
                 <div>၃. မိနစ် ၁၅-၃၀ အတွင်း ခရက်ဒစ် ဖြည့်မည်</div>
               </div>
             </div>

@@ -110,8 +110,8 @@ const MONTHS = [
 ]
 const YEARS = Array.from({ length: 42 }, (_, i) => String(2007 - i)) // 2007→1966 (อายุ 19-60)
 
-const TOTAL_STEPS = 6
-const STEP_LABELS = ['ส่วนตัว', 'เอกสาร', 'ภาษา', 'ประวัติงาน', 'ต้องการ', 'ยืนยัน']
+const TOTAL_STEPS = 7
+const STEP_LABELS = ['ส่วนตัว', 'เอกสาร', 'ภาษา', 'ประวัติงาน', 'ต้องการ', 'รูปถ่าย', 'ยืนยัน']
 
 type FormData = {
   name: string
@@ -251,12 +251,22 @@ export default function ResumeCreatePage() {
   const [step, setStep] = useState(1)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState<FormData>(INIT)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string>('')
+  const [docFiles, setDocFiles] = useState<File[]>([])
 
   useEffect(() => {
     const u = localStorage.getItem('aung_user')
     if (!u) { router.push('/login'); return }
     setUser(JSON.parse(u))
   }, [])
+
+  useEffect(() => {
+    if (!photoFile) { setPhotoPreview(''); return }
+    const url = URL.createObjectURL(photoFile)
+    setPhotoPreview(url)
+    return () => URL.revokeObjectURL(url)
+  }, [photoFile])
 
   const set = (field: keyof FormData, value: string | boolean) =>
     setForm(f => ({ ...f, [field]: value }))
@@ -277,6 +287,31 @@ export default function ResumeCreatePage() {
   const handleSubmit = async (isPublic: boolean) => {
     if (!user) return
     setSaving(true)
+
+    // Upload photo
+    let photoUrl = ''
+    if (photoFile) {
+      const ext = photoFile.name.split('.').pop()
+      const path = `photos/${user.id}_${Date.now()}.${ext}`
+      const { data: upData } = await supabase.storage.from('resume-files').upload(path, photoFile, { upsert: true })
+      if (upData) {
+        const { data: urlData } = supabase.storage.from('resume-files').getPublicUrl(path)
+        photoUrl = urlData.publicUrl
+      }
+    }
+
+    // Upload docs
+    const docUrls: string[] = []
+    for (const doc of docFiles) {
+      const ext = doc.name.split('.').pop()
+      const path = `docs/${user.id}_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
+      const { data: upData } = await supabase.storage.from('resume-files').upload(path, doc, { upsert: true })
+      if (upData) {
+        const { data: urlData } = supabase.storage.from('resume-files').getPublicUrl(path)
+        docUrls.push(urlData.publicUrl)
+      }
+    }
+
     await supabase.from('resumes').insert({
       user_id: user.id,
       name: form.name,
@@ -303,6 +338,8 @@ export default function ResumeCreatePage() {
       want_salary: form.want_salary || null,
       strengths: form.strengths.join(', ') || null,
       job_type: wantJobVal || null,
+      photo_url: photoUrl || null,
+      doc_urls: docUrls.length ? docUrls : null,
       suit_status: 'pending',
       is_public: isPublic,
     })
@@ -600,8 +637,36 @@ export default function ResumeCreatePage() {
             </div>
           </>}
 
-          {/* ══ STEP 6: ยืนยัน ══ */}
+          {/* ══ STEP 6: รูปถ่าย ══ */}
           {step === 6 && <>
+            <QHeader num="ข้อ 25 / 29" th="รูปถ่ายหน้าตรง" mm="မျက်နှာတည့်တည့် ဓာတ်ပုံ" />
+            <label className={`w-full rounded-2xl border-2 border-dashed px-4 py-8 flex flex-col items-center gap-2 cursor-pointer transition-colors ${photoFile ? 'border-[#C9A84C] bg-amber-50' : 'border-gray-300 bg-white'}`}>
+              <input type="file" accept="image/*" className="hidden" onChange={e => setPhotoFile(e.target.files?.[0] || null)} />
+              {photoPreview ? (
+                <img src={photoPreview} className="w-24 h-24 rounded-xl object-cover shadow" />
+              ) : (
+                <div className="text-4xl">📷</div>
+              )}
+              <div className="text-sm font-bold text-gray-600">{photoFile ? photoFile.name : 'แตะเพื่ออัปโหลดรูปถ่าย'}</div>
+              <div className="text-xs text-gray-400" style={{ fontFamily: 'Noto Sans Myanmar' }}>ဓာတ်ပုံ တင်ရန် နှိပ်ပါ</div>
+            </label>
+
+            <QHeader num="ข้อ 26 / 29" th="เอกสาร (พาสปอร์ต, Work Permit ฯลฯ)" mm="နိုင်ငံကူးလက်မှတ်၊ လုပ်ငန်းခွင့်လက်မှတ် စသည်" />
+            <label className={`w-full rounded-2xl border-2 border-dashed px-4 py-6 flex flex-col items-center gap-2 cursor-pointer transition-colors ${docFiles.length > 0 ? 'border-[#2B3FBE] bg-blue-50' : 'border-gray-300 bg-white'}`}>
+              <input type="file" accept="image/*" multiple className="hidden" onChange={e => setDocFiles(Array.from(e.target.files || []))} />
+              <div className="text-4xl">📄</div>
+              <div className="text-sm font-bold text-gray-600">{docFiles.length > 0 ? `เลือกแล้ว ${docFiles.length} ไฟล์` : 'แตะเพื่ออัปโหลดเอกสาร'}</div>
+              <div className="text-xs text-gray-400">เลือกได้หลายไฟล์ / <span style={{ fontFamily: 'Noto Sans Myanmar' }}>ဖိုင်များ ရွေးချယ်နိုင်</span></div>
+            </label>
+            {docFiles.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {docFiles.map((f, i) => <span key={i} className="bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full">{f.name}</span>)}
+              </div>
+            )}
+          </>}
+
+          {/* ══ STEP 7: ยืนยัน ══ */}
+          {step === 7 && <>
             {/* Avatar card */}
             <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
               <div className="bg-[#C9A84C] pb-8 pt-6 flex flex-col items-center">
