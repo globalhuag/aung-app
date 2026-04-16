@@ -6,11 +6,11 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const MERCHANT_CODE = process.env.CHILLPAY_MERCHANT_CODE!
-const API_KEY       = process.env.CHILLPAY_API_KEY!
-const MD5_KEY       = process.env.CHILLPAY_MD5_KEY!
-const DIRECT_URL    = process.env.CHILLPAY_DIRECT_URL!
-const APP_URL       = process.env.NEXT_PUBLIC_APP_URL || 'https://aung-d0qzwzwha-globalhuags-projects.vercel.app'
+const MERCHANT_CODE = (process.env.CHILLPAY_MERCHANT_CODE || '').trim()
+const API_KEY       = (process.env.CHILLPAY_API_KEY     || '').trim()
+const MD5_KEY       = (process.env.CHILLPAY_MD5_KEY     || '').trim()
+const DIRECT_URL    = (process.env.CHILLPAY_DIRECT_URL  || '').trim()
+const APP_URL       = (process.env.NEXT_PUBLIC_APP_URL  || 'https://aung-app.vercel.app').trim()
 
 // Packages: amount in satang (1 baht = 100 satang)
 const PACKAGES: Record<string, { price: number; amount: number; credits: number }> = {
@@ -80,6 +80,11 @@ export async function POST(req: Request) {
     })
 
     console.log('[ChillPay create] OrderNo:', order_no, 'Amount:', amount_str, 'Phone:', phone_clean)
+    console.log('[ChillPay create] MerchantCode:', JSON.stringify(MERCHANT_CODE), 'KeyLen:', API_KEY.length, 'Md5Len:', MD5_KEY.length)
+    console.log('[ChillPay create] raw checksum string length:', raw.length)
+    console.log('[ChillPay create] checksum:', checksum)
+    console.log('[ChillPay create] ReturnUrl:', `${APP_URL}/topup/return`)
+    console.log('[ChillPay create] BackgroundUrl:', `${APP_URL}/api/chillpay/notify`)
 
     const cpResp = await fetch(DIRECT_URL, {
       method:  'POST',
