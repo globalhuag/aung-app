@@ -1,11 +1,11 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { Suspense, useEffect, useState, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 type PollStatus = 'polling' | 'paid' | 'timeout'
 
-export default function TopupReturnPage() {
+function ReturnContent() {
   const searchParams  = useSearchParams()
   const router        = useRouter()
   const order_no      = searchParams.get('order_no') || ''
@@ -38,9 +38,9 @@ export default function TopupReturnPage() {
 
           // Update localStorage credits
           try {
-            const raw  = localStorage.getItem('aung_user')
+            const raw = localStorage.getItem('aung_user')
             if (raw) {
-              const u    = JSON.parse(raw)
+              const u = JSON.parse(raw)
               const { data: fresh } = await supabase
                 .from('users')
                 .select('credits')
@@ -52,9 +52,9 @@ export default function TopupReturnPage() {
             }
           } catch (_) { /* non-critical */ }
 
-          return // stop polling
+          return
         }
-      } catch (_) { /* network hiccup, keep polling */ }
+      } catch (_) { /* keep polling */ }
 
       if (tries.current >= maxTries) {
         setStatus('timeout')
@@ -63,7 +63,6 @@ export default function TopupReturnPage() {
       setTimeout(poll, 5000)
     }
 
-    // First check after 3s (give webhook time to fire)
     setTimeout(poll, 3000)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order_no])
@@ -131,5 +130,17 @@ export default function TopupReturnPage() {
 
       </div>
     </div>
+  )
+}
+
+export default function TopupReturnPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F4F5FB] flex items-center justify-center">
+        <div className="text-4xl animate-pulse">💳</div>
+      </div>
+    }>
+      <ReturnContent />
+    </Suspense>
   )
 }
