@@ -5,39 +5,76 @@ import { supabase } from '@/lib/supabase'
 
 type User = { id: string; phone: string; credits: number }
 
-// =============== DATA ===============
-
+// =============== PROVINCES (Thai + Myanmar) ===============
 const PROVINCES = [
-  'กรุงเทพฯ','สมุทรปราการ','นนทบุรี','ปทุมธานี','พระนครศรีอยุธยา',
-  'ชลบุรี','ระยอง','จันทบุรี','ตราด','ฉะเชิงเทรา',
-  'สมุทรสาคร','นครปฐม','ราชบุรี','เพชรบุรี','ประจวบคีรีขันธ์',
-  'เชียงใหม่','เชียงราย','ลำพูน','ลำปาง','พะเยา',
-  'แม่ฮ่องสอน','น่าน','แพร่','อุตรดิตถ์','สุโขทัย',
-  'พิษณุโลก','พิจิตร','กำแพงเพชร','ตาก','นครสวรรค์',
-  'สุราษฎร์ธานี','ภูเก็ต','กระบี่','พังงา','นครศรีธรรมราช',
-  'สงขลา','ตรัง','พัทลุง','สตูล','ปัตตานี',
-  'นครราชสีมา','ขอนแก่น','อุดรธานี','หนองคาย','สกลนคร',
-  'อุบลราชธานี','ศรีสะเกษ','สุรินทร์','บุรีรัมย์','ชัยภูมิ',
-  'อื่นๆ/အခြား',
+  { th: 'กรุงเทพฯ', mm: 'ဘန်ကောက်' },
+  { th: 'สมุทรปราการ', mm: 'သမုတ်ပရာကာန်' },
+  { th: 'นนทบุรี', mm: 'နွန်တဘူရီ' },
+  { th: 'ปทุมธานี', mm: 'ပဋိမ်တာနီ' },
+  { th: 'พระนครศรีอยุธยา', mm: 'အယုဒ္ဓယ' },
+  { th: 'ชลบุรี', mm: 'ချောင်ဘူရီ' },
+  { th: 'ระยอง', mm: 'ရသောင်' },
+  { th: 'จันทบุรี', mm: 'ဂျန်ဒဘူရီ' },
+  { th: 'ตราด', mm: 'တြတ်' },
+  { th: 'ฉะเชิงเทรา', mm: 'ဆာချောင်သြ' },
+  { th: 'สมุทรสาคร', mm: 'သမုတ်သာခရ' },
+  { th: 'นครปฐม', mm: 'နကောင်ပတ်' },
+  { th: 'ราชบุรี', mm: 'ရာဇဘူရီ' },
+  { th: 'เพชรบุรี', mm: 'ဖက်ချဘူရီ' },
+  { th: 'ประจวบคีรีขันธ์', mm: 'ပြာဂျွပ်ကီရီကန်' },
+  { th: 'เชียงใหม่', mm: 'ချင်းမိုင်' },
+  { th: 'เชียงราย', mm: 'ချင်းရိုင်' },
+  { th: 'ลำพูน', mm: 'လမ်ဖုန်' },
+  { th: 'ลำปาง', mm: 'လမ်ပါင်' },
+  { th: 'พะเยา', mm: 'ဖ ယော' },
+  { th: 'แม่ฮ่องสอน', mm: 'မဲဟောင်းသောင်' },
+  { th: 'น่าน', mm: 'နန်' },
+  { th: 'แพร่', mm: 'ဖြဲ' },
+  { th: 'อุตรดิตถ์', mm: 'အုတ်တရဒစ်' },
+  { th: 'สุโขทัย', mm: 'သုခသိုင်' },
+  { th: 'พิษณุโลก', mm: 'ဖိသနုလောက်' },
+  { th: 'พิจิตร', mm: 'ဖိဂျစ်' },
+  { th: 'กำแพงเพชร', mm: 'ကမ်ဖဲင်းဖက်' },
+  { th: 'ตาก', mm: 'တာက်' },
+  { th: 'นครสวรรค์', mm: 'နကောင်ဆောင်' },
+  { th: 'สุราษฎร์ธานี', mm: 'သုရတ်သာနီ' },
+  { th: 'ภูเก็ต', mm: 'ဘူးကက်' },
+  { th: 'กระบี่', mm: 'ကြာဘီ' },
+  { th: 'พังงา', mm: 'ဖင်ငာ' },
+  { th: 'นครศรีธรรมราช', mm: 'နကောင်ရှီတမ်မြာရတ်' },
+  { th: 'สงขลา', mm: 'သောင်ဘလာ' },
+  { th: 'ตรัง', mm: 'တြာင်' },
+  { th: 'พัทลุง', mm: 'ဖတ်လုင်' },
+  { th: 'สตูล', mm: 'သတွူ' },
+  { th: 'ปัตตานี', mm: 'ပတ္တာနီ' },
+  { th: 'นครราชสีมา (โคราช)', mm: 'နကောင်ရာဇသီမာ (ကိုရတ်)' },
+  { th: 'ขอนแก่น', mm: 'ကွန်ကဲင်' },
+  { th: 'อุดรธานี', mm: 'အုဒ်တြာသာနီ' },
+  { th: 'หนองคาย', mm: 'နောင်ကိုင်' },
+  { th: 'สกลนคร', mm: 'သကောင်နကောင်' },
+  { th: 'อุบลราชธานี', mm: 'အုဘောင်ရာဇသာနီ' },
+  { th: 'ศรีสะเกษ', mm: 'ရှီသကဲ' },
+  { th: 'สุรินทร์', mm: 'သုရင်' },
+  { th: 'บุรีรัมย์', mm: 'ဘူရီရမ်' },
+  { th: 'ชัยภูมิ', mm: 'ချင်ဘူမိ' },
+  { th: 'อื่นๆ', mm: 'အခြား' },
 ]
 
+// =============== OPTIONS ===============
 const LANG_OPTS = [
   { v: 'ดีมาก', mm: 'အလွန်ကောင်း' },
   { v: 'ดี', mm: 'ကောင်း' },
   { v: 'พอใช้', mm: 'အသင့်အတင့်' },
   { v: 'ไม่ได้', mm: 'မရပါ' },
 ]
-
 const YES_NO = [
   { v: 'มี', mm: 'ရှိသည်' },
   { v: 'ไม่มี', mm: 'မရှိပါ' },
 ]
-
 const CAN_CANNOT = [
   { v: 'ได้', mm: 'တတ်သည်' },
   { v: 'ไม่ได้', mm: 'မတတ်ပါ' },
 ]
-
 const RACE_OPTS = [
   { v: 'พม่า', mm: 'ဗမာ' },
   { v: 'กะเหรี่ยง', mm: 'ကရင်' },
@@ -45,7 +82,6 @@ const RACE_OPTS = [
   { v: 'ไทใหญ่', mm: 'ရှမ်း' },
   { v: 'อื่นๆ', mm: 'အခြား' },
 ]
-
 const JOB_OPTS = [
   { v: 'โรงงาน', mm: 'စက်ရုံ' },
   { v: 'ก่อสร้าง', mm: 'ဆောက်လုပ်ရေး' },
@@ -53,7 +89,6 @@ const JOB_OPTS = [
   { v: 'พนักงานขาย', mm: 'အရောင်းဝန်ထမ်း' },
   { v: 'อื่นๆ', mm: 'အခြား' },
 ]
-
 const SKILL_OPTS = [
   { v: 'เชื่อมเหล็ก', mm: 'သံဆက်' },
   { v: 'เย็บผ้า', mm: 'အချုပ်' },
@@ -62,7 +97,6 @@ const SKILL_OPTS = [
   { v: 'อื่นๆ', mm: 'အခြား' },
   { v: 'ไม่มี', mm: 'မရှိပါ' },
 ]
-
 const STRENGTH_OPTS = [
   { v: 'ขยันอดทน', mm: 'ကြိုးစားသည်' },
   { v: 'ซื่อสัตย์', mm: 'သစ္စာရှိ' },
@@ -70,19 +104,38 @@ const STRENGTH_OPTS = [
   { v: 'ตรงต่อเวลา', mm: 'အချိန်တိကျ' },
   { v: 'ทำงานล่วงเวลาได้', mm: 'OT ဆင်းနိုင်' },
 ]
-
 const GENDER_OPTS = [
   { v: 'ชาย', mm: 'ကျား' },
   { v: 'หญิง', mm: 'မ' },
 ]
 
+// =============== BIRTHDAY HELPERS ===============
+const DAYS = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'))
+const MONTHS = [
+  { v: '01', th: 'มกราคม', mm: 'ဇန်နဝါရီ' },
+  { v: '02', th: 'กุมภาพันธ์', mm: 'ဖေဖော်ဝါရီ' },
+  { v: '03', th: 'มีนาคม', mm: 'မတ်' },
+  { v: '04', th: 'เมษายน', mm: 'ဧပြီ' },
+  { v: '05', th: 'พฤษภาคม', mm: 'မေ' },
+  { v: '06', th: 'มิถุนายน', mm: 'ဇွန်' },
+  { v: '07', th: 'กรกฎาคม', mm: 'ဇူလိုင်' },
+  { v: '08', th: 'สิงหาคม', mm: 'သြဂုတ်' },
+  { v: '09', th: 'กันยายน', mm: 'စက်တင်ဘာ' },
+  { v: '10', th: 'ตุลาคม', mm: 'အောက်တိုဘာ' },
+  { v: '11', th: 'พฤศจิกายน', mm: 'နိုဝင်ဘာ' },
+  { v: '12', th: 'ธันวาคม', mm: 'ဒီဇင်ဘာ' },
+]
+// อายุ 19-60 → ปีเกิด 1966-2007 (ปี ค.ศ.)
+const CURRENT_YEAR = 2026
+const YEARS = Array.from({ length: 42 }, (_, i) => String(CURRENT_YEAR - 19 - i)) // 2007..1966
+
 const TOTAL_STEPS = 6
 
 type FormData = {
   name: string
-  birthday: string
+  bday: string; bmonth: string; byear: string
   gender: string
-  race: string
+  race: string; race_other: string
   province: string
   smart_card: string
   bank_account: string
@@ -90,35 +143,36 @@ type FormData = {
   car_license: string
   drive_moto: string
   moto_license: string
-  thai_listen: string
-  thai_read: string
-  eng_listen: string
-  eng_read: string
-  skills: string[]
-  w1_name: string
-  w1_duration: string
-  w1_salary: string
-  w2_name: string
-  w2_duration: string
-  w2_salary: string
-  w3_name: string
-  w3_duration: string
-  w3_salary: string
-  want_job: string
+  thai_listen: string; thai_read: string
+  eng_listen: string; eng_read: string
+  skills: string[]; skill_other: string
+  w1_name: string; w1_duration: string; w1_salary: string
+  w2_name: string; w2_duration: string; w2_salary: string
+  w3_name: string; w3_duration: string; w3_salary: string
+  want_job: string; want_job_other: string
   want_area: string
   want_salary: string
   strengths: string[]
 }
 
 const INIT: FormData = {
-  name: '', birthday: '', gender: '', race: '', province: '',
-  smart_card: '', bank_account: '', drive_car: '', car_license: '', drive_moto: '', moto_license: '',
-  thai_listen: '', thai_read: '', eng_listen: '', eng_read: '',
-  skills: [],
+  name: '',
+  bday: '', bmonth: '', byear: '',
+  gender: '',
+  race: '', race_other: '',
+  province: '',
+  smart_card: '', bank_account: '',
+  drive_car: '', car_license: '',
+  drive_moto: '', moto_license: '',
+  thai_listen: '', thai_read: '',
+  eng_listen: '', eng_read: '',
+  skills: [], skill_other: '',
   w1_name: '', w1_duration: '', w1_salary: '',
   w2_name: '', w2_duration: '', w2_salary: '',
   w3_name: '', w3_duration: '', w3_salary: '',
-  want_job: '', want_area: '', want_salary: '',
+  want_job: '', want_job_other: '',
+  want_area: '',
+  want_salary: '',
   strengths: [],
 }
 
@@ -129,7 +183,7 @@ function Q({ num, th, mm, required }: { num: string; th: string; mm: string; req
     <div className="mb-2">
       <div className="text-sm font-extrabold text-gray-800 flex items-baseline gap-1.5 flex-wrap">
         <span className="text-[10px] font-bold text-[#2B3FBE] bg-[#E8EBFF] px-1.5 py-0.5 rounded-full flex-shrink-0">{num}</span>
-        {th}{required && <span className="text-red-400 text-xs">*</span>}
+        {th}{required && <span className="text-red-400 text-xs ml-0.5">*</span>}
       </div>
       <div className="text-xs text-gray-400 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>{mm}</div>
     </div>
@@ -142,9 +196,8 @@ function BtnGrid({ opts, value, onChange, multi }: {
   onChange: (v: string) => void
   multi?: boolean
 }) {
-  const isSelected = (v: string) => multi
-    ? (value as string[]).includes(v)
-    : value === v
+  const isSelected = (v: string) =>
+    multi ? (value as string[]).includes(v) : value === v
   return (
     <div className="grid grid-cols-2 gap-2">
       {opts.map(o => (
@@ -159,6 +212,18 @@ function BtnGrid({ opts, value, onChange, multi }: {
   )
 }
 
+function OtherInput({ value, onChange, placeholder }: {
+  value: string; onChange: (v: string) => void; placeholder?: string
+}) {
+  return (
+    <div className="mt-2">
+      <input type="text" value={value} onChange={e => onChange(e.target.value)}
+        placeholder={placeholder || 'ระบุ... / ရေးထည့်ပါ...'}
+        className="w-full border-2 border-[#2B3FBE] rounded-xl px-4 py-2.5 text-sm focus:outline-none bg-[#E8EBFF] placeholder-blue-300 font-medium" />
+    </div>
+  )
+}
+
 function TxtInput({ value, onChange, placeholder }: {
   value: string; onChange: (v: string) => void; placeholder?: string
 }) {
@@ -166,6 +231,18 @@ function TxtInput({ value, onChange, placeholder }: {
     <input type="text" value={value} onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
       className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2B3FBE] bg-white" />
+  )
+}
+
+function ProvinceSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <select value={value} onChange={e => onChange(e.target.value)}
+      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2B3FBE] bg-white">
+      <option value="">-- เลือกจังหวัด / ခရိုင်ရွေးချယ်ပါ --</option>
+      {PROVINCES.map(p => (
+        <option key={p.th} value={p.th}>{p.th} / {p.mm}</option>
+      ))}
+    </select>
   )
 }
 
@@ -179,7 +256,7 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
   )
 }
 
-// =============== MAIN PAGE ===============
+// =============== MAIN ===============
 
 export default function ResumeCreatePage() {
   const router = useRouter()
@@ -203,15 +280,26 @@ export default function ResumeCreatePage() {
       return { ...f, [field]: arr.includes(value) ? arr.filter(x => x !== value) : [...arr, value] }
     })
 
+  // ชื่อจริงของ race / want_job / skills ถ้าเลือก อื่นๆ ให้ใช้ค่าที่พิมพ์
+  const raceValue = form.race === 'อื่นๆ' && form.race_other ? form.race_other : form.race
+  const wantJobValue = form.want_job === 'อื่นๆ' && form.want_job_other ? form.want_job_other : form.want_job
+  const skillsValue = form.skills
+    .map(s => s === 'อื่นๆ' ? (form.skill_other || 'อื่นๆ') : s)
+    .filter(s => s !== 'ไม่มี')
+    .join(', ')
+
+  const birthday = form.bday && form.bmonth && form.byear
+    ? `${form.bday}/${form.bmonth}/${form.byear}` : ''
+
   const handleSubmit = async () => {
     if (!user) return
     setSaving(true)
     await supabase.from('resumes').insert({
       user_id: user.id,
       name: form.name,
-      birthday: form.birthday || null,
+      birthday: birthday || null,
       gender: form.gender || null,
-      race: form.race || null,
+      race: raceValue || null,
       province: form.province || null,
       smart_card: form.smart_card || null,
       bank_account: form.bank_account || null,
@@ -223,7 +311,7 @@ export default function ResumeCreatePage() {
       thai_read: form.thai_read || null,
       eng_listen: form.eng_listen || null,
       eng_read: form.eng_read || null,
-      skills: form.skills.length ? form.skills.join(', ') : null,
+      skills: skillsValue || null,
       w1_name: form.w1_name || null,
       w1_duration: form.w1_duration || null,
       w1_salary: form.w1_salary || null,
@@ -233,11 +321,11 @@ export default function ResumeCreatePage() {
       w3_name: form.w3_name || null,
       w3_duration: form.w3_duration || null,
       w3_salary: form.w3_salary || null,
-      want_job: form.want_job || null,
+      want_job: wantJobValue || null,
       want_area: form.want_area || null,
       want_salary: form.want_salary || null,
-      strengths: form.strengths.length ? form.strengths.join(', ') : null,
-      job_type: form.want_job || null,
+      strengths: form.strengths.join(', ') || null,
+      job_type: wantJobValue || null,
       suit_status: 'pending',
       is_public: false,
     })
@@ -249,7 +337,7 @@ export default function ResumeCreatePage() {
 
   if (!user) return null
 
-  const STEP_LABELS = ['ส่วนตัว','เอกสาร','ภาษา','ประวัติงาน','ต้องการ','ยืนยัน']
+  const STEP_LABELS = ['ส่วนตัว', 'เอกสาร', 'ภาษา', 'ประวัติงาน', 'ต้องการ', 'ยืนยัน']
 
   return (
     <div className="min-h-screen bg-[#F4F5FB] flex flex-col items-center">
@@ -290,19 +378,45 @@ export default function ResumeCreatePage() {
           </div>
         </div>
 
-        {/* ===== Content ===== */}
+        {/* Content */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
 
-          {/* STEP 1: ส่วนตัว */}
+          {/* ===== STEP 1: ส่วนตัว ===== */}
           {step === 1 && <>
             <div>
               <Q num="2/29" th="ชื่อ-นามสกุล ภาษาอังกฤษ" mm="အမည် အင်္ဂလိပ်ဘာသာ" required />
               <TxtInput value={form.name} onChange={v => set('name', v.toUpperCase())} placeholder="FIRSTNAME LASTNAME" />
             </div>
 
+            {/* Birthday dropdowns */}
             <div>
-              <Q num="3/29" th="วันเกิด (วว/ดด/ปปปป)" mm="မွေးသက္ကရာဇ် (ဥပမာ ၂၁/၀၂/၁၉၈၈)" />
-              <TxtInput value={form.birthday} onChange={v => set('birthday', v)} placeholder="21/02/1988" />
+              <Q num="3/29" th="วันเกิด" mm="မွေးသက္ကရာဇ်" />
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <div className="text-xs text-gray-500 font-bold mb-1">วัน / ရက်</div>
+                  <select value={form.bday} onChange={e => set('bday', e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-[#2B3FBE] bg-white">
+                    <option value="">--</option>
+                    {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 font-bold mb-1">เดือน / လ</div>
+                  <select value={form.bmonth} onChange={e => set('bmonth', e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-[#2B3FBE] bg-white">
+                    <option value="">--</option>
+                    {MONTHS.map(m => <option key={m.v} value={m.v}>{m.th}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 font-bold mb-1">ปี (ค.ศ.) / နှစ်</div>
+                  <select value={form.byear} onChange={e => set('byear', e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-[#2B3FBE] bg-white">
+                    <option value="">--</option>
+                    {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -313,80 +427,75 @@ export default function ResumeCreatePage() {
             <div>
               <Q num="5/29" th="เชื้อชาติ" mm="လူမျိုး" />
               <BtnGrid opts={RACE_OPTS} value={form.race} onChange={v => set('race', v)} />
+              {form.race === 'อื่นๆ' && (
+                <OtherInput value={form.race_other} onChange={v => set('race_other', v)}
+                  placeholder="ระบุเชื้อชาติ... / လူမျိုးရေးထည့်ပါ..." />
+              )}
             </div>
 
             <div>
               <Q num="6/29" th="จังหวัดที่อยู่ปัจจุบัน" mm="လက်ရှိနေထိုင်သည့် ခရိုင်" />
-              <select value={form.province} onChange={e => set('province', e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2B3FBE] bg-white">
-                <option value="">-- เลือกจังหวัด / ခရိုင်ရွေးချယ်ပါ --</option>
-                {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
+              <ProvinceSelect value={form.province} onChange={v => set('province', v)} />
             </div>
           </>}
 
-          {/* STEP 2: เอกสาร & ขับขี่ */}
+          {/* ===== STEP 2: เอกสาร & ขับขี่ ===== */}
           {step === 2 && <>
             <div>
               <Q num="7/29" th="มี Smart Card / Work Permit ไหม" mm="Smart Card Work Permit ရှိပါသလား" />
               <BtnGrid opts={YES_NO} value={form.smart_card} onChange={v => set('smart_card', v)} />
             </div>
-
             <div>
               <Q num="8/29" th="มีบัญชีธนาคารไทยไหม" mm="ထိုင်းဘဏ်အကောင့် ရှိပါသလား" />
               <BtnGrid opts={YES_NO} value={form.bank_account} onChange={v => set('bank_account', v)} />
             </div>
-
             <div>
               <Q num="9/29" th="ขับรถยนต์ได้ไหม" mm="ကားမောင်းတတ်ပါသလား" />
               <BtnGrid opts={CAN_CANNOT} value={form.drive_car} onChange={v => set('drive_car', v)} />
             </div>
-
             <div>
               <Q num="10/29" th="มีใบขับขี่รถยนต์ไทยไหม" mm="ထိုင်းကားမောင်းလိုင်စင် ရှိပါသလား" />
               <BtnGrid opts={YES_NO} value={form.car_license} onChange={v => set('car_license', v)} />
             </div>
-
             <div>
               <Q num="11/29" th="ขับรถจักรยานยนต์ได้ไหม" mm="ဆိုင်ကယ်မောင်းတတ်ပါသလား" />
               <BtnGrid opts={CAN_CANNOT} value={form.drive_moto} onChange={v => set('drive_moto', v)} />
             </div>
-
             <div>
               <Q num="12/29" th="มีใบขับขี่จักรยานยนต์ไทยไหม" mm="ထိုင်းဆိုင်ကယ်လိုင်စင် ရှိပါသလား" />
               <BtnGrid opts={YES_NO} value={form.moto_license} onChange={v => set('moto_license', v)} />
             </div>
           </>}
 
-          {/* STEP 3: ภาษา & ทักษะ */}
+          {/* ===== STEP 3: ภาษา & ทักษะ ===== */}
           {step === 3 && <>
             <div>
               <Q num="13/29" th="ภาษาไทย (ฟัง+พูด)" mm="ထိုင်းဘာသာစကား (နားထောင်+ပြောဆို)" />
               <BtnGrid opts={LANG_OPTS} value={form.thai_listen} onChange={v => set('thai_listen', v)} />
             </div>
-
             <div>
               <Q num="14/29" th="ภาษาไทย (อ่าน+เขียน)" mm="ထိုင်းဘာသာစကား (ဖတ်+ရေး)" />
               <BtnGrid opts={LANG_OPTS} value={form.thai_read} onChange={v => set('thai_read', v)} />
             </div>
-
             <div>
               <Q num="15/29" th="ภาษาอังกฤษ (ฟัง+พูด)" mm="အင်္ဂလိပ်ဘာသာစကား (နားထောင်+ပြောဆို)" />
               <BtnGrid opts={LANG_OPTS} value={form.eng_listen} onChange={v => set('eng_listen', v)} />
             </div>
-
             <div>
               <Q num="16/29" th="ภาษาอังกฤษ (อ่าน+เขียน)" mm="အင်္ဂလိပ်ဘာသာစကား (ဖတ်+ရေး)" />
               <BtnGrid opts={LANG_OPTS} value={form.eng_read} onChange={v => set('eng_read', v)} />
             </div>
-
             <div>
               <Q num="17/29" th="ทักษะพิเศษ (เลือกได้หลายข้อ)" mm="ထူးချွန်သည့်ကျွမ်းကျင်မှုများ" />
               <BtnGrid opts={SKILL_OPTS} value={form.skills} onChange={v => toggleMulti('skills', v)} multi />
+              {form.skills.includes('อื่นๆ') && (
+                <OtherInput value={form.skill_other} onChange={v => set('skill_other', v)}
+                  placeholder="ระบุทักษะ... / ကျွမ်းကျင်မှုရေးထည့်ပါ..." />
+              )}
             </div>
           </>}
 
-          {/* STEP 4: ประวัติงาน */}
+          {/* ===== STEP 4: ประวัติงาน ===== */}
           {step === 4 && <>
             {([
               { num: '18/29', label: 'ประวัติงาน 1', mm: 'အလုပ်အကိုင်သမိုင်း ၁', n: 'w1_name' as const, d: 'w1_duration' as const, s: 'w1_salary' as const },
@@ -417,20 +526,20 @@ export default function ResumeCreatePage() {
             ))}
           </>}
 
-          {/* STEP 5: ต้องการ & จุดเด่น */}
+          {/* ===== STEP 5: ต้องการ & จุดเด่น ===== */}
           {step === 5 && <>
             <div>
               <Q num="21/29" th="ประเภทงานที่ต้องการ" mm="ဘယ်လိုအလုပ်အမျိုးအစားလုပ်ချင်လဲ" />
               <BtnGrid opts={JOB_OPTS} value={form.want_job} onChange={v => set('want_job', v)} />
+              {form.want_job === 'อื่นๆ' && (
+                <OtherInput value={form.want_job_other} onChange={v => set('want_job_other', v)}
+                  placeholder="ระบุประเภทงาน... / အလုပ်အမျိုးအစားရေးထည့်ပါ..." />
+              )}
             </div>
 
             <div>
               <Q num="22/29" th="บริเวณที่ต้องการทำงาน" mm="အလုပ်လုပ်လိုသည့် နေရာ" />
-              <select value={form.want_area} onChange={e => set('want_area', e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2B3FBE] bg-white">
-                <option value="">-- เลือกจังหวัด / ခရိုင်ရွေးချယ်ပါ --</option>
-                {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
+              <ProvinceSelect value={form.want_area} onChange={v => set('want_area', v)} />
             </div>
 
             <div>
@@ -439,7 +548,7 @@ export default function ResumeCreatePage() {
             </div>
 
             <div>
-              <Q num="24/29" th="จุดเด่นของคุณ (เลือกได้หลายข้อ)" mm="သင်၏ ထူးချွန်ချက် (တစ်ချက်ချင်းစီ ရွေးရန်)" />
+              <Q num="24/29" th="จุดเด่นของคุณ (เลือกได้หลายข้อ)" mm="သင်၏ ထူးချွန်ချက်" />
               {form.strengths.length > 0 && (
                 <div className="mb-2 flex flex-wrap gap-1.5">
                   {form.strengths.map(s => (
@@ -451,7 +560,7 @@ export default function ResumeCreatePage() {
             </div>
           </>}
 
-          {/* STEP 6: ยืนยัน */}
+          {/* ===== STEP 6: ยืนยัน ===== */}
           {step === 6 && <>
             <div>
               <div className="text-base font-extrabold text-gray-800">ตรวจสอบข้อมูล</div>
@@ -463,8 +572,8 @@ export default function ResumeCreatePage() {
                 <div className="text-white font-black text-base">{form.name || '(ไม่ระบุ)'}</div>
                 <div className="text-white/70 text-xs mt-0.5 flex flex-wrap gap-2">
                   {form.gender && <span>{form.gender}</span>}
-                  {form.birthday && <span>· {form.birthday}</span>}
-                  {form.race && <span>· {form.race}</span>}
+                  {birthday && <span>· {birthday}</span>}
+                  {raceValue && <span>· {raceValue}</span>}
                 </div>
               </div>
               <div className="px-4 py-3">
@@ -480,11 +589,11 @@ export default function ResumeCreatePage() {
                 <SummaryRow label="ไทย อ่าน+เขียน" value={form.thai_read} />
                 <SummaryRow label="อังกฤษ ฟัง+พูด" value={form.eng_listen} />
                 <SummaryRow label="อังกฤษ อ่าน+เขียน" value={form.eng_read} />
-                <SummaryRow label="ทักษะพิเศษ" value={form.skills.join(', ')} />
+                <SummaryRow label="ทักษะพิเศษ" value={skillsValue} />
                 <SummaryRow label="งานที่ 1" value={[form.w1_name, form.w1_duration && `${form.w1_duration} ปี`, form.w1_salary && `${form.w1_salary}฿`].filter(Boolean).join(' · ')} />
                 <SummaryRow label="งานที่ 2" value={[form.w2_name, form.w2_duration && `${form.w2_duration} ปี`, form.w2_salary && `${form.w2_salary}฿`].filter(Boolean).join(' · ')} />
                 <SummaryRow label="งานที่ 3" value={[form.w3_name, form.w3_duration && `${form.w3_duration} ปี`, form.w3_salary && `${form.w3_salary}฿`].filter(Boolean).join(' · ')} />
-                <SummaryRow label="งานที่ต้องการ" value={form.want_job} />
+                <SummaryRow label="งานที่ต้องการ" value={wantJobValue} />
                 <SummaryRow label="พื้นที่ต้องการ" value={form.want_area} />
                 <SummaryRow label="เงินเดือนที่ต้องการ" value={form.want_salary ? `${form.want_salary} บาท` : ''} />
                 <SummaryRow label="จุดเด่น" value={form.strengths.join(', ')} />
