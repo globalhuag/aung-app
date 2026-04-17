@@ -362,8 +362,8 @@ export default function ResumeCreatePage() {
   const canNext = step !== 1 || form.name.trim().length > 0
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center">
-      <div className="w-full max-w-sm flex flex-col min-h-screen">
+    <div className="h-screen bg-gray-100 flex flex-col items-center overflow-hidden">
+      <div className="w-full max-w-sm flex flex-col h-full">
 
         {/* ── Header (gold) ── */}
         <div className="bg-[#C9A84C] px-4 pt-4 pb-3 flex-shrink-0">
