@@ -755,16 +755,23 @@ export default function ResumeCreatePage() {
               </button>
             </div>
           ) : (
-            <div className="flex gap-3">
-              <button onClick={() => handleSubmit(false)} disabled={saving}
-                className="flex-1 rounded-full border-2 border-gray-300 bg-white text-gray-600 py-3.5 font-extrabold text-sm disabled:opacity-50">
-                🔒 เก็บไว้ส่วนตัว
-                <span className="block text-xs font-normal opacity-60 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ကိုယ်ပိုင်သိမ်းမည်</span>
-              </button>
-              <button onClick={() => handleSubmit(true)} disabled={saving}
-                className="flex-1 rounded-full bg-[#C9A84C] disabled:bg-gray-200 text-white py-3.5 font-extrabold text-sm transition-colors">
-                {saving ? '...' : '✅ ยืนยันเผยแพร่'}
-                {!saving && <span className="block text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>အတည်ပြု</span>}
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-3">
+                <button onClick={() => handleSubmit(false)} disabled={saving}
+                  className="flex-1 rounded-full border-2 border-gray-300 bg-white text-gray-600 py-3.5 font-extrabold text-sm disabled:opacity-50">
+                  🔒 เก็บไว้ส่วนตัว
+                  <span className="block text-xs font-normal opacity-60 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ကိုယ်ပိုင်သိမ်းမည်</span>
+                </button>
+                <button onClick={() => handleSubmit(true)} disabled={saving}
+                  className="flex-1 rounded-full bg-[#C9A84C] disabled:bg-gray-200 text-white py-3.5 font-extrabold text-sm transition-colors">
+                  {saving ? '...' : '✅ ยืนยันเผยแพร่'}
+                  {!saving && <span className="block text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>အတည်ပြု</span>}
+                </button>
+              </div>
+              <button onClick={() => { setStep(s => s - 1); scrollTop() }} disabled={saving}
+                className="w-full rounded-full border-2 border-gray-300 bg-white text-gray-500 py-2.5 font-bold text-sm disabled:opacity-40">
+                ← ย้อนกลับแก้ไข
+                <span className="ml-1 opacity-60" style={{ fontFamily: 'Noto Sans Myanmar' }}>နောက်သို့</span>
               </button>
             </div>
           )}
