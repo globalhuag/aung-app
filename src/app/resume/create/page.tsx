@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -254,6 +254,11 @@ export default function ResumeCreatePage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string>('')
   const [docFiles, setDocFiles] = useState<File[]>([])
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  const scrollTop = () => {
+    contentRef.current ? (contentRef.current.scrollTop = 0) : window.scrollTo(0, 0)
+  }
 
   useEffect(() => {
     const u = localStorage.getItem('aung_user')
@@ -363,7 +368,7 @@ export default function ResumeCreatePage() {
         {/* ── Header (gold) ── */}
         <div className="bg-[#C9A84C] px-4 pt-4 pb-3 flex-shrink-0">
           <div className="flex items-center gap-2 mb-2">
-            <button onClick={() => step > 1 ? setStep(s => s - 1) : router.back()}
+            <button onClick={() => { if (step > 1) { setStep(s => s - 1); scrollTop() } else { router.back() } }}
               className="w-7 h-7 rounded-full bg-white/25 flex items-center justify-center text-white font-bold">
               ←
             </button>
@@ -387,7 +392,7 @@ export default function ResumeCreatePage() {
         </div>
 
         {/* ── Content ── */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+        <div ref={contentRef} className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4">
 
           {/* ══ STEP 1: ส่วนตัว ══ */}
           {step === 1 && <>
@@ -738,12 +743,12 @@ export default function ResumeCreatePage() {
         <div className="px-4 pb-6 pt-3 bg-gray-100 flex-shrink-0">
           {step < TOTAL_STEPS ? (
             <div className="flex gap-3">
-              <button onClick={() => { if (step > 1) { setStep(s => s - 1); window.scrollTo(0, 0) } else { router.back() } }}
+              <button onClick={() => { if (step > 1) { setStep(s => s - 1); scrollTop() } else { router.back() } }}
                 className="flex-1 rounded-full border-2 border-gray-300 bg-white text-gray-600 py-3.5 font-extrabold text-sm">
                 ← ย้อนกลับ
                 <span className="block text-xs font-normal opacity-60 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>နောက်သို့</span>
               </button>
-              <button onClick={() => { setStep(s => s + 1); window.scrollTo(0, 0) }} disabled={!canNext}
+              <button onClick={() => { setStep(s => s + 1); scrollTop() }} disabled={!canNext}
                 className="flex-1 rounded-full bg-[#C9A84C] disabled:bg-gray-200 disabled:text-gray-400 text-white py-3.5 font-extrabold text-sm transition-colors">
                 ถัดไป →
                 <span className="block text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ရှေ့ဆက်</span>
