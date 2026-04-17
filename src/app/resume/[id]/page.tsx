@@ -110,23 +110,48 @@ export default function ResumeDetailPage() {
     }
   }
 
-  // ─── Download resume card as PNG (client-side) ───────────────────────────
+  // ─── Download / Share resume card as PNG ─────────────────────────────────
   const handleDownloadImage = async () => {
     const el = cardRef.current
     if (!el) return
     try {
       const { default: html2canvas } = await import('html2canvas')
       const canvas = await html2canvas(el, {
-        scale:      2,
-        useCORS:    true,
-        allowTaint: true,
-        backgroundColor: '#f4f5fb',
+        scale:           2,
+        useCORS:         true,
+        allowTaint:      true,
+        backgroundColor: '#ffffff',
       })
-      const link    = document.createElement('a')
-      link.download = `resume-${resume?.name || 'workpass'}.png`
-      link.href     = canvas.toDataURL('image/png')
-      link.click()
-    } catch (e) {
+
+      const filename = `resume-${resume?.name || 'workpass'}.png`
+
+      // Try Web Share API first (mobile → saves to Photos)
+      if (navigator.canShare) {
+        canvas.toBlob(async (blob) => {
+          if (!blob) return
+          const file = new File([blob], filename, { type: 'image/png' })
+          if (navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({ files: [file], title: 'WorkPass Resume' })
+              return
+            } catch (_) { /* user cancelled or unsupported — fall through */ }
+          }
+          // Fallback: normal download
+          const url  = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.download = filename
+          link.href     = url
+          link.click()
+          URL.revokeObjectURL(url)
+        }, 'image/png')
+      } else {
+        // Desktop: normal download
+        const link    = document.createElement('a')
+        link.download = filename
+        link.href     = canvas.toDataURL('image/png')
+        link.click()
+      }
+    } catch {
       alert('โหลดรูปไม่สำเร็จ ลองใหม่อีกครั้ง')
     }
   }

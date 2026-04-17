@@ -2,6 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 import sharp from 'sharp'
 
+// Allow up to 60s for Vertex AI Imagen (takes ~20-30s)
+export const maxDuration = 60
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!

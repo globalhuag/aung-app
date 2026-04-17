@@ -108,16 +108,7 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* No credit warning — only if no resume is processing */}
-          {noCredit && !resumes.some(r => r.suit_status === 'pending' || r.suit_status === 'processing') && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-600 flex gap-2 mb-3">
-              <span>⚠️</span>
-              <div>เครดิตหมดแล้ว เติม 20 บาท รับ 4 เครดิต<br/>
-                <span style={{fontFamily:'Noto Sans Myanmar'}}>ခရက်ဒစ် ကုန်ပြီ — ၂၀ဘတ် = ၄ ခရက်ဒစ်</span>
-              </div>
-            </div>
-          )}
-          {/* Processing banner */}
+          {/* Processing banner — shown while suit generating */}
           {resumes.some(r => r.suit_status === 'pending' || r.suit_status === 'processing') && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-700 flex gap-2 mb-3">
               <span className="animate-pulse">⚙️</span>
