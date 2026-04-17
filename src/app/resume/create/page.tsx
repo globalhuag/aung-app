@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -254,11 +254,7 @@ export default function ResumeCreatePage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string>('')
   const [docFiles, setDocFiles] = useState<File[]>([])
-  const contentRef = useRef<HTMLDivElement>(null)
-
-  const scrollTop = () => {
-    contentRef.current ? (contentRef.current.scrollTop = 0) : window.scrollTo(0, 0)
-  }
+  const scrollTop = () => window.scrollTo(0, 0)
 
   useEffect(() => {
     const u = localStorage.getItem('aung_user')
@@ -362,11 +358,11 @@ export default function ResumeCreatePage() {
   const canNext = step !== 1 || form.name.trim().length > 0
 
   return (
-    <div className="h-screen bg-gray-100 flex flex-col items-center overflow-hidden">
-      <div className="w-full max-w-sm flex flex-col h-full">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center">
+      <div className="w-full max-w-sm">
 
-        {/* ── Header (gold) ── */}
-        <div className="bg-[#C9A84C] px-4 pt-4 pb-3 flex-shrink-0">
+        {/* ── Header (gold, sticky) ── */}
+        <div className="sticky top-0 z-10 bg-[#C9A84C] px-4 pt-4 pb-3">
           <div className="flex items-center gap-2 mb-2">
             <button onClick={() => { if (step > 1) { setStep(s => s - 1); scrollTop() } else { router.back() } }}
               className="w-7 h-7 rounded-full bg-white/25 flex items-center justify-center text-white font-bold">
@@ -392,7 +388,7 @@ export default function ResumeCreatePage() {
         </div>
 
         {/* ── Content ── */}
-        <div ref={contentRef} className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4">
+        <div className="px-4 py-4 space-y-4 pb-36">
 
           {/* ══ STEP 1: ส่วนตัว ══ */}
           {step === 1 && <>
@@ -739,8 +735,9 @@ export default function ResumeCreatePage() {
 
         </div>
 
-        {/* ── Footer 2-button nav ── */}
-        <div className="px-4 pb-6 pt-3 bg-gray-100 flex-shrink-0">
+        {/* ── Footer 2-button nav (fixed) ── */}
+        <div className="fixed bottom-0 left-0 right-0 z-10 flex justify-center bg-gray-100 border-t border-gray-200">
+        <div className="w-full max-w-sm px-4 pb-6 pt-3">
           {step < TOTAL_STEPS ? (
             <div className="flex gap-3">
               <button onClick={() => { if (step > 1) { setStep(s => s - 1); scrollTop() } else { router.back() } }}
@@ -775,6 +772,7 @@ export default function ResumeCreatePage() {
               </button>
             </div>
           )}
+        </div>
         </div>
 
       </div>
