@@ -5,9 +5,16 @@ import sharp from 'sharp'
 // Allow up to 60s for Vertex AI Imagen (takes ~20-30s)
 export const maxDuration = 60
 
+// Regular client for DB reads
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+// Admin client (service role) for storage uploads — bypasses RLS
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim()
 )
 
 const GOOGLE_PROJECT  = 'suit1-492705'
@@ -154,12 +161,12 @@ async function callImagenInpainting(
 // ─── Upload to Supabase Storage ────────────────────────────────────────────────
 
 async function uploadToStorage(bucket: string, path: string, buffer: Buffer, mime = 'image/png') {
-  const { error } = await supabase.storage.from(bucket).upload(path, buffer, {
+  const { error } = await supabaseAdmin.storage.from(bucket).upload(path, buffer, {
     contentType: mime,
     upsert:      true,
   })
   if (error) throw new Error(`Storage upload failed: ${error.message}`)
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path)
+  const { data } = supabaseAdmin.storage.from(bucket).getPublicUrl(path)
   return data.publicUrl
 }
 
