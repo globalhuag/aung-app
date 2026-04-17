@@ -72,9 +72,15 @@ export default function RegisterPage() {
             <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
               <span className="text-white font-black text-sm">A</span>
             </div>
-            <span className="text-white font-black text-lg tracking-wide">Aung</span>
+            <div>
+              <div className="text-white font-black text-lg tracking-wide leading-none">Aung</div>
+              <div className="text-white/60 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အောင်</div>
+            </div>
           </div>
-          <div className="ml-auto text-white/60 text-xs">สมัครสมาชิก</div>
+          <div className="ml-auto text-right">
+            <div className="text-white/60 text-xs">สมัครสมาชิก</div>
+            <div className="text-white/40 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အကောင့်ဖွင့်</div>
+          </div>
         </div>
 
         {/* Progress bar */}

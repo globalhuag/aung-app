@@ -78,11 +78,11 @@ export default function TopupPage() {
             ←
           </button>
           <div className="flex-1">
-            <div className="text-white font-black text-base">เติมเครดิต</div>
-            <div className="text-white/70 text-xs" style={{ fontFamily: 'Noto Sans Myanmar' }}>ခရက်ဒစ်ဖြည့်ရန်</div>
+            <div className="text-white font-black text-base leading-none">เติมเครดิต</div>
+            <div className="text-white/70 text-xs" style={{ fontFamily: 'Noto Sans Myanmar' }}>ခရက်ဒစ်ဖြည့်ရန် · Aung အောင်</div>
           </div>
           <div className="bg-white/20 rounded-full px-3 py-1 text-white text-xs font-bold">
-            ⭐ {user.credits} เครดิต
+            ⭐ {user.credits} เครดิต · ခရက်ဒစ်
           </div>
         </div>
 

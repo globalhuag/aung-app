@@ -60,8 +60,16 @@ export default function JobsPage() {
 
         {/* Header */}
         <div className="bg-[#2B3FBE] px-4 py-3">
-          <div className="text-white font-black text-base mb-0.5">ประกาศงาน</div>
-          <div className="text-white/70 text-xs" style={{ fontFamily: 'Noto Sans Myanmar' }}>အလုပ်ကြော်ငြာများ</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-white font-black text-base mb-0.5">ประกาศงาน</div>
+              <div className="text-white/70 text-xs" style={{ fontFamily: 'Noto Sans Myanmar' }}>အလုပ်ကြော်ငြာများ</div>
+            </div>
+            <div className="text-right">
+              <div className="text-white font-black text-sm leading-none">Aung</div>
+              <div className="text-white/50 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အောင်</div>
+            </div>
+          </div>
         </div>
 
         {/* Search + Filter */}
@@ -78,7 +86,7 @@ export default function JobsPage() {
           <div className="flex gap-2 overflow-x-auto pb-1">
             <button onClick={() => setFilterType('')}
               className={`flex-shrink-0 rounded-full border-2 px-3 py-1 text-xs font-bold transition-all ${!filterType ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-600'}`}>
-              ทั้งหมด
+              ทั้งหมด <span style={{fontFamily:'Noto Sans Myanmar',fontSize:'10px'}} className="opacity-70">အားလုံး</span>
             </button>
             {JOB_TYPES.map(t => (
               <button key={t} onClick={() => setFilterType(filterType === t ? '' : t)}
@@ -92,7 +100,7 @@ export default function JobsPage() {
         {/* Job list */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
           {loading ? (
-            <div className="text-center py-12 text-gray-400 text-sm">กำลังโหลด...</div>
+            <div className="text-center py-12 text-gray-400 text-sm">กำลังโหลด...<div className="text-xs mt-1" style={{fontFamily:'Noto Sans Myanmar'}}>ဆောင်ရွက်နေသည်</div></div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-4xl mb-3">📢</div>

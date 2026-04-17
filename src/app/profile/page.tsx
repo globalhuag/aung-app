@@ -61,7 +61,14 @@ export default function ProfilePage() {
         {/* Header */}
         <div className="bg-[#2B3FBE] px-4 pt-4 pb-8">
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 text-white font-black text-lg">โปรไฟล์</div>
+            <div className="flex-1">
+              <div className="text-white font-black text-lg leading-none">โปรไฟล์</div>
+              <div className="text-white/60 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>ကိုယ်ရေးအချက်အလက်</div>
+            </div>
+            <div className="text-right">
+              <div className="text-white font-black text-sm leading-none">Aung</div>
+              <div className="text-white/50 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အောင်</div>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-white/20 border-2 border-white/40 flex items-center justify-center text-3xl">
@@ -82,9 +89,9 @@ export default function ProfilePage() {
         <div className="px-4 -mt-4">
           <div className="bg-white rounded-2xl border border-gray-100 grid grid-cols-3 divide-x divide-gray-100 overflow-hidden shadow-sm">
             {[
-              { label: 'เครดิต', value: user.credits, icon: '⭐' },
+              { label: 'เครดิต · ခရက်ဒစ်', value: user.credits, icon: '⭐' },
               { label: 'เรซูเม่', value: loading ? '...' : resumeCount, icon: '📄' },
-              { label: 'สถานะ', value: 'ใช้งาน', icon: '✅' },
+              { label: 'สถานะ · အသုံးပြု', value: 'ใช้งาน', icon: '✅' },
             ].map(s => (
               <div key={s.label} className="py-3 flex flex-col items-center gap-0.5">
                 <div className="text-lg">{s.icon}</div>

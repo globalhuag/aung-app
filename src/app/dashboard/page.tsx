@@ -124,7 +124,10 @@ export default function DashboardPage() {
           <div className="w-9 h-9 rounded-xl bg-white/20 border-2 border-dashed border-white/40 flex items-center justify-center">
             <span className="text-white font-black text-sm">A</span>
           </div>
-          <span className="text-white font-black text-xl tracking-wide">Aung</span>
+          <div>
+            <div className="text-white font-black text-xl tracking-wide leading-none">Aung</div>
+            <div className="text-white/60 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အောင်</div>
+          </div>
         </div>
 
         {/* User bar: ชื่อ + เครดิต */}
@@ -180,7 +183,7 @@ export default function DashboardPage() {
           )}
 
           {loading ? (
-            <div className="text-center py-12 text-gray-400 text-sm">กำลังโหลด...</div>
+            <div className="text-center py-12 text-gray-400 text-sm">กำลังโหลด...<div className="text-xs mt-1" style={{fontFamily:'Noto Sans Myanmar'}}>ဆောင်ရွက်နေသည်</div></div>
           ) : resumes.length === 0 ? (
             /* Empty state */
             <div className="text-center py-10">
@@ -210,7 +213,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex flex-col gap-1 items-end flex-shrink-0">
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.suit_status==='done'?'bg-green-50 text-green-600':r.suit_status==='error'?'bg-red-50 text-red-500':r.suit_status==='processing'?'bg-blue-50 text-blue-600':'bg-yellow-50 text-yellow-600'}`}>
-                      {r.suit_status==='done'?'✓ สูทเสร็จ':r.suit_status==='error'?'✕ ผิดพลาด':r.suit_status==='processing'?'⚙️ กำลังสร้าง':'⏳ รอดำเนินการ'}
+                      {r.suit_status==='done'?'✓ สูทเสร็จ · ပြုလုပ်ပြီး':r.suit_status==='error'?'✕ ผิดพลาด · အမှား':r.suit_status==='processing'?'⚙️ กำลังสร้าง · ဆောင်ရွက်နေ':'⏳ รอดำเนินการ · စောင့်ဆိုင်း'}
                     </span>
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.is_public?'bg-blue-50 text-blue-600':'bg-gray-100 text-gray-500'}`}>
                       {r.is_public?'🌐 สาธารณะ':'🔒 ส่วนตัว'}
@@ -218,7 +221,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="border-t border-gray-100 flex">
-                  <button onClick={() => router.push(`/resume/${r.id}`)} className="flex-1 py-2 text-xs font-bold text-[#2B3FBE] border-r border-gray-100">⬇️ ดู/พิมพ์</button>
+                  <button onClick={() => router.push(`/resume/${r.id}`)} className="flex-1 py-2 text-xs font-bold text-[#2B3FBE] border-r border-gray-100">⬇️ ดู<span className="block text-gray-400 font-normal" style={{fontFamily:'Noto Sans Myanmar',fontSize:'9px'}}>ကြည့်မည်</span></button>
                   <button onClick={() => {
                     const url = `${window.location.origin}/resume/${r.id}`
                     navigator.clipboard.writeText(url).then(() => alert('คัดลอกลิงก์แล้ว!'))

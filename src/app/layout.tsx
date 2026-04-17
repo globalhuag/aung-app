@@ -1,5 +1,6 @@
 ﻿import type { Metadata } from 'next'
 import './globals.css'
+import { ScrollReset } from '@/components/ScrollReset'
 
 export const metadata: Metadata = {
   title: 'Aung — အောင်',
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="th">
-      <body className="bg-[#F4F5FB] min-h-screen">{children}</body>
+      <body className="bg-[#F4F5FB] min-h-screen">
+        <ScrollReset />
+        {children}
+      </body>
     </html>
   )
 }

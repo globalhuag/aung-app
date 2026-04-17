@@ -76,7 +76,12 @@ export default function ChatPage() {
 
   if (!user) return null
 
-  const QUICK_MESSAGES = ['สอบถามงาน', 'ปัญหาเครดิต', 'ช่วยด้วย', 'ถามเรซูเม่']
+  const QUICK_MESSAGES = [
+    { th: 'สอบถามงาน', mm: 'အလုပ်မေးမည်' },
+    { th: 'ปัญหาเครดิต', mm: 'ခရက်ဒစ်ပြဿနာ' },
+    { th: 'ช่วยด้วย', mm: 'ကူညီပါ' },
+    { th: 'ถามเรซูเม่', mm: 'Resume မေးမည်' },
+  ]
 
   return (
     <div className="min-h-screen bg-[#F4F5FB] flex flex-col items-center">
@@ -92,7 +97,7 @@ export default function ChatPage() {
             👨‍💼
           </div>
           <div className="flex-1">
-            <div className="text-white font-black text-sm">ทีมงาน Aung</div>
+            <div className="text-white font-black text-sm">ทีมงาน Aung <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal text-white/70">အောင်</span></div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-green-400"></div>
               <span className="text-white/70 text-xs">ออนไลน์ / အွန်လိုင်း</span>
@@ -111,7 +116,7 @@ export default function ChatPage() {
                   <p className="text-xs text-gray-500 mt-1">สามารถสอบถามเรื่องงาน เรซูเม่ หรือเครดิตได้เลยครับ</p>
                   <p className="text-xs text-gray-400 mt-2" style={{ fontFamily: 'Noto Sans Myanmar' }}>မင်္ဂလာပါ! မည်သည့်ကိစ္စမဆို မေးနိုင်ပါသည်</p>
                 </div>
-                <div className="text-xs text-gray-400 mt-1 ml-1">ตอนนี้</div>
+                <div className="text-xs text-gray-400 mt-1 ml-1">ตอนนี้ · <span style={{fontFamily:'Noto Sans Myanmar'}}>ယခု</span></div>
               </div>
             </div>
           )}
@@ -139,9 +144,10 @@ export default function ChatPage() {
         {messages.length === 0 && (
           <div className="px-4 pb-2 flex gap-2 overflow-x-auto flex-shrink-0">
             {QUICK_MESSAGES.map(q => (
-              <button key={q} onClick={() => setText(q)}
-                className="flex-shrink-0 bg-white border border-gray-200 rounded-full px-3 py-1.5 text-xs font-bold text-gray-600">
-                {q}
+              <button key={q.th} onClick={() => setText(q.th)}
+                className="flex-shrink-0 bg-white border border-gray-200 rounded-full px-3 py-1.5 text-xs font-bold text-gray-600 text-left">
+                {q.th}
+                <span className="block text-gray-400 font-normal" style={{fontFamily:'Noto Sans Myanmar',fontSize:'10px'}}>{q.mm}</span>
               </button>
             ))}
           </div>

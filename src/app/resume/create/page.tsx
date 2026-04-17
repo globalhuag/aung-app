@@ -368,7 +368,10 @@ export default function ResumeCreatePage() {
               ←
             </button>
             <div className="text-white/80 text-xs font-bold">ข้อ {step} จาก {TOTAL_STEPS}</div>
-            <div className="ml-auto text-white/70 text-xs">⭐ {user.credits} เครดิต</div>
+            <div className="ml-auto text-right">
+              <div className="text-white font-black text-xs leading-none">Aung</div>
+              <div className="text-white/60 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အောင်</div>
+            </div>
           </div>
           {/* Progress */}
           <div className="flex gap-1">
