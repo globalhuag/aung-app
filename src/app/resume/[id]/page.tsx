@@ -56,14 +56,14 @@ export default function ResumeDetailPage() {
   const params = useParams()
   const id     = params?.id as string
 
-  const cardRef = useRef<HTMLDivElement>(null)
+  const cardRef     = useRef<HTMLDivElement>(null)
+  const hasTriedRef = useRef(false)   // ป้องกัน retry loop
 
-  const [resume,   setResume]   = useState<Resume | null>(null)
-  const [phone,    setPhone]    = useState('')
-  const [loading,  setLoading]  = useState(true)
-  const [notFound, setNotFound] = useState(false)
-  const [copied,   setCopied]   = useState(false)
-  const [generating, setGenerating] = useState(false)
+  const [resume,      setResume]      = useState<Resume | null>(null)
+  const [phone,       setPhone]       = useState('')
+  const [loading,     setLoading]     = useState(true)
+  const [notFound,    setNotFound]    = useState(false)
+  const [generating,  setGenerating]  = useState(false)
   const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null)
 
   useEffect(() => {
@@ -81,8 +81,9 @@ export default function ResumeDetailPage() {
     if (u) setPhone((u as { id: string; phone: string }).phone)
     setLoading(false)
 
-    // Auto-generate suit ถ้ายัง pending — เรียกจาก resume page ซึ่ง navigation ยังคงอยู่
-    if (data.suit_status === 'pending' && data.photo_url) {
+    // Auto-generate: ทำงานเมื่อ pending หรือ error (retry) — แค่ครั้งเดียวต่อ session
+    if ((data.suit_status === 'pending' || data.suit_status === 'error') && data.photo_url && !hasTriedRef.current) {
+      hasTriedRef.current = true
       triggerGenerate(data.id)
     }
   }
@@ -109,13 +110,7 @@ export default function ResumeDetailPage() {
     }
   }
 
-  const handleShare = async () => {
-    await navigator.clipboard.writeText(window.location.href)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2500)
-  }
-
-  // ─── Download / Share resume card as PNG ─────────────────────────────────
+  // ─── Download resume card as PNG → บันทึกลงอัลบั้มรูป ──────────────────────
   const handleDownloadImage = async () => {
     const el = cardRef.current
     if (!el) return
@@ -130,32 +125,31 @@ export default function ResumeDetailPage() {
 
       const filename = `resume-${resume?.name || 'workpass'}.png`
 
-      // Try Web Share API first (mobile → saves to Photos)
-      if (navigator.canShare) {
-        canvas.toBlob(async (blob) => {
-          if (!blob) return
-          const file = new File([blob], filename, { type: 'image/png' })
-          if (navigator.canShare({ files: [file] })) {
-            try {
-              await navigator.share({ files: [file], title: 'WorkPass Resume' })
-              return
-            } catch (_) { /* user cancelled or unsupported — fall through */ }
+      canvas.toBlob(async (blob) => {
+        if (!blob) return
+
+        // Web Share API → เปิด share sheet ให้กด "บันทึกรูป" / "Save to Photos"
+        if (typeof navigator.share === 'function') {
+          try {
+            const file = new File([blob], filename, { type: 'image/png' })
+            await navigator.share({ files: [file], title: 'WorkPass Resume' })
+            return
+          } catch {
+            // user ยกเลิก หรือ browser ไม่รองรับ file share → ใช้ fallback
           }
-          // Fallback: normal download
-          const url  = URL.createObjectURL(blob)
-          const link = document.createElement('a')
-          link.download = filename
-          link.href     = url
-          link.click()
-          URL.revokeObjectURL(url)
-        }, 'image/png')
-      } else {
-        // Desktop: normal download
-        const link    = document.createElement('a')
-        link.download = filename
-        link.href     = canvas.toDataURL('image/png')
-        link.click()
-      }
+        }
+
+        // Fallback: download ปกติ (Android Chrome → บันทึกลง Gallery อัตโนมัติ)
+        const url  = URL.createObjectURL(blob)
+        const a    = document.createElement('a')
+        a.download = filename
+        a.href     = url
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        setTimeout(() => URL.revokeObjectURL(url), 1000)
+      }, 'image/png')
+
     } catch {
       alert('โหลดรูปไม่สำเร็จ ลองใหม่อีกครั้ง')
     }
@@ -203,11 +197,8 @@ export default function ResumeDetailPage() {
         <div className="flex items-center gap-2">
           <button onClick={() => router.back()} className="p-2 rounded-xl text-gray-500 hover:bg-gray-50 text-sm font-bold">← กลับ</button>
           <div className="flex-1" />
-          <button onClick={handleShare} className="bg-[#F4F5FB] text-[#2B3FBE] border border-[#2B3FBE]/20 rounded-xl px-3 py-1.5 text-xs font-bold">
-            {copied ? '✓ คัดลอก' : '🔗 แชร์'}
-          </button>
           <button onClick={handleDownloadImage} className="bg-[#2B3FBE] text-white rounded-xl px-3 py-1.5 text-xs font-bold">
-            🖼️ โหลดรูป
+            🖼️ บันทึกรูป
           </button>
           <button onClick={handleDownloadPDF} className="bg-[#C9A84C] text-white rounded-xl px-3 py-1.5 text-xs font-bold">
             📄 PDF
