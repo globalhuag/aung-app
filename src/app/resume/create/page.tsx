@@ -738,12 +738,12 @@ export default function ResumeCreatePage() {
         <div className="px-4 pb-6 pt-3 bg-gray-100 flex-shrink-0">
           {step < TOTAL_STEPS ? (
             <div className="flex gap-3">
-              <button onClick={() => step > 1 ? setStep(s => s - 1) : router.back()}
+              <button onClick={() => { if (step > 1) { setStep(s => s - 1); window.scrollTo(0, 0) } else { router.back() } }}
                 className="flex-1 rounded-full border-2 border-gray-300 bg-white text-gray-600 py-3.5 font-extrabold text-sm">
                 ← ย้อนกลับ
                 <span className="block text-xs font-normal opacity-60 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>နောက်သို့</span>
               </button>
-              <button onClick={() => setStep(s => s + 1)} disabled={!canNext}
+              <button onClick={() => { setStep(s => s + 1); window.scrollTo(0, 0) }} disabled={!canNext}
                 className="flex-1 rounded-full bg-[#C9A84C] disabled:bg-gray-200 disabled:text-gray-400 text-white py-3.5 font-extrabold text-sm transition-colors">
                 ถัดไป →
                 <span className="block text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ရှေ့ဆက်</span>

@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from 'next'
 import './globals.css'
 import { ScrollReset } from '@/components/ScrollReset'
+import { HomeButton } from '@/components/HomeButton'
 
 export const metadata: Metadata = {
   title: 'Aung — အောင်',
@@ -12,6 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="th">
       <body className="bg-[#F4F5FB] min-h-screen">
         <ScrollReset />
+        <HomeButton />
         {children}
       </body>
     </html>

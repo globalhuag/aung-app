@@ -29,6 +29,7 @@ export default function RegisterPage() {
     if (data) { setError('เบอร์นี้มีบัญชีแล้ว กรุณา Login'); setLoading(false); return }
     // Mock OTP — ระบบยังไม่เชื่อม Thaibulksms
     setStep('otp')
+    window.scrollTo(0, 0)
     setLoading(false)
   }
 
@@ -37,6 +38,7 @@ export default function RegisterPage() {
     if (otp.length !== 6) { setError('กรอก OTP ให้ครบ 6 หลัก'); return }
     setError('')
     setStep('pin')
+    window.scrollTo(0, 0)
   }
 
   const handleRegister = async () => {
@@ -66,7 +68,7 @@ export default function RegisterPage() {
 
         {/* Header */}
         <div className="bg-[#2B3FBE] px-4 py-4 flex items-center gap-3">
-          <button onClick={() => step === 'phone' ? router.push('/login') : setStep(s => s === 'otp' ? 'phone' : 'otp')}
+          <button onClick={() => { if (step === 'phone') { router.push('/login') } else { setStep(s => s === 'otp' ? 'phone' : 'otp'); window.scrollTo(0, 0) } }}
             className="text-white text-xl font-bold">←</button>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -145,7 +147,7 @@ export default function RegisterPage() {
               <div className="text-gray-400 text-xs text-center mb-4">{otp.length}/6 หลัก</div>
               <Numpad onNum={n=>otp.length<6&&setOtp(p=>p+n)} onDel={()=>setOtp(p=>p.slice(0,-1))} onClear={()=>setOtp('')} />
               <div className="flex gap-3 mt-4">
-                <button onClick={()=>{setStep('phone');setOtp('')}} className="flex-[0.8] bg-[#4A4845] text-white rounded-xl py-3 text-sm font-bold">
+                <button onClick={()=>{setStep('phone');setOtp('');window.scrollTo(0,0)}} className="flex-[0.8] bg-[#4A4845] text-white rounded-xl py-3 text-sm font-bold">
                   ← กลับ<span className="block text-xs opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>နောက်သို့</span>
                 </button>
                 <button onClick={handleOtpNext} disabled={otp.length!==6}
@@ -189,7 +191,7 @@ export default function RegisterPage() {
                 onClear={() => { setPin(''); setPinConfirm('') }}
               />
               <div className="flex gap-3 mt-4">
-                <button onClick={()=>{setStep('otp');setPin('');setPinConfirm('')}} className="flex-[0.8] bg-[#4A4845] text-white rounded-xl py-3 text-sm font-bold">
+                <button onClick={()=>{setStep('otp');setPin('');setPinConfirm('');window.scrollTo(0,0)}} className="flex-[0.8] bg-[#4A4845] text-white rounded-xl py-3 text-sm font-bold">
                   ← กลับ<span className="block text-xs opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>နောက်သို့</span>
                 </button>
                 <button onClick={handleRegister} disabled={pin.length!==6||pinConfirm.length!==6||pin!==pinConfirm||loading}
