@@ -92,24 +92,38 @@ export default function ResumeDetailPage() {
     try {
       const { default: html2canvas } = await import('html2canvas')
       const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' })
-      const filename = `resume-${resume?.name || 'workpass'}.png`
+      const filename = `resume-${(resume?.name || 'workpass').replace(/\s+/g, '_')}.jpg`
+
+      // แปลงเป็น JPEG (บีบอัดง่าย เซฟลงอัลบั้มได้ทุกเครื่อง)
       canvas.toBlob(async (blob) => {
         if (!blob) return
-        if (typeof navigator.share === 'function') {
+
+        // iOS + Android ใหม่: Web Share API → เปิด sheet "บันทึกรูปภาพ"
+        if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/jpeg' })] })) {
           try {
-            const file = new File([blob], filename, { type: 'image/png' })
-            await navigator.share({ files: [file], title: 'WorkPass Resume' })
+            await navigator.share({
+              files:  [new File([blob], filename, { type: 'image/jpeg' })],
+              title:  'WorkPass Resume',
+            })
             return
-          } catch { /* fallback */ }
+          } catch (err: unknown) {
+            // user กดยกเลิก → ไม่ต้อง fallback
+            if (err instanceof Error && err.name === 'AbortError') return
+          }
         }
+
+        // Fallback: <a download> — Android Chrome บันทึกลง Gallery อัตโนมัติ
         const url = URL.createObjectURL(blob)
         const a   = document.createElement('a')
-        a.download = filename; a.href = url
-        document.body.appendChild(a); a.click()
+        a.href     = url
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
         document.body.removeChild(a)
-        setTimeout(() => URL.revokeObjectURL(url), 1000)
-      }, 'image/png')
-    } catch { alert('โหลดรูปไม่สำเร็จ') }
+        setTimeout(() => URL.revokeObjectURL(url), 2000)
+      }, 'image/jpeg', 0.92)  // JPEG quality 92%
+
+    } catch { alert('โหลดรูปไม่สำเร็จ กรุณาลองใหม่') }
   }
 
   const handleDownloadPDF = () => window.print()
