@@ -202,7 +202,7 @@ export async function POST(req: Request) {
 
     // 5) Upload suit photo to Supabase Storage
     const suitPath = `suits/${resume_id}.png`
-    const suitUrl  = await uploadToStorage('resumes', suitPath, suitBuf)
+    const suitUrl  = await uploadToStorage('resume-files', suitPath, suitBuf)
     console.log('[Suit] Uploaded:', suitUrl)
 
     // 6) Update DB
