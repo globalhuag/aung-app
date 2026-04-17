@@ -45,6 +45,7 @@ export default function ResumeDetailPage() {
   const [notFound,    setNotFound]    = useState(false)
   const [generating,  setGenerating]  = useState(false)
   const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null)
+  const [previewUrl,  setPreviewUrl]  = useState<string | null>(null)
 
   useEffect(() => {
     const u = localStorage.getItem('aung_user')
@@ -92,38 +93,20 @@ export default function ResumeDetailPage() {
     try {
       const { default: html2canvas } = await import('html2canvas')
       const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' })
-      const filename = `resume-${(resume?.name || 'workpass').replace(/\s+/g, '_')}.jpg`
 
-      // แปลงเป็น JPEG (บีบอัดง่าย เซฟลงอัลบั้มได้ทุกเครื่อง)
-      canvas.toBlob(async (blob) => {
+      // แปลงเป็น JPEG → แสดง preview เต็มจอ ให้ผู้ใช้กดค้างเพื่อบันทึก (iOS/Android)
+      canvas.toBlob((blob) => {
         if (!blob) return
-
-        // iOS + Android ใหม่: Web Share API → เปิด sheet "บันทึกรูปภาพ"
-        if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/jpeg' })] })) {
-          try {
-            await navigator.share({
-              files:  [new File([blob], filename, { type: 'image/jpeg' })],
-              title:  'WorkPass Resume',
-            })
-            return
-          } catch (err: unknown) {
-            // user กดยกเลิก → ไม่ต้อง fallback
-            if (err instanceof Error && err.name === 'AbortError') return
-          }
-        }
-
-        // Fallback: <a download> — Android Chrome บันทึกลง Gallery อัตโนมัติ
         const url = URL.createObjectURL(blob)
-        const a   = document.createElement('a')
-        a.href     = url
-        a.download = filename
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        setTimeout(() => URL.revokeObjectURL(url), 2000)
-      }, 'image/jpeg', 0.92)  // JPEG quality 92%
+        setPreviewUrl(url)
+      }, 'image/jpeg', 0.92)
 
     } catch { alert('โหลดรูปไม่สำเร็จ กรุณาลองใหม่') }
+  }
+
+  const closePreview = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+    setPreviewUrl(null)
   }
 
   const handleDownloadPDF = () => window.print()
@@ -346,6 +329,55 @@ export default function ResumeDetailPage() {
       </div>
 
       <div className="pb-10" />
+
+      {/* ── Fullscreen image preview (กดค้างเพื่อบันทึกลงอัลบั้ม) ── */}
+      {previewUrl && (
+        <div
+          onClick={closePreview}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            background: 'rgba(0,0,0,0.92)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            padding: 16,
+          }}
+        >
+          {/* instruction */}
+          <div style={{ color: 'white', fontSize: 15, fontWeight: 'bold', marginBottom: 12, textAlign: 'center', lineHeight: 1.6 }}>
+            📥 กดค้างที่รูปเพื่อบันทึกลงอัลบั้ม
+            <br />
+            <span style={{ fontSize: 12, opacity: 0.7 }}>Long-press image → Save to Photos</span>
+          </div>
+
+          {/* image — stop propagation so tapping image doesn't close modal */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={previewUrl}
+            alt="resume preview"
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: '100%', maxHeight: '70vh',
+              borderRadius: 10,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+            } as React.CSSProperties}
+          />
+
+          {/* close button */}
+          <button
+            onClick={closePreview}
+            style={{
+              marginTop: 20, background: 'rgba(255,255,255,0.15)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'white', borderRadius: 12,
+              padding: '10px 32px', fontSize: 14, fontWeight: 'bold', cursor: 'pointer',
+            }}
+          >
+            ✕ ปิด
+          </button>
+        </div>
+      )}
     </div>
   )
 }
