@@ -55,6 +55,7 @@ async function getAccessToken(): Promise<string> {
 }
 
 // ─── Mask creation (mirrors bot v147 create_body_mask) ────────────────────────
+// NOTE: Uses raw pixel buffer instead of SVG to avoid librsvg dependency on Vercel Linux
 
 async function createBodyMask(imageBytes: Buffer): Promise<{ img: Buffer; mask: Buffer; w: number; h: number }> {
   const TARGET = 1024
@@ -67,23 +68,30 @@ async function createBodyMask(imageBytes: Buffer): Promise<{ img: Buffer; mask: 
 
   const w = TARGET, h = TARGET
 
-  // Face protection oval: center-top area
+  // Face protection oval parameters (same as bot v147)
   const faceCx = w / 2
   const faceCy = h * 0.25
   const faceRx = w * 0.25
   const faceRy = h * 0.28
-  const rectY  = Math.round(faceCy + faceRy)
 
-  // SVG mask: white bg, black oval (protect face), white rect (replace body+bg)
-  const svgMask = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
-    <rect width="${w}" height="${h}" fill="white"/>
-    <ellipse cx="${faceCx}" cy="${faceCy}" rx="${faceRx}" ry="${faceRy}" fill="black"/>
-    <rect x="0" y="${rectY}" width="${w}" height="${h - rectY}" fill="white"/>
-  </svg>`
+  // Build raw grayscale mask pixel-by-pixel (no SVG / no librsvg needed)
+  // White (255) = replace (body + background), Black (0) = protect (face oval)
+  const rawMask = Buffer.alloc(w * h, 255)  // start all-white
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const dy = (y - faceCy) / faceRy
+      const dx = (x - faceCx) / faceRx
+      if (dx * dx + dy * dy <= 1.0) {
+        rawMask[y * w + x] = 0  // black = protect face
+      }
+    }
+  }
 
-  const mask = await sharp(Buffer.from(svgMask))
-    .blur(5)
-    .greyscale()
+  // Convert raw grayscale → PNG, then apply soft blur for smooth edges
+  const mask = await sharp(rawMask, {
+    raw: { width: w, height: h, channels: 1 },
+  })
+    .blur(8)
     .png()
     .toBuffer()
 
@@ -108,19 +116,25 @@ async function callImagenInpainting(
   const body = {
     instances: [{
       prompt,
-      image: { bytesBase64Encoded: photoBase64 },
-      mask:  { image: { bytesBase64Encoded: maskBase64 } },
-      referenceImages: [{
-        referenceImage: { bytesBase64Encoded: photoBase64 },
-        maskImageConfig: {
-          maskImageType: 'USER_PROVIDED',
-          userProvidedMask: { bytesBase64Encoded: maskBase64 },
+      referenceImages: [
+        {
+          referenceType:  'REFERENCE_TYPE_RAW',
+          referenceId:    1,
+          referenceImage: { bytesBase64Encoded: photoBase64 },
         },
-      }],
+        {
+          referenceType:  'REFERENCE_TYPE_MASK',
+          referenceId:    2,
+          referenceImage: { bytesBase64Encoded: maskBase64 },
+          maskImageConfig: {
+            maskMode: 'MASK_MODE_USER_PROVIDED',
+          },
+        },
+      ],
     }],
     parameters: {
       sampleCount: 1,
-      editConfig:  { editMode: 'inpainting-insert' },
+      editConfig:  { editMode: 'EDIT_MODE_INPAINT_INSERTION' },
     },
   }
 
