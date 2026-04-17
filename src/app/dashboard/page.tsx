@@ -1,27 +1,75 @@
 ﻿'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-type User = { id: string; phone: string; credits: number }
+type User   = { id: string; phone: string; credits: number }
 type Resume = { id: string; name: string; job_type: string; province: string; suit_status: string; is_public: boolean; created_at: string }
 
 export default function DashboardPage() {
   const router = useRouter()
-  const [user, setUser] = useState<User|null>(null)
+  const [user,    setUser]    = useState<User|null>(null)
   const [resumes, setResumes] = useState<Resume[]>([])
   const [loading, setLoading] = useState(true)
+  const [toast,   setToast]   = useState('')       // notification text
+  const pollRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const userIdRef = useRef('')
 
   useEffect(() => {
     const u = localStorage.getItem('aung_user')
     if (!u) { router.push('/login'); return }
     const parsed = JSON.parse(u)
     setUser(parsed)
+    userIdRef.current = parsed.id
     loadFreshData(parsed.id)
+
+    return () => { if (pollRef.current) clearTimeout(pollRef.current) }
   }, [])
 
+  // Auto-poll every 5s while any resume is pending/processing
+  const schedulePoll = (userId: string) => {
+    if (pollRef.current) clearTimeout(pollRef.current)
+    pollRef.current = setTimeout(() => pollStatus(userId), 5000)
+  }
+
+  const pollStatus = async (userId: string) => {
+    const { data } = await supabase
+      .from('resumes')
+      .select('id, suit_status, name')
+      .eq('user_id', userId)
+
+    if (!data) return
+
+    const stillProcessing = data.some(r => r.suit_status === 'pending' || r.suit_status === 'processing')
+    const justDone        = data.find(r => r.suit_status === 'done')
+
+    // Refresh full resume list to pick up new statuses
+    setResumes(prev => {
+      const prevPending = prev.some(r => r.suit_status === 'pending' || r.suit_status === 'processing')
+      const nowDone     = data.find(r => {
+        const old = prev.find(p => p.id === r.id)
+        return old && (old.suit_status === 'pending' || old.suit_status === 'processing') && r.suit_status === 'done'
+      })
+      if (nowDone) {
+        setToast(`✅ ชุดสูทของ ${nowDone.name || 'คนงาน'} สร้างเสร็จแล้ว!`)
+        setTimeout(() => setToast(''), 5000)
+      }
+      return prev
+    })
+
+    // Reload full list
+    const { data: full } = await supabase
+      .from('resumes')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+    if (full) setResumes(full)
+
+    // Keep polling if still processing
+    if (stillProcessing) schedulePoll(userId)
+  }
+
   const loadFreshData = async (userId: string) => {
-    // Load fresh credits from DB (localStorage may be stale)
     const [{ data: freshUser }, { data: resumeData }] = await Promise.all([
       supabase.from('users').select('id, phone, credits').eq('id', userId).single(),
       supabase.from('resumes').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
@@ -30,8 +78,14 @@ export default function DashboardPage() {
       setUser(freshUser as User)
       localStorage.setItem('aung_user', JSON.stringify({ ...JSON.parse(localStorage.getItem('aung_user') || '{}'), ...freshUser }))
     }
-    setResumes(resumeData || [])
+    const list = resumeData || []
+    setResumes(list)
     setLoading(false)
+
+    // Start polling if any resume is pending/processing
+    if (list.some((r: Resume) => r.suit_status === 'pending' || r.suit_status === 'processing')) {
+      schedulePoll(userId)
+    }
   }
 
   const handleLogout = () => {
@@ -57,6 +111,13 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen flex flex-col items-center bg-[#F4F5FB]">
       <div className="w-full max-w-sm">
+
+        {/* Toast notification */}
+        {toast && (
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-lg animate-bounce max-w-xs text-center">
+            {toast}
+          </div>
+        )}
 
         {/* Header: โลโก้ + ชื่อแอพ */}
         <div className="bg-[#2B3FBE] px-4 py-3 flex items-center gap-3">
