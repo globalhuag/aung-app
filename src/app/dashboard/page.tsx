@@ -17,16 +17,20 @@ export default function DashboardPage() {
     if (!u) { router.push('/login'); return }
     const parsed = JSON.parse(u)
     setUser(parsed)
-    loadResumes(parsed.id)
+    loadFreshData(parsed.id)
   }, [])
 
-  const loadResumes = async (userId: string) => {
-    const { data } = await supabase
-      .from('resumes')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-    setResumes(data || [])
+  const loadFreshData = async (userId: string) => {
+    // Load fresh credits from DB (localStorage may be stale)
+    const [{ data: freshUser }, { data: resumeData }] = await Promise.all([
+      supabase.from('users').select('id, phone, credits').eq('id', userId).single(),
+      supabase.from('resumes').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+    ])
+    if (freshUser) {
+      setUser(freshUser as User)
+      localStorage.setItem('aung_user', JSON.stringify({ ...JSON.parse(localStorage.getItem('aung_user') || '{}'), ...freshUser }))
+    }
+    setResumes(resumeData || [])
     setLoading(false)
   }
 
@@ -104,12 +108,21 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* No credit warning */}
-          {noCredit && (
+          {/* No credit warning — only if no resume is processing */}
+          {noCredit && !resumes.some(r => r.suit_status === 'pending' || r.suit_status === 'processing') && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-600 flex gap-2 mb-3">
               <span>⚠️</span>
               <div>เครดิตหมดแล้ว เติม 20 บาท รับ 4 เครดิต<br/>
                 <span style={{fontFamily:'Noto Sans Myanmar'}}>ခရက်ဒစ် ကုန်ပြီ — ၂၀ဘတ် = ၄ ခရက်ဒစ်</span>
+              </div>
+            </div>
+          )}
+          {/* Processing banner */}
+          {resumes.some(r => r.suit_status === 'pending' || r.suit_status === 'processing') && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-700 flex gap-2 mb-3">
+              <span className="animate-pulse">⚙️</span>
+              <div>กำลังสร้างชุดสูทด้วย AI อยู่ รอสักครู่นะครับ<br/>
+                <span style={{fontFamily:'Noto Sans Myanmar'}}>AI ဖြင့် suit ပြုလုပ်နေပါသည် — ခဏစောင့်ပါ</span>
               </div>
             </div>
           )}
@@ -144,8 +157,8 @@ export default function DashboardPage() {
                     <div className="text-xs text-gray-400 mt-0.5">{r.job_type} · {r.province} · {new Date(r.created_at).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'})}</div>
                   </div>
                   <div className="flex flex-col gap-1 items-end flex-shrink-0">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.suit_status==='done'?'bg-green-50 text-green-600':r.suit_status==='error'?'bg-red-50 text-red-500':'bg-yellow-50 text-yellow-600'}`}>
-                      {r.suit_status==='done'?'✓ เสร็จ':r.suit_status==='error'?'✕ ผิดพลาด':'⏳ รอ'}
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.suit_status==='done'?'bg-green-50 text-green-600':r.suit_status==='error'?'bg-red-50 text-red-500':r.suit_status==='processing'?'bg-blue-50 text-blue-600':'bg-yellow-50 text-yellow-600'}`}>
+                      {r.suit_status==='done'?'✓ สูทเสร็จ':r.suit_status==='error'?'✕ ผิดพลาด':r.suit_status==='processing'?'⚙️ กำลังสร้าง':'⏳ รอดำเนินการ'}
                     </span>
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.is_public?'bg-blue-50 text-blue-600':'bg-gray-100 text-gray-500'}`}>
                       {r.is_public?'🌐 สาธารณะ':'🔒 ส่วนตัว'}

@@ -312,7 +312,7 @@ export default function ResumeCreatePage() {
       }
     }
 
-    await supabase.from('resumes').insert({
+    const { data: insertedResume } = await supabase.from('resumes').insert({
       user_id: user.id,
       name: form.name,
       birthday: birthday || null,
@@ -342,9 +342,20 @@ export default function ResumeCreatePage() {
       doc_urls: docUrls.length ? docUrls : null,
       suit_status: 'pending',
       is_public: isPublic,
-    })
+    }).select('id').single()
+
     await supabase.from('users').update({ credits: user.credits - 1 }).eq('id', user.id)
     localStorage.setItem('aung_user', JSON.stringify({ ...user, credits: user.credits - 1 }))
+
+    // Auto-generate suit ใน background (fire & forget) ถ้ามีรูปถ่าย
+    if (photoUrl && insertedResume?.id) {
+      fetch('/api/suit/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resume_id: insertedResume.id }),
+      }).catch(() => {/* ignore errors — user can retry from resume page */})
+    }
+
     setSaving(false)
     router.push('/dashboard')
   }
