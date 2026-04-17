@@ -64,7 +64,6 @@ export default function ResumeDetailPage() {
   const [notFound, setNotFound] = useState(false)
   const [copied,   setCopied]   = useState(false)
   const [generating, setGenerating] = useState(false)
-  const [genError,   setGenError]   = useState('')
   const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null)
 
   useEffect(() => {
@@ -81,33 +80,39 @@ export default function ResumeDetailPage() {
     const { data: u } = await supabase.from('users').select('id, phone').eq('id', data.user_id).single()
     if (u) setPhone((u as { id: string; phone: string }).phone)
     setLoading(false)
+
+    // Auto-generate suit ถ้ายัง pending — เรียกจาก resume page ซึ่ง navigation ยังคงอยู่
+    if (data.suit_status === 'pending' && data.photo_url) {
+      triggerGenerate(data.id)
+    }
+  }
+
+  const triggerGenerate = async (resumeId: string) => {
+    setGenerating(true)
+    try {
+      const res  = await fetch('/api/suit/generate', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ resume_id: resumeId }),
+      })
+      const data = await res.json()
+      if (data.suit_photo_url) {
+        setResume(prev => prev ? { ...prev, suit_photo_url: data.suit_photo_url, suit_status: 'done' } : prev)
+      } else {
+        // error — ยังแสดง resume ด้วยรูปต้นฉบับได้ ไม่ต้อง block
+        setResume(prev => prev ? { ...prev, suit_status: 'error' } : prev)
+      }
+    } catch {
+      setResume(prev => prev ? { ...prev, suit_status: 'error' } : prev)
+    } finally {
+      setGenerating(false)
+    }
   }
 
   const handleShare = async () => {
     await navigator.clipboard.writeText(window.location.href)
     setCopied(true)
     setTimeout(() => setCopied(false), 2500)
-  }
-
-  // ─── Generate suit via API ────────────────────────────────────────────────
-  const handleGenerateSuit = async () => {
-    if (!resume || generating) return
-    setGenerating(true)
-    setGenError('')
-    try {
-      const res  = await fetch('/api/suit/generate', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ resume_id: resume.id }),
-      })
-      const data = await res.json()
-      if (!res.ok || data.error) throw new Error(data.error || 'เกิดข้อผิดพลาด')
-      setResume(prev => prev ? { ...prev, suit_photo_url: data.suit_photo_url, suit_status: 'done' } : prev)
-    } catch (e: unknown) {
-      setGenError(e instanceof Error ? e.message : String(e))
-    } finally {
-      setGenerating(false)
-    }
   }
 
   // ─── Download / Share resume card as PNG ─────────────────────────────────
@@ -209,16 +214,10 @@ export default function ResumeDetailPage() {
           </button>
         </div>
 
-        {/* Generate suit button — owner only, not done */}
-        {isOwner && resume.suit_status !== 'done' && (
-          <div className="mt-2">
-            <button
-              onClick={handleGenerateSuit}
-              disabled={generating}
-              className="w-full bg-gradient-to-r from-[#6a11cb] to-[#2575fc] disabled:opacity-50 text-white rounded-xl py-2 text-xs font-extrabold">
-              {generating ? '⚙️ กำลังสร้างสูท...' : '✨ สร้างสูทด้วย AI'}
-            </button>
-            {genError && <div className="text-xs text-red-500 mt-1 text-center">{genError}</div>}
+        {/* Generating indicator */}
+        {generating && (
+          <div className="mt-2 bg-blue-50 border border-blue-200 rounded-xl py-2 px-3 text-xs text-blue-700 text-center animate-pulse">
+            ⚙️ กำลังสร้างชุดสูทด้วย AI...
           </div>
         )}
       </div>
@@ -228,8 +227,13 @@ export default function ResumeDetailPage() {
 
         {/* Suit photo or avatar header */}
         <div className="bg-gradient-to-br from-[#C9A84C] to-[#a8872e] rounded-2xl p-5 mb-4 flex items-center gap-4">
-          <div className="w-20 h-20 rounded-full bg-white/20 overflow-hidden flex-shrink-0 flex items-center justify-center">
-            {resume.suit_photo_url ? (
+          <div className="w-20 h-20 rounded-full bg-white/20 overflow-hidden flex-shrink-0 flex items-center justify-center relative">
+            {generating ? (
+              /* Generating spinner */
+              <div className="flex flex-col items-center justify-center w-full h-full">
+                <div className="w-8 h-8 border-4 border-white/40 border-t-white rounded-full animate-spin" />
+              </div>
+            ) : resume.suit_photo_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={resume.suit_photo_url} alt="suit" className="w-full h-full object-cover" crossOrigin="anonymous" />
             ) : resume.photo_url ? (
