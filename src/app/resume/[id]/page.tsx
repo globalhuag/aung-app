@@ -31,6 +31,18 @@ function calcAge(birthday: string) {
   return isNaN(age) ? '' : `${age} ปี`
 }
 
+// ── Shared section-header style factory ──────────────────────────────────────
+function secHead(fs: number) {
+  return {
+    fontSize: fs, fontWeight: 'bold' as const, color: '#2575fc',
+    borderBottom: '1px dashed #ddd', paddingBottom: fs * 0.46,
+    marginBottom: fs * 0.77, display: 'flex', alignItems: 'center', gap: 6,
+  }
+}
+function secBar(h: number) {
+  return { width: 3, height: h, background: '#2575fc', display: 'inline-block' as const, borderRadius: 2 }
+}
+
 export default function ResumeDetailPage() {
   const router  = useRouter()
   const params  = useParams()
@@ -89,7 +101,6 @@ export default function ResumeDetailPage() {
     }
   }
 
-  // จับภาพจาก hidden A4 div (794×1123px) → JPEG → preview เต็มจอ
   const handleDownloadImage = async () => {
     const el = printRef.current
     if (!el) return
@@ -97,21 +108,19 @@ export default function ResumeDetailPage() {
     try {
       const { default: html2canvas } = await import('html2canvas')
       const canvas = await html2canvas(el, {
-        scale:       2,          // 1588×2246px → คมชัดพิมพ์ได้
+        scale:       2,
         useCORS:     true,
         allowTaint:  true,
         backgroundColor: '#ffffff',
-        windowWidth: 794,        // บอก html2canvas ว่า viewport กว้าง A4
+        windowWidth: 794,
         width:       794,
         height:      1123,
       })
-
       canvas.toBlob((blob) => {
         if (!blob) return
         const url = URL.createObjectURL(blob)
         setPreviewUrl(url)
       }, 'image/jpeg', 0.92)
-
     } catch { alert('โหลดรูปไม่สำเร็จ กรุณาลองใหม่') }
     finally { setSaving(false) }
   }
@@ -134,148 +143,212 @@ export default function ResumeDetailPage() {
     </div>
   )
 
-  const isOwner       = currentUser?.id === resume.user_id
-  const photoSrc      = resume.suit_photo_url || resume.photo_url || ''
-  const age           = calcAge(resume.birthday)
-  const today         = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })
-  const strengthText  = resume.strengths || resume.skills || 'แรงงานมีประสบการณ์ ขยัน ตรงต่อเวลา'
+  const isOwner      = currentUser?.id === resume.user_id
+  const photoSrc     = resume.suit_photo_url || resume.photo_url || ''
+  const age          = calcAge(resume.birthday)
+  const today        = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })
+  const strengthText = resume.strengths || resume.skills || 'แรงงานมีประสบการณ์ ขยัน ตรงต่อเวลา'
   const works = [
     { name: resume.w1_name, dur: resume.w1_duration, sal: resume.w1_salary },
     { name: resume.w2_name, dur: resume.w2_duration, sal: resume.w2_salary },
     { name: resume.w3_name, dur: resume.w3_duration, sal: resume.w3_salary },
   ].filter(w => w.name)
 
-  // ── Resume card body (ใช้ 2 ที่: visible card + hidden A4 print) ──────────
-  const cardBody = (
+  const photoEl = (size: number) => photoSrc ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={photoSrc} alt="photo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} crossOrigin="anonymous" />
+  ) : (
+    <span style={{ fontSize: size * 0.4 }}>{resume.gender === 'หญิง' ? '👩' : '👨'}</span>
+  )
+
+  // ── Mobile card (compact, ~512px wide) ─────────────────────────────────────
+  const mobileCard = (
     <>
-      {/* HEADER */}
-      <div style={{ background: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)', padding: '40px 32px', display: 'flex', alignItems: 'center', gap: '24px' }}>
-        <div style={{ width: 120, height: 120, borderRadius: '50%', border: '4px solid rgba(255,255,255,0.25)', overflow: 'hidden', flexShrink: 0, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {generating ? (
-            <div style={{ width: 48, height: 48, borderRadius: '50%', border: '4px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', animation: 'spin 1s linear infinite' }} />
-          ) : photoSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={photoSrc} alt="photo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} crossOrigin="anonymous" />
-          ) : (
-            <span style={{ fontSize: 48 }}>{resume.gender === 'หญิง' ? '👩' : '👨'}</span>
-          )}
+      <div style={{ background: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)', padding: '32px 24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div style={{ width: 100, height: 100, borderRadius: '50%', border: '4px solid rgba(255,255,255,0.25)', overflow: 'hidden', flexShrink: 0, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {generating ? <div style={{ width: 36, height: 36, borderRadius: '50%', border: '4px solid rgba(255,255,255,0.3)', borderTopColor: '#fff' }} /> : photoEl(100)}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ color: 'white', fontWeight: 'bold', fontSize: 26, letterSpacing: 0.5, lineHeight: 1.2, marginBottom: 6 }}>
-            {resume.name || 'ไม่ระบุชื่อ'}
+          <div style={{ color: 'white', fontWeight: 'bold', fontSize: 22, lineHeight: 1.2, marginBottom: 5 }}>{resume.name || 'ไม่ระบุชื่อ'}</div>
+          {phone && <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, marginBottom: 4 }}>📞 {phone}</div>}
+          <div style={{ background: 'rgba(255,255,255,0.2)', display: 'inline-block', padding: '3px 12px', borderRadius: 20, color: 'white', fontSize: 11, marginTop: 3 }}>
+            {resume.want_job || 'แรงงาน'} • {resume.race || 'พม่า'}
           </div>
-          {phone && <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13, marginBottom: 4 }}>📞 {phone}</div>}
-          <div style={{ background: 'rgba(255,255,255,0.2)', display: 'inline-block', padding: '4px 14px', borderRadius: 20, color: 'white', fontSize: 12, marginTop: 4 }}>
+          {resume.suit_status === 'error' && <div style={{ marginTop: 5, fontSize: 10, color: 'rgba(255,200,200,0.9)' }}>⚠️ สูท AI ยังไม่สมบูรณ์</div>}
+        </div>
+      </div>
+
+      <div style={{ background: 'white', margin: '-16px 20px 14px', padding: '14px 16px', borderRadius: 10, boxShadow: '0 4px 15px rgba(0,0,0,0.07)', borderLeft: '5px solid #2575fc', fontStyle: 'italic', fontSize: 12, lineHeight: 1.6, color: '#444' }}>
+        &ldquo;{strengthText}&rdquo;
+      </div>
+
+      <div style={{ display: 'flex', padding: '0 20px 28px', gap: 18 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ marginBottom: 14 }}>
+            <div style={secHead(12)}><span style={secBar(12)} />ส่วนตัว</div>
+            {[['วันเกิด', resume.birthday], ['อายุ', age], ['เพศ', resume.gender], ['จังหวัด', resume.province], ['Smart Card', resume.smart_card], ['บัญชีธนาคาร', resume.bank_account]].map(([l, v]) => v ? (
+              <div key={l} style={{ display: 'flex', fontSize: 11, marginBottom: 6 }}>
+                <span style={{ color: '#888', width: 80, flexShrink: 0 }}>{l}:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
+              </div>
+            ) : null)}
+          </div>
+          <div style={{ marginBottom: 14 }}>
+            <div style={secHead(12)}><span style={secBar(12)} />ทักษะภาษา</div>
+            {[['ไทย (ฟัง+พูด)', resume.thai_listen], ['ไทย (อ่าน+เขียน)', resume.thai_read], ['อังกฤษ (ฟัง+พูด)', resume.eng_listen], ['อังกฤษ (อ่าน+เขียน)', resume.eng_read]].map(([l, v]) => (
+              <div key={l} style={{ marginBottom: 8 }}>
+                <div style={{ fontSize: 10, color: '#555', marginBottom: 3 }}>{l}</div>
+                <div style={{ background: '#eee', height: 5, borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ background: '#2575fc', height: '100%', borderRadius: 3, width: getLangWidth(v) }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <div style={secHead(12)}><span style={secBar(12)} />ทักษะพิเศษ</div>
+            {[['ขับรถยนต์', resume.drive_car], ['ใบขับขี่รถยนต์', resume.car_license], ['ขับมอเตอร์ไซค์', resume.drive_moto], ['ใบขับขี่ มตซ.', resume.moto_license]].map(([l, v]) => v ? (
+              <div key={l} style={{ display: 'flex', fontSize: 11, marginBottom: 5 }}>
+                <span style={{ color: '#888', width: 80, flexShrink: 0 }}>{l}:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
+              </div>
+            ) : null)}
+            {resume.skills && <div style={{ fontSize: 11, color: '#555', marginTop: 7, lineHeight: 1.5 }}>{resume.skills}</div>}
+          </div>
+        </div>
+
+        <div style={{ flex: 1.5 }}>
+          <div style={{ marginBottom: 14 }}>
+            <div style={secHead(12)}><span style={secBar(12)} />ประวัติงาน</div>
+            {works.length > 0 ? works.map((w, i) => (
+              <div key={i} style={{ borderLeft: '2px solid #2575fc', paddingLeft: 12, marginBottom: 12, position: 'relative' }}>
+                <div style={{ width: 8, height: 8, background: '#fff', border: '2px solid #2575fc', borderRadius: '50%', position: 'absolute', left: -6, top: 2 }} />
+                <div style={{ fontWeight: 'bold', fontSize: 12, color: '#333' }}>{w.name}</div>
+                <div style={{ fontSize: 10, color: '#777', marginTop: 2 }}>{w.dur ? `${w.dur} ปี` : ''}{w.dur && w.sal ? ' | ' : ''}{w.sal ? `เงินเดือน ${w.sal} บาท` : ''}</div>
+              </div>
+            )) : <div style={{ fontSize: 11, color: '#bbb' }}>ไม่มีประวัติงาน</div>}
+          </div>
+          <div>
+            <div style={secHead(12)}><span style={secBar(12)} />งานที่ต้องการ</div>
+            {[['ประเภทงาน', resume.want_job], ['พื้นที่', resume.want_area]].map(([l, v]) => v ? (
+              <div key={l} style={{ display: 'flex', fontSize: 11, marginBottom: 6 }}>
+                <span style={{ color: '#888', width: 72, flexShrink: 0 }}>{l}:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
+              </div>
+            ) : null)}
+            {resume.want_salary && (
+              <div style={{ background: '#f8f9fa', padding: '10px 12px', borderRadius: 8, border: '1px solid #eee', marginTop: 7 }}>
+                <div style={{ fontSize: 10, color: '#666', marginBottom: 3 }}>รายได้ที่คาดหวัง</div>
+                <div style={{ fontSize: 18, fontWeight: 'bold', color: '#2575fc' }}>{resume.want_salary} บาท/เดือน</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ borderTop: '1px solid #f0f0f0', textAlign: 'center', padding: '10px', fontSize: 10, color: '#bbb' }}>
+        WorkPass Resume • {today}
+      </div>
+    </>
+  )
+
+  // ── A4 card (794×1123px — optimised for print) ──────────────────────────────
+  const a4Card = (
+    <div style={{ width: 794, minHeight: 1123, display: 'flex', flexDirection: 'column', fontFamily: 'Arial, sans-serif' }}>
+
+      {/* HEADER */}
+      <div style={{ background: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)', padding: '52px 48px', display: 'flex', alignItems: 'center', gap: '32px' }}>
+        <div style={{ width: 148, height: 148, borderRadius: '50%', border: '5px solid rgba(255,255,255,0.3)', overflow: 'hidden', flexShrink: 0, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {photoEl(148)}
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ color: 'white', fontWeight: 'bold', fontSize: 36, letterSpacing: 0.5, lineHeight: 1.2, marginBottom: 8 }}>{resume.name || 'ไม่ระบุชื่อ'}</div>
+          {phone && <div style={{ color: 'rgba(255,255,255,0.85)', fontSize: 16, marginBottom: 6 }}>📞 {phone}</div>}
+          <div style={{ background: 'rgba(255,255,255,0.2)', display: 'inline-block', padding: '6px 18px', borderRadius: 24, color: 'white', fontSize: 14, marginTop: 4 }}>
             {resume.want_job || 'แรงงาน'} • {resume.race || 'พม่า'}
           </div>
         </div>
       </div>
 
       {/* SUMMARY */}
-      <div style={{ background: 'white', margin: '-20px 24px 16px', padding: '16px 20px', borderRadius: 10, boxShadow: '0 4px 15px rgba(0,0,0,0.07)', borderLeft: '5px solid #2575fc', fontStyle: 'italic', fontSize: 13, lineHeight: 1.6, color: '#444' }}>
+      <div style={{ background: 'white', margin: '-26px 40px 22px', padding: '20px 26px', borderRadius: 12, boxShadow: '0 4px 18px rgba(0,0,0,0.08)', borderLeft: '6px solid #2575fc', fontStyle: 'italic', fontSize: 15, lineHeight: 1.7, color: '#444' }}>
         &ldquo;{strengthText}&rdquo;
       </div>
 
-      {/* 2-column */}
-      <div style={{ display: 'flex', padding: '0 24px 32px', gap: 24 }}>
+      {/* 2-column body */}
+      <div style={{ display: 'flex', padding: '0 40px', gap: 36, flex: 1 }}>
 
         {/* LEFT */}
-        <div style={{ flex: 1 }}>
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 'bold', color: '#2575fc', borderBottom: '1px dashed #ddd', paddingBottom: 6, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 3, height: 14, background: '#2575fc', display: 'inline-block', borderRadius: 2 }} />ส่วนตัว
-            </div>
-            {[
-              { label: 'วันเกิด',      val: resume.birthday },
-              { label: 'อายุ',         val: age },
-              { label: 'เพศ',          val: resume.gender },
-              { label: 'จังหวัด',      val: resume.province },
-              { label: 'Smart Card',   val: resume.smart_card },
-              { label: 'บัญชีธนาคาร', val: resume.bank_account },
-            ].map(({ label, val }) => val ? (
-              <div key={label} style={{ display: 'flex', fontSize: 12, marginBottom: 7 }}>
-                <span style={{ color: '#888', width: 90, flexShrink: 0 }}>{label}:</span>
-                <span style={{ fontWeight: 500, color: '#333' }}>{val}</span>
+        <div style={{ flex: 1, paddingBottom: 40 }}>
+
+          {/* ส่วนตัว */}
+          <div style={{ marginBottom: 24 }}>
+            <div style={secHead(16)}><span style={secBar(16)} />ส่วนตัว</div>
+            {[['วันเกิด', resume.birthday], ['อายุ', age], ['เพศ', resume.gender], ['จังหวัด', resume.province], ['Smart Card', resume.smart_card], ['บัญชีธนาคาร', resume.bank_account]].map(([l, v]) => v ? (
+              <div key={l} style={{ display: 'flex', fontSize: 14, marginBottom: 10 }}>
+                <span style={{ color: '#888', width: 110, flexShrink: 0 }}>{l}:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
               </div>
             ) : null)}
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 'bold', color: '#2575fc', borderBottom: '1px dashed #ddd', paddingBottom: 6, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 3, height: 14, background: '#2575fc', display: 'inline-block', borderRadius: 2 }} />ทักษะภาษา
-            </div>
-            {[
-              { label: 'ไทย (ฟัง+พูด)',       val: resume.thai_listen },
-              { label: 'ไทย (อ่าน+เขียน)',     val: resume.thai_read },
-              { label: 'อังกฤษ (ฟัง+พูด)',     val: resume.eng_listen },
-              { label: 'อังกฤษ (อ่าน+เขียน)', val: resume.eng_read },
-            ].map(({ label, val }) => (
-              <div key={label} style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 11, color: '#555', marginBottom: 4 }}>{label}</div>
-                <div style={{ background: '#eee', height: 6, borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{ background: '#2575fc', height: '100%', borderRadius: 3, width: getLangWidth(val) }} />
+          {/* ทักษะภาษา */}
+          <div style={{ marginBottom: 24 }}>
+            <div style={secHead(16)}><span style={secBar(16)} />ทักษะภาษา</div>
+            {[['ไทย (ฟัง+พูด)', resume.thai_listen], ['ไทย (อ่าน+เขียน)', resume.thai_read], ['อังกฤษ (ฟัง+พูด)', resume.eng_listen], ['อังกฤษ (อ่าน+เขียน)', resume.eng_read]].map(([l, v]) => (
+              <div key={l} style={{ marginBottom: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#555', marginBottom: 5 }}>
+                  <span>{l}</span>
+                  <span style={{ color: '#2575fc', fontWeight: 500 }}>{v || 'ไม่มี'}</span>
+                </div>
+                <div style={{ background: '#e8eef8', height: 8, borderRadius: 4, overflow: 'hidden' }}>
+                  <div style={{ background: 'linear-gradient(90deg,#6a11cb,#2575fc)', height: '100%', borderRadius: 4, width: getLangWidth(v) }} />
                 </div>
               </div>
             ))}
           </div>
 
+          {/* ทักษะพิเศษ */}
           <div>
-            <div style={{ fontSize: 13, fontWeight: 'bold', color: '#2575fc', borderBottom: '1px dashed #ddd', paddingBottom: 6, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 3, height: 14, background: '#2575fc', display: 'inline-block', borderRadius: 2 }} />ทักษะพิเศษ
-            </div>
-            {[
-              { label: 'ขับรถยนต์',      val: resume.drive_car },
-              { label: 'ใบขับขี่รถยนต์', val: resume.car_license },
-              { label: 'ขับมอเตอร์ไซค์', val: resume.drive_moto },
-              { label: 'ใบขับขี่ มตซ.',  val: resume.moto_license },
-            ].map(({ label, val }) => val ? (
-              <div key={label} style={{ display: 'flex', fontSize: 12, marginBottom: 6 }}>
-                <span style={{ color: '#888', width: 90, flexShrink: 0 }}>{label}:</span>
-                <span style={{ fontWeight: 500, color: '#333' }}>{val}</span>
+            <div style={secHead(16)}><span style={secBar(16)} />ทักษะพิเศษ</div>
+            {[['ขับรถยนต์', resume.drive_car], ['ใบขับขี่รถยนต์', resume.car_license], ['ขับมอเตอร์ไซค์', resume.drive_moto], ['ใบขับขี่ มตซ.', resume.moto_license]].map(([l, v]) => v ? (
+              <div key={l} style={{ display: 'flex', fontSize: 14, marginBottom: 9 }}>
+                <span style={{ color: '#888', width: 110, flexShrink: 0 }}>{l}:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
               </div>
             ) : null)}
-            {resume.skills && (
-              <div style={{ fontSize: 12, color: '#555', marginTop: 8, lineHeight: 1.5 }}>{resume.skills}</div>
-            )}
+            {resume.skills && <div style={{ fontSize: 14, color: '#555', marginTop: 10, lineHeight: 1.6 }}>{resume.skills}</div>}
           </div>
         </div>
 
         {/* RIGHT */}
-        <div style={{ flex: 1.5 }}>
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 'bold', color: '#2575fc', borderBottom: '1px dashed #ddd', paddingBottom: 6, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 3, height: 14, background: '#2575fc', display: 'inline-block', borderRadius: 2 }} />ประวัติงาน
-            </div>
+        <div style={{ flex: 1.4, paddingBottom: 40 }}>
+
+          {/* ประวัติงาน */}
+          <div style={{ marginBottom: 28 }}>
+            <div style={secHead(16)}><span style={secBar(16)} />ประวัติงาน</div>
             {works.length > 0 ? works.map((w, i) => (
-              <div key={i} style={{ borderLeft: '2px solid #2575fc', paddingLeft: 14, marginBottom: 14, position: 'relative' }}>
-                <div style={{ width: 10, height: 10, background: '#fff', border: '2px solid #2575fc', borderRadius: '50%', position: 'absolute', left: -7, top: 2 }} />
-                <div style={{ fontWeight: 'bold', fontSize: 13, color: '#333' }}>{w.name}</div>
-                <div style={{ fontSize: 11, color: '#777', marginTop: 3 }}>
-                  {w.dur ? `${w.dur} ปี` : ''}{w.dur && w.sal ? ' | ' : ''}{w.sal ? `เงินเดือน ${w.sal} บาท` : ''}
-                </div>
+              <div key={i} style={{ borderLeft: '3px solid #2575fc', paddingLeft: 18, marginBottom: 20, position: 'relative' }}>
+                <div style={{ width: 12, height: 12, background: '#fff', border: '3px solid #2575fc', borderRadius: '50%', position: 'absolute', left: -8, top: 3 }} />
+                <div style={{ fontWeight: 'bold', fontSize: 15, color: '#333' }}>{w.name}</div>
+                <div style={{ fontSize: 13, color: '#777', marginTop: 4 }}>{w.dur ? `${w.dur} ปี` : ''}{w.dur && w.sal ? '  |  ' : ''}{w.sal ? `เงินเดือน ${w.sal} บาท` : ''}</div>
               </div>
-            )) : (
-              <div style={{ fontSize: 12, color: '#bbb' }}>ไม่มีประวัติงาน</div>
-            )}
+            )) : <div style={{ fontSize: 14, color: '#bbb' }}>ไม่มีประวัติงาน</div>}
           </div>
 
+          {/* งานที่ต้องการ */}
           <div>
-            <div style={{ fontSize: 13, fontWeight: 'bold', color: '#2575fc', borderBottom: '1px dashed #ddd', paddingBottom: 6, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 3, height: 14, background: '#2575fc', display: 'inline-block', borderRadius: 2 }} />งานที่ต้องการ
-            </div>
-            {[
-              { label: 'ประเภทงาน', val: resume.want_job },
-              { label: 'พื้นที่',   val: resume.want_area },
-            ].map(({ label, val }) => val ? (
-              <div key={label} style={{ display: 'flex', fontSize: 12, marginBottom: 7 }}>
-                <span style={{ color: '#888', width: 80, flexShrink: 0 }}>{label}:</span>
-                <span style={{ fontWeight: 500, color: '#333' }}>{val}</span>
+            <div style={secHead(16)}><span style={secBar(16)} />งานที่ต้องการ</div>
+            {[['ประเภทงาน', resume.want_job], ['พื้นที่', resume.want_area]].map(([l, v]) => v ? (
+              <div key={l} style={{ display: 'flex', fontSize: 14, marginBottom: 10 }}>
+                <span style={{ color: '#888', width: 96, flexShrink: 0 }}>{l}:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
               </div>
             ) : null)}
             {resume.want_salary && (
-              <div style={{ background: '#f8f9fa', padding: '12px 14px', borderRadius: 8, border: '1px solid #eee', marginTop: 8 }}>
-                <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>รายได้ที่คาดหวัง</div>
-                <div style={{ fontSize: 20, fontWeight: 'bold', color: '#2575fc' }}>{resume.want_salary} บาท/เดือน</div>
+              <div style={{ background: 'linear-gradient(135deg,#f0f4ff,#e8f0fe)', padding: '18px 20px', borderRadius: 12, border: '1px solid #d0dcff', marginTop: 12 }}>
+                <div style={{ fontSize: 13, color: '#666', marginBottom: 6 }}>รายได้ที่คาดหวัง</div>
+                <div style={{ fontSize: 28, fontWeight: 'bold', color: '#2575fc' }}>{resume.want_salary}</div>
+                <div style={{ fontSize: 14, color: '#6a11cb', marginTop: 2 }}>บาท / เดือน</div>
               </div>
             )}
           </div>
@@ -283,15 +356,14 @@ export default function ResumeDetailPage() {
       </div>
 
       {/* FOOTER */}
-      <div style={{ borderTop: '1px solid #f0f0f0', textAlign: 'center', padding: '12px', fontSize: 11, color: '#bbb' }}>
+      <div style={{ borderTop: '2px solid #f0f0f0', textAlign: 'center', padding: '16px', fontSize: 13, color: '#bbb', marginTop: 'auto' }}>
         WorkPass Resume • {today}
       </div>
-    </>
+    </div>
   )
 
   return (
     <div className="min-h-screen bg-[#f4f7f9]">
-      <style>{`.skill-bar-fill { transition: width 0.6s ease; }`}</style>
 
       {/* ── Action bar ── */}
       <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-3 py-2 max-w-lg mx-auto">
@@ -319,12 +391,12 @@ export default function ResumeDetailPage() {
         )}
       </div>
 
-      {/* ── Visible resume card (mobile display) ── */}
+      {/* ── Visible mobile card ── */}
       <div ref={cardRef} className="max-w-lg mx-auto bg-white shadow-lg overflow-hidden" style={{ fontFamily: 'Arial, sans-serif' }}>
-        {cardBody}
+        {mobileCard}
       </div>
 
-      {/* ── Hidden A4 card for image capture (794×1123px) ── */}
+      {/* ── Hidden A4 card (794×1123px) for image capture ── */}
       <div
         ref={printRef}
         aria-hidden="true"
@@ -332,16 +404,15 @@ export default function ResumeDetailPage() {
           position: 'fixed', left: '-9999px', top: 0,
           width: 794, minHeight: 1123,
           background: '#fff', overflow: 'hidden',
-          fontFamily: 'Arial, sans-serif',
           pointerEvents: 'none',
         }}
       >
-        {cardBody}
+        {a4Card}
       </div>
 
       <div className="pb-10" />
 
-      {/* ── Fullscreen image preview (กดค้างเพื่อบันทึกลงอัลบั้ม) ── */}
+      {/* ── Fullscreen preview overlay ── */}
       {previewUrl && (
         <div
           onClick={closePreview}
@@ -365,7 +436,7 @@ export default function ResumeDetailPage() {
             alt="resume preview"
             onClick={e => e.stopPropagation()}
             style={{
-              maxWidth: '100%', maxHeight: '70vh',
+              maxWidth: '100%', maxHeight: '72vh',
               borderRadius: 10,
               boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
               userSelect: 'none',
