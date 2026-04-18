@@ -212,8 +212,8 @@ async function callImagenInpainting(
 ): Promise<string> {
   const isFemale = gender === 'หญิง'
   const prompt   = isFemale
-    ? 'Change only the clothing to a dark navy blue blazer suit jacket with sharp notch lapels and white collared dress shirt underneath fully buttoned. Keep the original face, skin tone, hair, and head exactly unchanged. Solid pure white background, soft natural studio lighting. Must have visible suit lapels and white shirt collar. No t-shirt, no round collar, no collarless top, no casual clothing.'
-    : 'Change only the clothing to a dark navy blue business suit jacket with wide notch lapels, crisp white collared dress shirt, and dark navy necktie with a windsor knot. Keep the original face, skin tone, hair, and head exactly unchanged. Solid pure white background, soft natural studio lighting. Must have visible suit lapels, white shirt collar, and necktie. No t-shirt, no round collar, no collarless top, no casual clothing, no missing tie.'
+    ? 'Professional corporate ID photo of a woman. She is wearing a dark navy blue blazer suit jacket with sharp notch lapels, white collared dress shirt underneath fully buttoned. Solid pure white background, soft studio lighting from front, sharp focus on face and suit, photorealistic, high resolution. Must have visible suit lapels and white shirt collar. No t-shirt, no round collar, no collarless top, no casual clothing.'
+    : 'Professional corporate ID photo of a man. He is wearing a dark navy blue business suit jacket with wide notch lapels, crisp white collared dress shirt underneath, dark navy necktie with a windsor knot centered on the chest. Solid pure white background, soft studio lighting from front, sharp focus on face and suit, photorealistic, high resolution. Must have visible suit lapels, white shirt collar, and necktie. No t-shirt, no round collar, no collarless top, no casual clothing, no missing tie.'
 
   const endpoint = `https://${GOOGLE_LOCATION}-aiplatform.googleapis.com/v1/projects/${GOOGLE_PROJECT}/locations/${GOOGLE_LOCATION}/publishers/google/models/${IMAGEN_MODEL}:predict`
 
@@ -240,7 +240,7 @@ async function callImagenInpainting(
     parameters: {
       sampleCount:      1,
       editConfig:       { editMode: 'EDIT_MODE_INPAINT_INSERTION' },
-      guidanceScale:    50,
+      guidanceScale:    60,
       personGeneration: 'allow_adult',
       safetySetting:    'block_some',
     },
