@@ -156,17 +156,7 @@ export default function ResumeDetailPage() {
 
   const photoEl = (size: number) => photoSrc ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={photoSrc}
-      alt="photo"
-      style={{
-        width: '100%', height: '100%', objectFit: 'cover',
-        // suit_photo_url ถูก crop ด้วย mouth-center crop แล้ว → ปากอยู่กลางภาพพอดี
-        // photo_url ต้นฉบับ → ปากอยู่ที่ ~40% จากบน ต้อง shift ขึ้น
-        objectPosition: 'center center',
-      }}
-      crossOrigin="anonymous"
-    />
+    <img src={photoSrc} alt="photo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} crossOrigin="anonymous" />
   ) : (
     <span style={{ fontSize: size * 0.4 }}>{resume.gender === 'หญิง' ? '👩' : '👨'}</span>
   )
