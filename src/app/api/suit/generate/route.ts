@@ -240,7 +240,7 @@ async function callImagenInpainting(
     parameters: {
       sampleCount:      1,
       editConfig:       { editMode: 'EDIT_MODE_INPAINT_INSERTION' },
-      guidanceScale:    60,
+      guidanceScale:    50,
       personGeneration: 'allow_adult',
       safetySetting:    'block_some',
     },
