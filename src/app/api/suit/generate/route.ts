@@ -150,11 +150,11 @@ async function prepareImageAndMask(
     const sFw    = fw * scale
     const sFh    = fh * scale
 
-    // Ellipse: ดำครอบแค่ใบหน้า+หัว หยุดที่คาง (fy+fh)
-    const protX1 = Math.max(0,      sFx - sFw * 0.55)
-    const protY1 = Math.max(0,      sFy - sFh * 0.75)
-    const protX2 = Math.min(TARGET, sFx + sFw + sFw * 0.55)
-    const protY2 = Math.min(TARGET, sFy + sFh) // chin = fy + fh
+    // Ellipse: ครอบหัว+ใบหน้า+คอ (ยื่นต่ำกว่าคาง 35% เพื่อป้องกันคอ/ขากรรไกร)
+    const protX1 = Math.max(0,      sFx - sFw * 0.70)   // กว้างขึ้นซ้าย-ขวา
+    const protY1 = Math.max(0,      sFy - sFh * 0.90)   // สูงขึ้นเหนือหัว
+    const protX2 = Math.min(TARGET, sFx + sFw + sFw * 0.70)
+    const protY2 = Math.min(TARGET, sFy + sFh * 1.35)   // ยื่นต่ำกว่าคาง 35% (คลุมคอ)
 
     ellipse = {
       cx: (protX1 + protX2) / 2,
@@ -212,8 +212,8 @@ async function callImagenInpainting(
 ): Promise<string> {
   const isFemale = gender === 'หญิง'
   const prompt   = isFemale
-    ? 'Professional corporate ID photo of a woman. She is wearing a dark navy blue blazer suit jacket with sharp notch lapels, white collared dress shirt underneath fully buttoned. Solid pure white background, soft studio lighting from front, sharp focus on face and suit, photorealistic, high resolution. Must have visible suit lapels and white shirt collar. No t-shirt, no round collar, no collarless top, no casual clothing.'
-    : 'Professional corporate ID photo of a man. He is wearing a dark navy blue business suit jacket with wide notch lapels, crisp white collared dress shirt underneath, dark navy necktie with a windsor knot centered on the chest. Solid pure white background, soft studio lighting from front, sharp focus on face and suit, photorealistic, high resolution. Must have visible suit lapels, white shirt collar, and necktie. No t-shirt, no round collar, no collarless top, no casual clothing, no missing tie.'
+    ? 'Change only the clothing to a dark navy blue blazer suit jacket with sharp notch lapels and white collared dress shirt underneath fully buttoned. Keep the original face, skin tone, hair, and head exactly unchanged. Solid pure white background, soft natural studio lighting. Must have visible suit lapels and white shirt collar. No t-shirt, no round collar, no collarless top, no casual clothing.'
+    : 'Change only the clothing to a dark navy blue business suit jacket with wide notch lapels, crisp white collared dress shirt, and dark navy necktie with a windsor knot. Keep the original face, skin tone, hair, and head exactly unchanged. Solid pure white background, soft natural studio lighting. Must have visible suit lapels, white shirt collar, and necktie. No t-shirt, no round collar, no collarless top, no casual clothing, no missing tie.'
 
   const endpoint = `https://${GOOGLE_LOCATION}-aiplatform.googleapis.com/v1/projects/${GOOGLE_PROJECT}/locations/${GOOGLE_LOCATION}/publishers/google/models/${IMAGEN_MODEL}:predict`
 
@@ -240,7 +240,7 @@ async function callImagenInpainting(
     parameters: {
       sampleCount:      1,
       editConfig:       { editMode: 'EDIT_MODE_INPAINT_INSERTION' },
-      guidanceScale:    60,              // v119: 25→60 (face fidelity)
+      guidanceScale:    30,              // ลดลงจาก 60 → ยึดรูปต้นฉบับมากขึ้น ไม่ beautify หน้า
       personGeneration: 'allow_adult',
       safetySetting:    'block_some',
     },
