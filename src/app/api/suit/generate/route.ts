@@ -150,11 +150,11 @@ async function prepareImageAndMask(
     const sFw    = fw * scale
     const sFh    = fh * scale
 
-    // Ellipse: ครอบหัว+ใบหน้า+คอ (ยื่นต่ำกว่าคาง 35% เพื่อป้องกันคอ/ขากรรไกร)
-    const protX1 = Math.max(0,      sFx - sFw * 0.70)   // กว้างขึ้นซ้าย-ขวา
-    const protY1 = Math.max(0,      sFy - sFh * 0.90)   // สูงขึ้นเหนือหัว
-    const protX2 = Math.min(TARGET, sFx + sFw + sFw * 0.70)
-    const protY2 = Math.min(TARGET, sFy + sFh * 1.35)   // ยื่นต่ำกว่าคาง 35% (คลุมคอ)
+    // Ellipse: ครอบหัว+ใบหน้า หยุดที่ใต้คาง 15% (อย่าลงต่ำเกินไปไม่งั้นหน้าหาย)
+    const protX1 = Math.max(0,      sFx - sFw * 0.60)
+    const protY1 = Math.max(0,      sFy - sFh * 0.80)
+    const protX2 = Math.min(TARGET, sFx + sFw + sFw * 0.60)
+    const protY2 = Math.min(TARGET, sFy + sFh * 1.15)   // ยื่นต่ำกว่าคาง 15%
 
     ellipse = {
       cx: (protX1 + protX2) / 2,
@@ -240,7 +240,7 @@ async function callImagenInpainting(
     parameters: {
       sampleCount:      1,
       editConfig:       { editMode: 'EDIT_MODE_INPAINT_INSERTION' },
-      guidanceScale:    30,              // ลดลงจาก 60 → ยึดรูปต้นฉบับมากขึ้น ไม่ beautify หน้า
+      guidanceScale:    40,              // 40 = balance ระหว่างยึดต้นฉบับ vs ใส่สูทได้ถูกต้อง
       personGeneration: 'allow_adult',
       safetySetting:    'block_some',
     },
