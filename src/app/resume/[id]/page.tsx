@@ -163,7 +163,7 @@ export default function ResumeDetailPage() {
         width: '100%', height: '100%', objectFit: 'cover',
         // suit_photo_url ถูก crop ด้วย mouth-center crop แล้ว → ปากอยู่กลางภาพพอดี
         // photo_url ต้นฉบับ → ปากอยู่ที่ ~40% จากบน ต้อง shift ขึ้น
-        objectPosition: resume.suit_photo_url ? 'center center' : 'center 40%',
+        objectPosition: resume.suit_photo_url ? 'center center' : 'center 55%',
       }}
       crossOrigin="anonymous"
     />
