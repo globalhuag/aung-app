@@ -83,7 +83,7 @@ export async function POST(req: Request) {
     console.log('[ChillPay create] MerchantCode:', JSON.stringify(MERCHANT_CODE), 'KeyLen:', API_KEY.length, 'Md5Len:', MD5_KEY.length)
     console.log('[ChillPay create] raw checksum string length:', raw.length)
     console.log('[ChillPay create] checksum:', checksum)
-    console.log('[ChillPay create] ReturnUrl:', `${APP_URL}/topup/return`)
+    console.log('[ChillPay create] ReturnUrl:', `${APP_URL}/api/chillpay/return`)
     console.log('[ChillPay create] BackgroundUrl:', `${APP_URL}/api/chillpay/notify`)
 
     const cpResp = await fetch(DIRECT_URL, {
