@@ -8,7 +8,11 @@ type PollStatus = 'polling' | 'paid' | 'timeout'
 function ReturnContent() {
   const searchParams  = useSearchParams()
   const router        = useRouter()
-  const order_no      = searchParams.get('order_no') || ''
+  // ดึง order_no จาก URL ก่อน ถ้าไม่มีให้ดึงจาก localStorage (ChillPay อาจตัด query params)
+  const order_no      = searchParams.get('order_no')
+                     || searchParams.get('OrderNo')
+                     || (typeof window !== 'undefined' ? localStorage.getItem('pending_order_no') : '')
+                     || ''
   const [status, setStatus]   = useState<PollStatus>('polling')
   const [credits, setCredits] = useState(0)
   const [dots, setDots]       = useState('.')
@@ -35,6 +39,7 @@ function ReturnContent() {
         if (data.status === 'paid') {
           setCredits(data.credits ?? 0)
           setStatus('paid')
+          localStorage.removeItem('pending_order_no')
 
           // Update localStorage credits
           try {
@@ -58,6 +63,7 @@ function ReturnContent() {
 
       if (tries.current >= maxTries) {
         setStatus('timeout')
+        localStorage.removeItem('pending_order_no')
         return
       }
       setTimeout(poll, 5000)

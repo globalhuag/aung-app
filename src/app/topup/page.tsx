@@ -50,12 +50,11 @@ export default function TopupPage() {
         return
       }
 
-      // Redirect to ChillPay payment page
-      // After payment, ChillPay redirects to /topup/return?order_no=XXX
-      const returnUrl = `${window.location.origin}/topup/return?order_no=${data.order_no}`
+      // เซฟ order_no ใน localStorage ก่อน redirect
+      // เพราะ ChillPay อาจตัด query params ออกจาก ReturnUrl
+      localStorage.setItem('pending_order_no', data.order_no)
 
-      // Open ChillPay payment URL (in same tab)
-      // ChillPay's ReturnUrl is already set to /topup/return in the API
+      // Redirect to ChillPay payment page
       window.location.href = data.payment_url
 
     } catch (e: unknown) {
