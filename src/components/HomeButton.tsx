@@ -1,7 +1,7 @@
 'use client'
 import { usePathname, useRouter } from 'next/navigation'
 
-const HIDE_ON = ['/', '/dashboard', '/login', '/register']
+const HIDE_ON = ['/', '/dashboard', '/login', '/register', '/profile', '/jobs', '/chat']
 
 export function HomeButton() {
   const pathname = usePathname()

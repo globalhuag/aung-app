@@ -31,6 +31,40 @@ function calcAge(birthday: string) {
   return isNaN(age) ? '' : `${age} ปี`
 }
 
+function formatPhone(p: string) {
+  const d = p.replace(/\D/g, '')
+  if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
+  return p
+}
+
+function fmtSalary(s: string) {
+  if (!s) return s
+  const n = parseFloat(s.replace(/,/g, ''))
+  if (!isNaN(n)) return n.toLocaleString('th-TH')
+  return s
+}
+
+function jobIcon(job: string) {
+  if (!job) return '💼'
+  if (job.includes('โรงงาน')) return '🏭'
+  if (job.includes('ก่อสร้าง')) return '🏗️'
+  if (job.includes('แม่บ้าน')) return '🏠'
+  if (job.includes('ขาย')) return '🛍️'
+  if (job.includes('ขับรถ') || job.includes('รถ')) return '🚚'
+  if (job.includes('เกษตร')) return '🌾'
+  return '💼'
+}
+
+// Renders ✅/❌ for yes/no fields
+function YesNo({ val }: { val: string }) {
+  if (!val) return <span style={{ color: '#333' }}>{val}</span>
+  const isYes = /^(ได้|มี|เป็น)/i.test(val.trim())
+  const isNo  = /^(ไม่)/i.test(val.trim())
+  const color = isYes ? '#16a34a' : isNo ? '#dc2626' : '#333'
+  const icon  = isYes ? '✅ '   : isNo ? '❌ '   : ''
+  return <span style={{ fontWeight: 600, color }}>{icon}{val}</span>
+}
+
 // ── Shared section-header style factory ──────────────────────────────────────
 function secHead(fs: number) {
   return {
@@ -170,9 +204,9 @@ export default function ResumeDetailPage() {
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ color: 'white', fontWeight: 'bold', fontSize: 22, lineHeight: 1.2, marginBottom: 5 }}>{resume.name || 'ไม่ระบุชื่อ'}</div>
-          {phone && <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, marginBottom: 4 }}>📞 {phone}</div>}
+          {phone && <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, marginBottom: 4 }}>📞 {formatPhone(phone)}</div>}
           <div style={{ background: 'rgba(255,255,255,0.2)', display: 'inline-block', padding: '3px 12px', borderRadius: 20, color: 'white', fontSize: 11, marginTop: 3 }}>
-            {resume.want_job || 'แรงงาน'} • {resume.race || 'พม่า'}
+            {jobIcon(resume.want_job)} {resume.want_job || 'แรงงาน'} • {resume.race || 'พม่า'}
           </div>
           {resume.suit_status === 'error' && <div style={{ marginTop: 5, fontSize: 10, color: 'rgba(255,200,200,0.9)' }}>⚠️ สูท AI ยังไม่สมบูรณ์</div>}
         </div>
@@ -182,19 +216,35 @@ export default function ResumeDetailPage() {
         &ldquo;{strengthText}&rdquo;
       </div>
 
-      <div style={{ display: 'flex', padding: '0 20px 28px', gap: 18 }}>
-        <div style={{ flex: 1 }}>
+      {/* Two-column body with centered vertical divider */}
+      <div style={{ display: 'flex', padding: '0 20px 28px', gap: 0, alignItems: 'stretch' }}>
+
+        {/* LEFT column */}
+        <div style={{ flex: 1, paddingRight: 12 }}>
           <div style={{ marginBottom: 14 }}>
-            <div style={secHead(12)}><span style={secBar(12)} />ส่วนตัว</div>
-            {[['วันเกิด', resume.birthday], ['อายุ', age], ['เพศ', resume.gender], ['จังหวัด', resume.province], ['Smart Card', resume.smart_card], ['บัญชีธนาคาร', resume.bank_account]].map(([l, v]) => v ? (
+            <div style={secHead(12)}><span style={secBar(12)} />👤 ส่วนตัว</div>
+            {[['วันเกิด', resume.birthday], ['อายุ', age], ['เพศ', resume.gender]].map(([l, v]) => v ? (
               <div key={l} style={{ display: 'flex', fontSize: 11, marginBottom: 6 }}>
-                <span style={{ color: '#888', width: 80, flexShrink: 0 }}>{l}:</span>
+                <span style={{ color: '#888', width: 72, flexShrink: 0 }}>{l}:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
+              </div>
+            ) : null)}
+            {resume.province && (
+              <div style={{ display: 'flex', fontSize: 11, marginBottom: 6 }}>
+                <span style={{ color: '#888', width: 72, flexShrink: 0 }}>จังหวัด:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>📍 {resume.province}</span>
+              </div>
+            )}
+            {[['Smart Card', resume.smart_card], ['บัญชีธนาคาร', resume.bank_account]].map(([l, v]) => v ? (
+              <div key={l} style={{ display: 'flex', fontSize: 11, marginBottom: 6 }}>
+                <span style={{ color: '#888', width: 72, flexShrink: 0 }}>{l}:</span>
                 <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
               </div>
             ) : null)}
           </div>
+
           <div style={{ marginBottom: 14 }}>
-            <div style={secHead(12)}><span style={secBar(12)} />ทักษะภาษา</div>
+            <div style={secHead(12)}><span style={secBar(12)} />🗣️ ทักษะภาษา</div>
             {[['ไทย (ฟัง+พูด)', resume.thai_listen], ['ไทย (อ่าน+เขียน)', resume.thai_read], ['อังกฤษ (ฟัง+พูด)', resume.eng_listen], ['อังกฤษ (อ่าน+เขียน)', resume.eng_read]].map(([l, v]) => (
               <div key={l} style={{ marginBottom: 8 }}>
                 <div style={{ fontSize: 10, color: '#555', marginBottom: 3 }}>{l}</div>
@@ -204,41 +254,57 @@ export default function ResumeDetailPage() {
               </div>
             ))}
           </div>
+
           <div>
-            <div style={secHead(12)}><span style={secBar(12)} />ทักษะพิเศษ</div>
+            <div style={secHead(12)}><span style={secBar(12)} />⚡ ทักษะพิเศษ</div>
             {[['ขับรถยนต์', resume.drive_car], ['ใบขับขี่รถยนต์', resume.car_license], ['ขับมอเตอร์ไซค์', resume.drive_moto], ['ใบขับขี่ มตซ.', resume.moto_license]].map(([l, v]) => v ? (
               <div key={l} style={{ display: 'flex', fontSize: 11, marginBottom: 5 }}>
                 <span style={{ color: '#888', width: 80, flexShrink: 0 }}>{l}:</span>
-                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
+                <YesNo val={v} />
               </div>
             ) : null)}
             {resume.skills && <div style={{ fontSize: 11, color: '#555', marginTop: 7, lineHeight: 1.5 }}>{resume.skills}</div>}
           </div>
         </div>
 
-        <div style={{ flex: 1.5 }}>
+        {/* Center vertical divider */}
+        <div style={{ width: 1, background: '#e0e7ff', alignSelf: 'stretch', flexShrink: 0, margin: '4px 0' }} />
+
+        {/* RIGHT column */}
+        <div style={{ flex: 1, paddingLeft: 12 }}>
           <div style={{ marginBottom: 14 }}>
-            <div style={secHead(12)}><span style={secBar(12)} />ประวัติงาน</div>
+            <div style={secHead(12)}><span style={secBar(12)} />💼 ประวัติงาน</div>
             {works.length > 0 ? works.map((w, i) => (
               <div key={i} style={{ borderLeft: '2px solid #2575fc', paddingLeft: 12, marginBottom: 12, position: 'relative' }}>
                 <div style={{ width: 8, height: 8, background: '#fff', border: '2px solid #2575fc', borderRadius: '50%', position: 'absolute', left: -6, top: 2 }} />
                 <div style={{ fontWeight: 'bold', fontSize: 12, color: '#333' }}>{w.name}</div>
-                <div style={{ fontSize: 10, color: '#777', marginTop: 2 }}>{w.dur ? `${w.dur} ปี` : ''}{w.dur && w.sal ? ' | ' : ''}{w.sal ? `เงินเดือน ${w.sal} บาท` : ''}</div>
+                <div style={{ fontSize: 10, color: '#777', marginTop: 2 }}>
+                  {w.dur ? <span>⏰ {w.dur} ปี</span> : null}
+                  {w.dur && w.sal ? <span>  |  </span> : null}
+                  {w.sal ? <span>💰 {fmtSalary(w.sal)} บาท</span> : null}
+                </div>
               </div>
             )) : <div style={{ fontSize: 11, color: '#bbb' }}>ไม่มีประวัติงาน</div>}
           </div>
+
           <div>
-            <div style={secHead(12)}><span style={secBar(12)} />งานที่ต้องการ</div>
-            {[['ประเภทงาน', resume.want_job], ['พื้นที่', resume.want_area]].map(([l, v]) => v ? (
-              <div key={l} style={{ display: 'flex', fontSize: 11, marginBottom: 6 }}>
-                <span style={{ color: '#888', width: 72, flexShrink: 0 }}>{l}:</span>
-                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
+            <div style={secHead(12)}><span style={secBar(12)} />🎯 งานที่ต้องการ</div>
+            {resume.want_job && (
+              <div style={{ display: 'flex', fontSize: 11, marginBottom: 6 }}>
+                <span style={{ color: '#888', width: 72, flexShrink: 0 }}>ประเภทงาน:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{jobIcon(resume.want_job)} {resume.want_job}</span>
               </div>
-            ) : null)}
+            )}
+            {resume.want_area && (
+              <div style={{ display: 'flex', fontSize: 11, marginBottom: 6 }}>
+                <span style={{ color: '#888', width: 72, flexShrink: 0 }}>พื้นที่:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>📍 {resume.want_area}</span>
+              </div>
+            )}
             {resume.want_salary && (
               <div style={{ background: '#f8f9fa', padding: '10px 12px', borderRadius: 8, border: '1px solid #eee', marginTop: 7 }}>
                 <div style={{ fontSize: 10, color: '#666', marginBottom: 3 }}>รายได้ที่คาดหวัง</div>
-                <div style={{ fontSize: 18, fontWeight: 'bold', color: '#2575fc' }}>{resume.want_salary} บาท/เดือน</div>
+                <div style={{ fontSize: 16, fontWeight: 'bold', color: '#2575fc' }}>💰 {fmtSalary(resume.want_salary)} บาท/เดือน</div>
               </div>
             )}
           </div>
@@ -262,9 +328,9 @@ export default function ResumeDetailPage() {
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ color: 'white', fontWeight: 'bold', fontSize: 38, letterSpacing: 0.5, lineHeight: 1.2, marginBottom: 10 }}>{resume.name || 'ไม่ระบุชื่อ'}</div>
-          {phone && <div style={{ color: 'rgba(255,255,255,0.85)', fontSize: 18, marginBottom: 8 }}>📞 {phone}</div>}
+          {phone && <div style={{ color: 'rgba(255,255,255,0.85)', fontSize: 18, marginBottom: 8 }}>📞 {formatPhone(phone)}</div>}
           <div style={{ background: 'rgba(255,255,255,0.2)', display: 'inline-block', padding: '7px 20px', borderRadius: 24, color: 'white', fontSize: 16, marginTop: 4 }}>
-            {resume.want_job || 'แรงงาน'} • {resume.race || 'พม่า'}
+            {jobIcon(resume.want_job)} {resume.want_job || 'แรงงาน'} • {resume.race || 'พม่า'}
           </div>
         </div>
       </div>
@@ -274,16 +340,28 @@ export default function ResumeDetailPage() {
         &ldquo;{strengthText}&rdquo;
       </div>
 
-      {/* 2-column body */}
-      <div style={{ display: 'flex', padding: '22px 44px 0', gap: 40, flex: 1, minHeight: 0 }}>
+      {/* 2-column body with centered vertical divider */}
+      <div style={{ display: 'flex', padding: '22px 44px 0', gap: 0, flex: 1, minHeight: 0, alignItems: 'stretch' }}>
 
         {/* LEFT — 3 sections spread top→bottom */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: 24 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: 24, paddingRight: 24 }}>
 
           {/* ส่วนตัว */}
           <div>
-            <div style={secHead(18)}><span style={secBar(18)} />ส่วนตัว</div>
-            {[['วันเกิด', resume.birthday], ['อายุ', age], ['เพศ', resume.gender], ['จังหวัด', resume.province], ['Smart Card', resume.smart_card], ['บัญชีธนาคาร', resume.bank_account]].map(([l, v]) => v ? (
+            <div style={secHead(18)}><span style={secBar(18)} />👤 ส่วนตัว</div>
+            {[['วันเกิด', resume.birthday], ['อายุ', age], ['เพศ', resume.gender]].map(([l, v]) => v ? (
+              <div key={l} style={{ display: 'flex', fontSize: 16, marginBottom: 13, lineHeight: 1.5 }}>
+                <span style={{ color: '#888', width: 125, flexShrink: 0 }}>{l}:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
+              </div>
+            ) : null)}
+            {resume.province && (
+              <div style={{ display: 'flex', fontSize: 16, marginBottom: 13, lineHeight: 1.5 }}>
+                <span style={{ color: '#888', width: 125, flexShrink: 0 }}>จังหวัด:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>📍 {resume.province}</span>
+              </div>
+            )}
+            {[['Smart Card', resume.smart_card], ['บัญชีธนาคาร', resume.bank_account]].map(([l, v]) => v ? (
               <div key={l} style={{ display: 'flex', fontSize: 16, marginBottom: 13, lineHeight: 1.5 }}>
                 <span style={{ color: '#888', width: 125, flexShrink: 0 }}>{l}:</span>
                 <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
@@ -293,7 +371,7 @@ export default function ResumeDetailPage() {
 
           {/* ทักษะภาษา */}
           <div>
-            <div style={secHead(18)}><span style={secBar(18)} />ทักษะภาษา</div>
+            <div style={secHead(18)}><span style={secBar(18)} />🗣️ ทักษะภาษา</div>
             {[['ไทย (ฟัง+พูด)', resume.thai_listen], ['ไทย (อ่าน+เขียน)', resume.thai_read], ['อังกฤษ (ฟัง+พูด)', resume.eng_listen], ['อังกฤษ (อ่าน+เขียน)', resume.eng_read]].map(([l, v]) => (
               <div key={l} style={{ marginBottom: 18 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, color: '#555', marginBottom: 7 }}>
@@ -309,45 +387,58 @@ export default function ResumeDetailPage() {
 
           {/* ทักษะพิเศษ */}
           <div>
-            <div style={secHead(18)}><span style={secBar(18)} />ทักษะพิเศษ</div>
+            <div style={secHead(18)}><span style={secBar(18)} />⚡ ทักษะพิเศษ</div>
             {[['ขับรถยนต์', resume.drive_car], ['ใบขับขี่รถยนต์', resume.car_license], ['ขับมอเตอร์ไซค์', resume.drive_moto], ['ใบขับขี่ มตซ.', resume.moto_license]].map(([l, v]) => v ? (
               <div key={l} style={{ display: 'flex', fontSize: 16, marginBottom: 13, lineHeight: 1.5 }}>
                 <span style={{ color: '#888', width: 125, flexShrink: 0 }}>{l}:</span>
-                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
+                <YesNo val={v} />
               </div>
             ) : null)}
             {resume.skills && <div style={{ fontSize: 16, color: '#555', marginTop: 10, lineHeight: 1.8 }}>{resume.skills}</div>}
           </div>
         </div>
 
+        {/* Center vertical divider */}
+        <div style={{ width: 1, background: '#e0e7ff', alignSelf: 'stretch', flexShrink: 0, margin: '0 0 24px' }} />
+
         {/* RIGHT — 2 sections spread top→bottom */}
-        <div style={{ flex: 1.4, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: 24 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: 24, paddingLeft: 24 }}>
 
           {/* ประวัติงาน */}
           <div>
-            <div style={secHead(18)}><span style={secBar(18)} />ประวัติงาน</div>
+            <div style={secHead(18)}><span style={secBar(18)} />💼 ประวัติงาน</div>
             {works.length > 0 ? works.map((w, i) => (
               <div key={i} style={{ borderLeft: '3px solid #2575fc', paddingLeft: 22, marginBottom: 28, position: 'relative' }}>
                 <div style={{ width: 14, height: 14, background: '#fff', border: '3px solid #2575fc', borderRadius: '50%', position: 'absolute', left: -9, top: 4 }} />
                 <div style={{ fontWeight: 'bold', fontSize: 18, color: '#333', marginBottom: 7 }}>{w.name}</div>
-                <div style={{ fontSize: 16, color: '#777', lineHeight: 1.5 }}>{w.dur ? `${w.dur} ปี` : ''}{w.dur && w.sal ? '  |  ' : ''}{w.sal ? `เงินเดือน ${w.sal} บาท` : ''}</div>
+                <div style={{ fontSize: 16, color: '#777', lineHeight: 1.5 }}>
+                  {w.dur ? <span>⏰ {w.dur} ปี</span> : null}
+                  {w.dur && w.sal ? <span>{'  |  '}</span> : null}
+                  {w.sal ? <span>💰 {fmtSalary(w.sal)} บาท</span> : null}
+                </div>
               </div>
             )) : <div style={{ fontSize: 16, color: '#bbb' }}>ไม่มีประวัติงาน</div>}
           </div>
 
           {/* งานที่ต้องการ */}
           <div>
-            <div style={secHead(18)}><span style={secBar(18)} />งานที่ต้องการ</div>
-            {[['ประเภทงาน', resume.want_job], ['พื้นที่', resume.want_area]].map(([l, v]) => v ? (
-              <div key={l} style={{ display: 'flex', fontSize: 16, marginBottom: 14, lineHeight: 1.5 }}>
-                <span style={{ color: '#888', width: 110, flexShrink: 0 }}>{l}:</span>
-                <span style={{ fontWeight: 500, color: '#333' }}>{v}</span>
+            <div style={secHead(18)}><span style={secBar(18)} />🎯 งานที่ต้องการ</div>
+            {resume.want_job && (
+              <div style={{ display: 'flex', fontSize: 16, marginBottom: 14, lineHeight: 1.5 }}>
+                <span style={{ color: '#888', width: 110, flexShrink: 0 }}>ประเภทงาน:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>{jobIcon(resume.want_job)} {resume.want_job}</span>
               </div>
-            ) : null)}
+            )}
+            {resume.want_area && (
+              <div style={{ display: 'flex', fontSize: 16, marginBottom: 14, lineHeight: 1.5 }}>
+                <span style={{ color: '#888', width: 110, flexShrink: 0 }}>พื้นที่:</span>
+                <span style={{ fontWeight: 500, color: '#333' }}>📍 {resume.want_area}</span>
+              </div>
+            )}
             {resume.want_salary && (
               <div style={{ background: 'linear-gradient(135deg,#f0f4ff,#e8f0fe)', padding: '26px 28px', borderRadius: 14, border: '1px solid #d0dcff', marginTop: 18 }}>
-                <div style={{ fontSize: 16, color: '#666', marginBottom: 10 }}>รายได้ที่คาดหวัง</div>
-                <div style={{ fontSize: 44, fontWeight: 'bold', color: '#2575fc', lineHeight: 1 }}>{resume.want_salary}</div>
+                <div style={{ fontSize: 16, color: '#666', marginBottom: 10 }}>💰 รายได้ที่คาดหวัง</div>
+                <div style={{ fontSize: 44, fontWeight: 'bold', color: '#2575fc', lineHeight: 1 }}>{fmtSalary(resume.want_salary)}</div>
                 <div style={{ fontSize: 18, color: '#6a11cb', marginTop: 8 }}>บาท / เดือน</div>
               </div>
             )}
