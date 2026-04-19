@@ -5,6 +5,12 @@ import { supabase } from '@/lib/supabase'
 
 type User = { id: string; phone: string; credits: number }
 
+function formatPhone(p: string) {
+  const d = p.replace(/\D/g, '')
+  if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
+  return p
+}
+
 // ── Provinces ──────────────────────────────────────────────────────────
 const QUICK_PROVINCES = [
   { th: 'กรุงเทพฯ', mm: 'ဘန်ကောက်' },
@@ -891,7 +897,7 @@ export default function ResumeCreatePage() {
 
               <div className="px-5 py-4 space-y-1 -mt-4 bg-white rounded-t-3xl">
                 <div className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">👤 ส่วนตัว</div>
-                <SummaryRow label="เบอร์โทร" value={user.phone} />
+                <SummaryRow label="เบอร์โทร" value={formatPhone(user.phone)} />
                 <SummaryRow label="วันเกิด" value={birthday} />
                 <SummaryRow label="เพศ / ကျား:" value={form.gender} />
                 <SummaryRow label="เชื้อชาติ" value={raceVal} />

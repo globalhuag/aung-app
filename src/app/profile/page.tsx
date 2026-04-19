@@ -5,6 +5,12 @@ import { supabase } from '@/lib/supabase'
 
 type User = { id: string; phone: string; credits: number }
 
+function formatPhone(p: string) {
+  const d = p.replace(/\D/g, '')
+  if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
+  return p
+}
+
 export default function ProfilePage() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
@@ -74,7 +80,7 @@ export default function ProfilePage() {
               👤
             </div>
             <div>
-              <div className="text-white font-black text-lg">{user.phone}</div>
+              <div className="text-white font-black text-lg">{formatPhone(user.phone)}</div>
               <div className="text-white/70 text-xs mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ဖုန်းနံပါတ်</div>
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">⭐ {user.credits} เครดิต</span>

@@ -4,6 +4,12 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 type User   = { id: string; phone: string; credits: number }
+
+function formatPhone(p: string) {
+  const d = p.replace(/\D/g, '')
+  if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
+  return p
+}
 type Resume = { id: string; name: string; job_type: string; province: string; suit_status: string; is_public: boolean; created_at: string }
 
 export default function DashboardPage() {
@@ -134,7 +140,7 @@ export default function DashboardPage() {
         <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
           <div className="flex-1 min-w-0">
             <div className="text-xs text-gray-400 font-semibold">สวัสดี / <span style={{fontFamily:'Noto Sans Myanmar'}}>မင်္ဂလာပါ</span></div>
-            <div className="text-base font-extrabold text-gray-800 truncate">{user.phone}</div>
+            <div className="text-base font-extrabold text-gray-800 truncate">{formatPhone(user.phone)}</div>
           </div>
           <button onClick={() => router.push('/topup')}
             className="flex items-center rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
