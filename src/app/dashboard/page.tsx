@@ -145,21 +145,8 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Notification banner */}
-        <div className="px-4 pt-3">
-          <div className="bg-[#C9A84C] rounded-xl px-3 py-2.5 flex items-center gap-2 cursor-pointer"
-            onClick={() => router.push('/jobs')}>
-            <div className="w-7 h-7 rounded-lg bg-white/25 flex items-center justify-center text-sm flex-shrink-0">🔔</div>
-            <div className="flex-1">
-              <div className="text-white text-xs font-bold">มีประกาศงานใหม่</div>
-              <div className="text-white/75 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အလုပ်ကြော်ငြာ အသစ်ရှိသည်</div>
-            </div>
-            <span className="text-white font-bold">→</span>
-          </div>
-        </div>
-
         {/* Resume section */}
-        <div className="px-4 py-4">
+        <div className="px-4 py-4 pb-24">
           <div className="flex items-center justify-between mb-3">
             <div>
               <div className="text-sm font-bold text-gray-800">เรซูเม่ของฉัน</div>
@@ -237,25 +224,22 @@ export default function DashboardPage() {
         </div>
 
         {/* Bottom Nav */}
-        <div className="bg-white border-t border-gray-100 flex px-3 py-2 pb-4 sticky bottom-0">
-          {[
-            {icon:'📄', label:'เรซูเม่', active:true, path:'/dashboard'},
-            {icon:'📢', label:'งาน', active:false, path:'/jobs'},
-            {icon:'💬', label:'แชท', active:false, path:'/chat'},
-            {icon:'👤', label:'โปรไฟล์', active:false, path:'/profile'},
-          ].map(item => (
-            <button key={item.label} onClick={() => router.push(item.path)}
-              className="flex-1 flex flex-col items-center gap-0.5">
-              <span className="text-lg">{item.icon}</span>
-              <span className={`text-xs font-bold ${item.active ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
-              {item.active && <div className="w-1 h-1 rounded-full bg-[#2B3FBE]" />}
-            </button>
-          ))}
-        </div>
-
-        {/* Logout */}
-        <div className="px-4 pb-6">
-          <button onClick={handleLogout} className="w-full text-xs text-gray-400 py-2">ออกจากระบบ</button>
+        <div className="fixed bottom-0 left-0 right-0 z-20 flex justify-center bg-white border-t border-gray-100">
+          <div className="w-full max-w-sm flex px-3 py-2 pb-4">
+            {[
+              {icon:'📄', label:'เรซูเม่', active:true, path:'/dashboard'},
+              {icon:'📢', label:'งาน', active:false, path:'/jobs'},
+              {icon:'💬', label:'แชท', active:false, path:'/chat'},
+              {icon:'👤', label:'โปรไฟล์', active:false, path:'/profile'},
+            ].map(item => (
+              <button key={item.label} onClick={() => router.push(item.path)}
+                className="flex-1 flex flex-col items-center gap-0.5">
+                <span className="text-lg">{item.icon}</span>
+                <span className={`text-xs font-bold ${item.active ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
+                {item.active && <div className="w-1 h-1 rounded-full bg-[#2B3FBE]" />}
+              </button>
+            ))}
+          </div>
         </div>
 
       </div>

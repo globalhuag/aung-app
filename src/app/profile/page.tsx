@@ -39,7 +39,6 @@ export default function ProfilePage() {
     {
       section: 'บัญชี / အကောင့်',
       items: [
-        { icon: '⭐', label: 'เติมเครดิต', labelMM: 'ခရက်ဒစ်ဖြည့်', action: () => router.push('/topup'), badge: `${user.credits} เครดิต`, badgeColor: 'text-[#2B3FBE]' },
         { icon: '📄', label: 'เรซูเม่ของฉัน', labelMM: 'ကျွန်ုပ်၏ Resume', action: () => router.push('/dashboard'), badge: `${resumeCount} รายการ`, badgeColor: 'text-gray-500' },
         { icon: '📢', label: 'ประกาศงาน', labelMM: 'အလုပ်ကြော်ငြာ', action: () => router.push('/jobs') },
       ]
@@ -102,8 +101,25 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Top-up CTA — prominent card */}
+        <div className="px-4 mt-4">
+          <button onClick={() => router.push('/topup')}
+            className="w-full bg-[#C9A84C] rounded-2xl px-4 py-4 flex items-center gap-3 shadow-sm active:opacity-90 transition-opacity">
+            <div className="w-10 h-10 rounded-xl bg-white/25 flex items-center justify-center text-2xl flex-shrink-0">⭐</div>
+            <div className="flex-1 text-left">
+              <div className="text-white font-black text-base leading-none">เติมเครดิต</div>
+              <div className="text-white/75 text-xs mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ခရက်ဒစ်ဖြည့်ရန်</div>
+            </div>
+            <div className="bg-white/20 rounded-full px-3 py-1.5 flex items-center gap-1">
+              <span className="text-white text-sm font-black">{user.credits}</span>
+              <span className="text-white/80 text-xs">เครดิต</span>
+            </div>
+            <span className="text-white font-black text-lg ml-1">→</span>
+          </button>
+        </div>
+
         {/* Menu */}
-        <div className="flex-1 px-4 py-5 space-y-4">
+        <div className="flex-1 px-4 py-5 pb-24 space-y-4">
           {MENU.map(section => (
             <div key={section.section}>
               <div className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1 mb-2">{section.section}</div>
@@ -152,15 +168,17 @@ function BottomNav({ active, router }: { active: string; router: ReturnType<type
     { icon: '👤', label: 'โปรไฟล์', key: 'profile', path: '/profile' },
   ]
   return (
-    <div className="bg-white border-t border-gray-100 flex px-3 py-2 pb-4 sticky bottom-0">
-      {items.map(item => (
-        <button key={item.key} onClick={() => router.push(item.path)}
-          className="flex-1 flex flex-col items-center gap-0.5">
-          <span className="text-lg">{item.icon}</span>
-          <span className={`text-xs font-bold ${active === item.key ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
-          {active === item.key && <div className="w-1 h-1 rounded-full bg-[#2B3FBE]" />}
-        </button>
-      ))}
+    <div className="fixed bottom-0 left-0 right-0 z-20 flex justify-center bg-white border-t border-gray-100">
+      <div className="w-full max-w-sm flex px-3 py-2 pb-4">
+        {items.map(item => (
+          <button key={item.key} onClick={() => router.push(item.path)}
+            className="flex-1 flex flex-col items-center gap-0.5">
+            <span className="text-lg">{item.icon}</span>
+            <span className={`text-xs font-bold ${active === item.key ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
+            {active === item.key && <div className="w-1 h-1 rounded-full bg-[#2B3FBE]" />}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

@@ -62,22 +62,22 @@ const CAN_CANNOT = [
   { v: 'ไม่ได้', mm: 'မတတ်ပါ' },
 ]
 const RACE_OPTS = [
-  { v: 'พม่า', mm: 'ဗမာ', color: 'border-gray-300 bg-white text-gray-700', sel: 'bg-[#2B3FBE] text-white border-[#2B3FBE]' },
-  { v: 'กะเหรี่ยง', mm: 'ကရင်', color: 'bg-[#15803D] text-white border-[#15803D]', sel: 'bg-[#15803D] text-white border-[#15803D] ring-2 ring-offset-1 ring-[#15803D]' },
-  { v: 'มอญ', mm: 'မွန်', color: 'bg-[#1E293B] text-white border-[#1E293B]', sel: 'bg-[#1E293B] text-white border-[#1E293B] ring-2 ring-offset-1 ring-[#1E293B]' },
-  { v: 'ไทใหญ่', mm: 'ရှမ်း', color: 'bg-[#92400E] text-white border-[#92400E]', sel: 'bg-[#92400E] text-white border-[#92400E] ring-2 ring-offset-1 ring-[#92400E]' },
+  { v: 'พม่า', mm: 'ဗမာ' },
+  { v: 'กะเหรี่ยง', mm: 'ကရင်' },
+  { v: 'มอญ', mm: 'မွန်' },
+  { v: 'ไทใหญ่', mm: 'ရှမ်း' },
 ]
 const SKILL_OPTS = [
-  { v: 'เชื่อมเหล็ก', mm: 'သံဆက်', emoji: '🔧', bg: 'bg-amber-50 border-amber-400 text-amber-800', sel: 'bg-amber-400 border-amber-400 text-white' },
-  { v: 'เย็บผ้า', mm: 'အချုပ်', emoji: '✂️', bg: 'bg-pink-50 border-pink-400 text-pink-800', sel: 'bg-pink-400 border-pink-400 text-white' },
-  { v: 'โฟล์คลิฟท์', mm: 'ဖိုကလစ်', emoji: '🚜', bg: 'bg-yellow-50 border-yellow-600 text-yellow-900', sel: 'bg-yellow-600 border-yellow-600 text-white' },
-  { v: 'ทำอาหาร', mm: 'ချက်ပြုတ်', emoji: '🍳', bg: 'bg-blue-50 border-blue-400 text-blue-800', sel: 'bg-blue-500 border-blue-500 text-white' },
-  { v: 'คอมพิวเตอร์', mm: 'ကွန်ပျူတာ', emoji: '💻', bg: 'bg-slate-50 border-slate-400 text-slate-700', sel: 'bg-slate-600 border-slate-600 text-white' },
-  { v: 'เกษตร', mm: 'လယ်ယာ', emoji: '🌾', bg: 'bg-green-50 border-green-500 text-green-800', sel: 'bg-green-600 border-green-600 text-white' },
-  { v: 'งานไม้', mm: 'သစ်သားလုပ်', emoji: '🪵', bg: 'bg-orange-50 border-orange-500 text-orange-800', sel: 'bg-orange-600 border-orange-600 text-white' },
-  { v: 'ไฟฟ้า', mm: 'လျှပ်စစ်', emoji: '⚡', bg: 'bg-yellow-50 border-yellow-400 text-yellow-800', sel: 'bg-yellow-400 border-yellow-400 text-white' },
-  { v: 'อื่นๆ', mm: 'အခြား', emoji: '✏️', bg: 'bg-purple-50 border-purple-400 text-purple-800', sel: 'bg-purple-500 border-purple-500 text-white' },
-  { v: 'ไม่มี', mm: 'မရှိပါ', emoji: '', bg: 'bg-gray-50 border-gray-300 text-gray-500', sel: 'bg-gray-400 border-gray-400 text-white' },
+  { v: 'เชื่อมเหล็ก', mm: 'သံဆက်', emoji: '🔧' },
+  { v: 'เย็บผ้า', mm: 'အချုပ်', emoji: '✂️' },
+  { v: 'โฟล์คลิฟท์', mm: 'ဖိုကလစ်', emoji: '🚜' },
+  { v: 'ทำอาหาร', mm: 'ချက်ပြုတ်', emoji: '🍳' },
+  { v: 'คอมพิวเตอร์', mm: 'ကွန်ပျူတာ', emoji: '💻' },
+  { v: 'เกษตร', mm: 'လယ်ယာ', emoji: '🌾' },
+  { v: 'งานไม้', mm: 'သစ်သားလုပ်', emoji: '🪵' },
+  { v: 'ไฟฟ้า', mm: 'လျှပ်စစ်', emoji: '⚡' },
+  { v: 'อื่นๆ', mm: 'အခြား', emoji: '✏️' },
+  { v: 'ไม่มี', mm: 'မရှိပါ', emoji: '' },
 ]
 const JOB_OPTS = [
   { v: 'โรงงาน', mm: 'စက်ရုံ', emoji: '🏭' },
@@ -254,6 +254,7 @@ export default function ResumeCreatePage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string>('')
   const [docFiles, setDocFiles] = useState<File[]>([])
+  const [pdpaAccepted, setPdpaAccepted] = useState(false)
   const scrollTop = () => window.scrollTo(0, 0)
 
   useEffect(() => {
@@ -393,11 +394,11 @@ export default function ResumeCreatePage() {
           {/* ══ STEP 1: ส่วนตัว ══ */}
           {step === 1 && <>
             {/* ชื่อ */}
-            <QHeader num="ข้อ 2 / 29" th="ชื่อ-นามสกุล ภาษาอังกฤษ *" mm="အမည် အင်္ဂလိပ်ဘာသာ" />
+            <QHeader num="ข้อ 1 / 25" th="ชื่อ-นามสกุล ภาษาอังกฤษ *" mm="အမည် အင်္ဂလိပ်ဘာသာ" />
             <TxtInput value={form.name} onChange={v => set('name', v.toUpperCase())} placeholder="FIRSTNAME LASTNAME" />
 
             {/* วันเกิด */}
-            <QHeader num="ข้อ 3 / 29" th="วันเกิด" mm="မွေးသက္ကရာဇ်" />
+            <QHeader num="ข้อ 2 / 25" th="วันเกิด" mm="မွေးသက္ကရာဇ်" />
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <div className="text-xs font-bold text-gray-500 mb-1.5 ml-1">วัน / ရက်</div>
@@ -426,7 +427,7 @@ export default function ResumeCreatePage() {
             </div>
 
             {/* เพศ */}
-            <QHeader num="ข้อ 4 / 29" th="เพศ" mm="ကျား/မ" />
+            <QHeader num="ข้อ 3 / 25" th="เพศ" mm="ကျား/မ" />
             <div className="flex gap-3">
               {GENDER_OPTS.map(g => (
                 <button key={g.v} onClick={() => set('gender', g.v)} type="button"
@@ -439,14 +440,14 @@ export default function ResumeCreatePage() {
             </div>
 
             {/* เชื้อชาติ */}
-            <QHeader num="ข้อ 5 / 29" th="เชื้อชาติ?" mm="လူမျိုး?" />
+            <QHeader num="ข้อ 4 / 25" th="เชื้อชาติ?" mm="လူမျိုး?" />
             <div className="grid grid-cols-2 gap-2">
               {RACE_OPTS.map(r => {
                 const isSel = form.race === r.v
                 return (
                   <button key={r.v} onClick={() => set('race', r.v)} type="button"
                     className={`rounded-full border-2 py-3 text-sm font-bold transition-all
-                      ${isSel ? r.sel : r.color}`}>
+                      ${isSel ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
                     {r.v}
                     <span className="block text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>{r.mm}</span>
                   </button>
@@ -455,7 +456,7 @@ export default function ResumeCreatePage() {
               {/* อื่นๆ - full width */}
               <button onClick={() => set('race', 'อื่นๆ')} type="button"
                 className={`col-span-2 rounded-full border-2 py-3 text-sm font-bold transition-all
-                  ${form.race === 'อื่นๆ' ? 'bg-[#6D28D9] border-[#6D28D9] text-white' : 'bg-purple-50 border-purple-300 text-purple-700'}`}>
+                  ${form.race === 'อื่นๆ' ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
                 อื่นๆ โปรดระบุ
                 <span className="block text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>အခြား ဖော်ပြပါ</span>
               </button>
@@ -465,7 +466,7 @@ export default function ResumeCreatePage() {
             )}
 
             {/* จังหวัด */}
-            <QHeader num="ข้อ 6 / 29" th="จังหวัดที่อยู่ปัจจุบัน?" mm="လက်ရှိနေထိုင်သည့် ခရိုင်?" />
+            <QHeader num="ข้อ 5 / 25" th="จังหวัดที่อยู่ปัจจุบัน?" mm="လက်ရှိနေထိုင်သည့် ခရိုင်?" />
             <div className="flex flex-wrap gap-2">
               {QUICK_PROVINCES.map(p => (
                 <button key={p.th} onClick={() => set('province', p.th)} type="button"
@@ -477,7 +478,7 @@ export default function ResumeCreatePage() {
               ))}
               <button onClick={() => set('province', 'อื่นๆ')} type="button"
                 className={`rounded-full border-2 px-4 py-2 text-xs font-bold transition-all
-                  ${form.province === 'อื่นๆ' ? 'bg-[#6D28D9] border-[#6D28D9] text-white' : 'bg-purple-50 border-purple-300 text-purple-700'}`}>
+                  ${form.province === 'อื่นๆ' ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
                 อื่นๆ ระบุเอง
                 <span className="block text-[10px] font-normal opacity-70" style={{ fontFamily: 'Noto Sans Myanmar' }}>အခြားခရိုင်</span>
               </button>
@@ -494,12 +495,12 @@ export default function ResumeCreatePage() {
           {/* ══ STEP 2: เอกสาร ══ */}
           {step === 2 && <>
             {[
-              { num: '7/29', th: 'มี Smart Card / Work Permit ไหม?', mm: 'Smart Card Work Permit ရှိပါသလား?', field: 'smart_card' as const, opts: YES_NO },
-              { num: '8/29', th: 'มีบัญชีธนาคารไทยไหม?', mm: 'ထိုင်းဘဏ်အကောင့် ရှိပါသလား?', field: 'bank_account' as const, opts: YES_NO },
-              { num: '9/29', th: 'ขับรถยนต์ได้ไหม?', mm: 'ကားမောင်းတတ်ပါသလား?', field: 'drive_car' as const, opts: CAN_CANNOT },
-              { num: '10/29', th: 'มีใบขับขี่รถยนต์ไทยไหม?', mm: 'ထိုင်းကားမောင်းလိုင်စင် ရှိပါသလား?', field: 'car_license' as const, opts: YES_NO },
-              { num: '11/29', th: 'ขับรถจักรยานยนต์ได้ไหม?', mm: 'ဆိုင်ကယ်မောင်းတတ်ပါသလား?', field: 'drive_moto' as const, opts: CAN_CANNOT },
-              { num: '12/29', th: 'มีใบขับขี่จักรยานยนต์ไทยไหม?', mm: 'ထိုင်းဆိုင်ကယ်လိုင်စင် ရှိပါသလား?', field: 'moto_license' as const, opts: YES_NO },
+              { num: '6/25', th: 'มี Smart Card / Work Permit ไหม?', mm: 'Smart Card Work Permit ရှိပါသလား?', field: 'smart_card' as const, opts: YES_NO },
+              { num: '7/25', th: 'มีบัญชีธนาคารไทยไหม?', mm: 'ထိုင်းဘဏ်အကောင့် ရှိပါသလား?', field: 'bank_account' as const, opts: YES_NO },
+              { num: '8/25', th: 'ขับรถยนต์ได้ไหม?', mm: 'ကားမောင်းတတ်ပါသလား?', field: 'drive_car' as const, opts: CAN_CANNOT },
+              { num: '9/25', th: 'มีใบขับขี่รถยนต์ไทยไหม?', mm: 'ထိုင်းကားမောင်းလိုင်စင် ရှိပါသလား?', field: 'car_license' as const, opts: YES_NO },
+              { num: '10/25', th: 'ขับรถจักรยานยนต์ได้ไหม?', mm: 'ဆိုင်ကယ်မောင်းတတ်ပါသလား?', field: 'drive_moto' as const, opts: CAN_CANNOT },
+              { num: '11/25', th: 'มีใบขับขี่จักรยานยนต์ไทยไหม?', mm: 'ထိုင်းဆိုင်ကယ်လိုင်စင် ရှိပါသလား?', field: 'moto_license' as const, opts: YES_NO },
             ].map(q => (
               <div key={q.num}>
                 <QHeader num={`ข้อ ${q.num}`} th={q.th} mm={q.mm} />
@@ -511,10 +512,10 @@ export default function ResumeCreatePage() {
           {/* ══ STEP 3: ภาษา & ทักษะ ══ */}
           {step === 3 && <>
             {[
-              { num: '13/29', th: 'ภาษาไทย (ฟัง+พูด)', mm: 'ထိုင်း (နားထောင်+ပြောဆို)', field: 'thai_listen' as const },
-              { num: '14/29', th: 'ภาษาไทย (อ่าน+เขียน)', mm: 'ထိုင်း (ဖတ်+ရေး)', field: 'thai_read' as const },
-              { num: '15/29', th: 'ภาษาอังกฤษ (ฟัง+พูด)', mm: 'အင်္ဂလိပ် (နားထောင်+ပြောဆို)', field: 'eng_listen' as const },
-              { num: '16/29', th: 'ภาษาอังกฤษ (อ่าน+เขียน)', mm: 'အင်္ဂလိပ် (ဖတ်+ရေး)', field: 'eng_read' as const },
+              { num: '12/25', th: 'ภาษาไทย (ฟัง+พูด)', mm: 'ထိုင်း (နားထောင်+ပြောဆို)', field: 'thai_listen' as const },
+              { num: '13/25', th: 'ภาษาไทย (อ่าน+เขียน)', mm: 'ထိုင်း (ဖတ်+ရေး)', field: 'thai_read' as const },
+              { num: '14/25', th: 'ภาษาอังกฤษ (ฟัง+พูด)', mm: 'အင်္ဂလိပ် (နားထောင်+ပြောဆို)', field: 'eng_listen' as const },
+              { num: '15/25', th: 'ภาษาอังกฤษ (อ่าน+เขียน)', mm: 'အင်္ဂလိပ် (ဖတ်+ရေး)', field: 'eng_read' as const },
             ].map(q => (
               <div key={q.num}>
                 <QHeader num={`ข้อ ${q.num}`} th={q.th} mm={q.mm} />
@@ -523,14 +524,14 @@ export default function ResumeCreatePage() {
             ))}
 
             {/* ทักษะพิเศษ */}
-            <QHeader num="ข้อ 17 / 29" th="ทักษะพิเศษ?" mm="ထူးချွန်သည့်ကျွမ်းကျင်မှုများ (တစ်ခုထက်ပိုရွေးနိုင်)" />
+            <QHeader num="ข้อ 16 / 25" th="ทักษะพิเศษ?" mm="ထူးချွန်သည့်ကျွမ်းကျင်မှုများ (တစ်ခုထက်ပိုရွေးနိုင်)" />
             <div className="flex flex-wrap gap-2">
               {SKILL_OPTS.map(s => {
                 const isSel = form.skills.includes(s.v)
                 return (
                   <button key={s.v} onClick={() => toggleMulti('skills', s.v)} type="button"
                     className={`rounded-full border-2 px-3 py-2 text-xs font-bold transition-all flex items-center gap-1.5
-                      ${isSel ? s.sel : s.bg}`}>
+                      ${isSel ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
                     {s.emoji && <span>{s.emoji}</span>}
                     <span>{s.v}</span>
                     <span className="opacity-70" style={{ fontFamily: 'Noto Sans Myanmar' }}>{s.mm}</span>
@@ -551,9 +552,9 @@ export default function ResumeCreatePage() {
           {/* ══ STEP 4: ประวัติงาน ══ */}
           {step === 4 && <>
             {([
-              { num: '18/29', label: 'ประวัติงาน 1', mm: 'အလုပ်အကိုင်သမိုင်း ၁', n: 'w1_name' as const, d: 'w1_duration' as const, s: 'w1_salary' as const },
-              { num: '19/29', label: 'ประวัติงาน 2', mm: 'အလုပ်အကိုင်သမိုင်း ၂', n: 'w2_name' as const, d: 'w2_duration' as const, s: 'w2_salary' as const },
-              { num: '20/29', label: 'ประวัติงาน 3', mm: 'အလုပ်အကိုင်သမိုင်း ၃', n: 'w3_name' as const, d: 'w3_duration' as const, s: 'w3_salary' as const },
+              { num: '17/25', label: 'ประวัติงาน 1', mm: 'အလုပ်အကိုင်သမိုင်း ၁', n: 'w1_name' as const, d: 'w1_duration' as const, s: 'w1_salary' as const },
+              { num: '18/25', label: 'ประวัติงาน 2', mm: 'အလုပ်အကိုင်သမိုင်း ၂', n: 'w2_name' as const, d: 'w2_duration' as const, s: 'w2_salary' as const },
+              { num: '19/25', label: 'ประวัติงาน 3', mm: 'အလုပ်အကိုင်သမိုင်း ၃', n: 'w3_name' as const, d: 'w3_duration' as const, s: 'w3_salary' as const },
             ]).map(w => (
               <div key={w.num} className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
                 <div>
@@ -582,7 +583,7 @@ export default function ResumeCreatePage() {
           {/* ══ STEP 5: ต้องการ ══ */}
           {step === 5 && <>
             {/* งานที่ต้องการ */}
-            <QHeader num="ข้อ 21 / 29" th="ประเภทงานที่ต้องการ?" mm="ဘယ်လိုအလုပ်အမျိုးအစားလုပ်ချင်လဲ?" />
+            <QHeader num="ข้อ 20 / 25" th="ประเภทงานที่ต้องการ?" mm="ဘယ်လိုအလုပ်အမျိုးအစားလုပ်ချင်လဲ?" />
             <div className="flex flex-wrap gap-2">
               {JOB_OPTS.map(j => (
                 <button key={j.v} onClick={() => set('want_job', j.v)} type="button"
@@ -599,7 +600,7 @@ export default function ResumeCreatePage() {
             )}
 
             {/* พื้นที่ต้องการ */}
-            <QHeader num="ข้อ 22 / 29" th="บริเวณที่ต้องการทำงาน?" mm="အလုပ်လုပ်လိုသည့် နေရာ?" />
+            <QHeader num="ข้อ 21 / 25" th="บริเวณที่ต้องการทำงาน?" mm="အလုပ်လုပ်လိုသည့် နေရာ?" />
             <div className="flex flex-wrap gap-2">
               {QUICK_PROVINCES.map(p => (
                 <button key={p.th} onClick={() => set('want_area', p.th)} type="button"
@@ -611,7 +612,7 @@ export default function ResumeCreatePage() {
               ))}
               <button onClick={() => set('want_area', 'อื่นๆ')} type="button"
                 className={`rounded-full border-2 px-4 py-2 text-xs font-bold transition-all
-                  ${form.want_area === 'อื่นๆ' ? 'bg-[#6D28D9] border-[#6D28D9] text-white' : 'bg-purple-50 border-purple-300 text-purple-700'}`}>
+                  ${form.want_area === 'อื่นๆ' ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
                 อื่นๆ ระบุเอง
               </button>
             </div>
@@ -624,11 +625,11 @@ export default function ResumeCreatePage() {
             )}
 
             {/* เงินเดือน */}
-            <QHeader num="ข้อ 23 / 29" th="รายได้ที่คาดหวัง (บาท/เดือน)" mm="မျှော်မှန်းထားသည့် လစဉ်ဝင်ငွေ" />
+            <QHeader num="ข้อ 22 / 25" th="รายได้ที่คาดหวัง (บาท/เดือน)" mm="မျှော်မှန်းထားသည့် လစဉ်ဝင်ငွေ" />
             <TxtInput value={form.want_salary} onChange={v => set('want_salary', v)} placeholder="เช่น 15000" />
 
             {/* จุดเด่น */}
-            <QHeader num="ข้อ 24 / 29" th="จุดเด่นของคุณ (เลือกได้หลายข้อ)" mm="သင်၏ ထူးချွန်ချက်" />
+            <QHeader num="ข้อ 23 / 25" th="จุดเด่นของคุณ (เลือกได้หลายข้อ)" mm="သင်၏ ထူးချွန်ချက်" />
             <div className="flex flex-wrap gap-2">
               {STRENGTH_OPTS.map(s => {
                 const isSel = form.strengths.includes(s.v)
@@ -646,7 +647,7 @@ export default function ResumeCreatePage() {
 
           {/* ══ STEP 6: รูปถ่าย ══ */}
           {step === 6 && <>
-            <QHeader num="ข้อ 25 / 29" th="รูปถ่ายหน้าตรง" mm="မျက်နှာတည့်တည့် ဓာတ်ပုံ" />
+            <QHeader num="ข้อ 24 / 25" th="รูปถ่ายหน้าตรง" mm="မျက်နှာတည့်တည့် ဓာတ်ပုံ" />
             <label className={`w-full rounded-2xl border-2 border-dashed px-4 py-8 flex flex-col items-center gap-2 cursor-pointer transition-colors ${photoFile ? 'border-[#C9A84C] bg-amber-50' : 'border-gray-300 bg-white'}`}>
               <input type="file" accept="image/*" className="hidden" onChange={e => setPhotoFile(e.target.files?.[0] || null)} />
               {photoPreview ? (
@@ -658,7 +659,7 @@ export default function ResumeCreatePage() {
               <div className="text-xs text-gray-400" style={{ fontFamily: 'Noto Sans Myanmar' }}>ဓာတ်ပုံ တင်ရန် နှိပ်ပါ</div>
             </label>
 
-            <QHeader num="ข้อ 26 / 29" th="เอกสาร (พาสปอร์ต, Work Permit ฯลฯ)" mm="နိုင်ငံကူးလက်မှတ်၊ လုပ်ငန်းခွင့်လက်မှတ် စသည်" />
+            <QHeader num="ข้อ 25 / 25" th="เอกสาร (พาสปอร์ต, Work Permit ฯลฯ)" mm="နိုင်ငံကူးလက်မှတ်၊ လုပ်ငန်းခွင့်လက်မှတ် စသည်" />
             <label className={`w-full rounded-2xl border-2 border-dashed px-4 py-6 flex flex-col items-center gap-2 cursor-pointer transition-colors ${docFiles.length > 0 ? 'border-[#2B3FBE] bg-blue-50' : 'border-gray-300 bg-white'}`}>
               <input type="file" accept="image/*" multiple className="hidden" onChange={e => setDocFiles(Array.from(e.target.files || []))} />
               <div className="text-4xl">📄</div>
@@ -731,6 +732,23 @@ export default function ResumeCreatePage() {
             <div className="text-center text-xs text-gray-400">
               ⭐ ใช้ 1 เครดิต — คงเหลือ {user.credits} เครดิต
             </div>
+
+            {/* PDPA Consent */}
+            <div className="bg-gray-50 border-2 border-gray-200 rounded-2xl p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" checked={pdpaAccepted} onChange={e => setPdpaAccepted(e.target.checked)}
+                  className="mt-1 w-5 h-5 accent-[#2B3FBE] flex-shrink-0 cursor-pointer" />
+                <div>
+                  <div className="text-sm font-black text-gray-800">ยินยอม PDPA *</div>
+                  <div className="text-xs text-gray-600 mt-1 leading-relaxed">
+                    ข้าพเจ้ายินยอมให้ Aung เก็บรวบรวมและใช้ข้อมูลส่วนบุคคล เพื่อจัดทำเรซูเม่และจับคู่งาน
+                  </div>
+                  <div className="text-xs text-gray-400 mt-1" style={{ fontFamily: 'Noto Sans Myanmar' }}>
+                    ကျွန်ုပ် Aung အား ကိုယ်ရေးအချက်အလက် စုဆောင်းပြီး အလုပ်ရှာဖွေရာတွင် အသုံးပြုခွင့် ပေးသည်
+                  </div>
+                </div>
+              </label>
+            </div>
           </>}
 
         </div>
@@ -741,7 +759,7 @@ export default function ResumeCreatePage() {
           {step < TOTAL_STEPS ? (
             <div className="flex gap-3">
               <button onClick={() => { if (step > 1) { setStep(s => s - 1); scrollTop() } else { router.back() } }}
-                className="flex-1 rounded-full border-2 border-gray-300 bg-white text-gray-600 py-3.5 font-extrabold text-sm">
+                className="flex-1 rounded-full border-2 border-gray-400 bg-gray-100 text-gray-700 py-3.5 font-extrabold text-sm">
                 ← ย้อนกลับ
                 <span className="block text-xs font-normal opacity-60 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>နောက်သို့</span>
               </button>
@@ -754,13 +772,13 @@ export default function ResumeCreatePage() {
           ) : (
             <div className="flex flex-col gap-2">
               <div className="flex gap-3">
-                <button onClick={() => handleSubmit(false)} disabled={saving}
-                  className="flex-1 rounded-full border-2 border-gray-300 bg-white text-gray-600 py-3.5 font-extrabold text-sm disabled:opacity-50">
+                <button onClick={() => handleSubmit(false)} disabled={saving || !pdpaAccepted}
+                  className="flex-1 rounded-full border-2 border-gray-300 bg-white text-gray-600 py-3.5 font-extrabold text-sm disabled:opacity-40">
                   🔒 เก็บไว้ส่วนตัว
                   <span className="block text-xs font-normal opacity-60 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ကိုယ်ပိုင်သိမ်းမည်</span>
                 </button>
-                <button onClick={() => handleSubmit(true)} disabled={saving}
-                  className="flex-1 rounded-full bg-[#C9A84C] disabled:bg-gray-200 text-white py-3.5 font-extrabold text-sm transition-colors">
+                <button onClick={() => handleSubmit(true)} disabled={saving || !pdpaAccepted}
+                  className="flex-1 rounded-full bg-[#C9A84C] disabled:bg-gray-200 disabled:text-gray-400 text-white py-3.5 font-extrabold text-sm transition-colors">
                   {saving ? '...' : '✅ ยืนยันเผยแพร่'}
                   {!saving && <span className="block text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>အတည်ပြု</span>}
                 </button>
