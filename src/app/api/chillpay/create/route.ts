@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       IPAddress:     ip_address,
       ApiKey:        API_KEY,
       CheckSum:      checksum,
-      ReturnUrl:     `${APP_URL}/topup/return`,
+      ReturnUrl:     `${APP_URL}/topup/return?order_no=${order_no}`,
       BackgroundUrl: `${APP_URL}/api/chillpay/notify`,
     })
 
