@@ -254,7 +254,10 @@ export default function ResumeCreatePage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string>('')
   const [docFiles, setDocFiles] = useState<File[]>([])
-  const [pdpaAccepted, setPdpaAccepted] = useState(false)
+  const [pdpaConfirmed, setPdpaConfirmed] = useState(false)
+  const [fillingForOther, setFillingForOther] = useState(false)
+  const [pdpaMain, setPdpaMain] = useState(false)
+  const [pdpaProxy, setPdpaProxy] = useState(false)
   const scrollTop = () => window.scrollTo(0, 0)
 
   useEffect(() => {
@@ -357,6 +360,158 @@ export default function ResumeCreatePage() {
   if (!user) return null
 
   const canNext = step !== 1 || form.name.trim().length > 0
+  const canConfirmPdpa = pdpaMain && (!fillingForOther || pdpaProxy)
+
+  // ── PDPA Gate Screen ──
+  if (!pdpaConfirmed) return (
+    <div className="min-h-screen bg-[#F4F5FB] flex flex-col items-center">
+      <div className="w-full max-w-sm flex flex-col min-h-screen">
+
+        {/* PDPA Header */}
+        <div className="bg-[#2B3FBE] px-4 pt-4 pb-5">
+          <button onClick={() => router.back()}
+            className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white font-bold mb-3">
+            ←
+          </button>
+          <div className="text-white font-black text-xl leading-tight">ข้อตกลงการเก็บข้อมูล<br/>ส่วนบุคคล (PDPA)</div>
+          <div className="text-white/70 text-xs mt-1" style={{fontFamily:'Noto Sans Myanmar'}}>ကိုယ်ရေးအချက်အလက် သဘောတူညီချက်</div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 py-5 space-y-4 pb-32">
+
+          {/* Intro */}
+          <div className="text-center py-1">
+            <div className="text-5xl mb-2">🔐</div>
+            <div className="text-base font-black text-gray-800">ก่อนเริ่มกรอกข้อมูล</div>
+            <div className="text-xs text-gray-500 mt-1 leading-relaxed">
+              Aung จำเป็นต้องได้รับความยินยอมของคุณในการเก็บข้อมูล<br/>
+              ตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562
+            </div>
+            <div className="text-xs text-gray-400 mt-1" style={{fontFamily:'Noto Sans Myanmar'}}>
+              ကိုယ်ရေးအချက်အလက် ကာကွယ်ရေးဥပဒေ (PDPA 2019)
+            </div>
+          </div>
+
+          {/* What we collect */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <div className="text-sm font-black text-gray-800 mb-3">📋 ข้อมูลที่เราเก็บรวบรวม</div>
+            {[
+              { th: 'ชื่อ-นามสกุล, วันเกิด, เพศ, เชื้อชาติ', mm: 'အမည်၊ မွေးသက္ကရာဇ်၊ ကျား/မ၊ လူမျိုး' },
+              { th: 'จังหวัดที่อยู่ปัจจุบัน, เบอร์โทรศัพท์', mm: 'နေရပ်လိပ်စာ၊ ဖုန်းနံပါတ်' },
+              { th: 'Smart Card, Work Permit, พาสปอร์ต', mm: 'Smart Card၊ Work Permit၊ နိုင်ငံကူးလက်မှတ်' },
+              { th: 'บัญชีธนาคาร, ใบขับขี่', mm: 'ဘဏ်အကောင့်၊ မောင်းနှင်လိုင်စင်' },
+              { th: 'ประวัติการทำงาน, ทักษะ, ความสามารถทางภาษา', mm: 'အလုပ်သမိုင်း၊ ကျွမ်းကျင်မှု၊ ဘာသာစကား' },
+              { th: 'รูปถ่าย และสำเนาเอกสาร', mm: 'ဓာတ်ပုံ နှင့် စာရွက်မိတ္တူ' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-2 mb-2.5 last:mb-0">
+                <span className="text-[#2B3FBE] font-black text-sm flex-shrink-0 mt-0.5">•</span>
+                <div>
+                  <div className="text-xs font-bold text-gray-700">{item.th}</div>
+                  <div className="text-xs text-gray-400 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>{item.mm}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Purpose */}
+          <div className="bg-[#E8EBFF] rounded-2xl p-4">
+            <div className="text-xs font-black text-[#2B3FBE] mb-1.5">🎯 วัตถุประสงค์การใช้ข้อมูล</div>
+            <div className="text-xs text-[#2B3FBE]/80 leading-relaxed">
+              เพื่อจัดทำเรซูเม่และจับคู่กับนายจ้าง/นายหน้าที่สนใจ
+              ข้อมูลจะถูกแชร์เฉพาะเมื่อคุณเลือก <span className="font-black">เผยแพร่เรซูเม่</span> เท่านั้น
+              คุณสามารถลบข้อมูลได้ทุกเมื่อ
+            </div>
+            <div className="text-xs text-[#2B3FBE]/60 mt-1.5" style={{fontFamily:'Noto Sans Myanmar'}}>
+              Resume ပြုလုပ်ပြီး အလုပ်ရှင်နှင့် ချိတ်ဆက်ရန်သာ — ထုတ်ဝေမှသာ မျှဝေမည်
+            </div>
+          </div>
+
+          {/* Who is filling */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <div className="text-sm font-black text-gray-800 mb-1">👤 กรอกข้อมูลให้ใคร?</div>
+            <div className="text-xs text-gray-400 mb-3" style={{fontFamily:'Noto Sans Myanmar'}}>ဘယ်သူ့အတွက် ဖြည့်သွင်းနေသလဲ?</div>
+            <div className="flex gap-2">
+              <button onClick={() => { setFillingForOther(false); setPdpaProxy(false) }}
+                className={`flex-1 rounded-xl border-2 py-3 text-sm font-bold transition-all
+                  ${!fillingForOther ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
+                ตัวเอง
+                <span className="block text-xs font-normal opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>ကိုယ်တိုင်</span>
+              </button>
+              <button onClick={() => setFillingForOther(true)}
+                className={`flex-1 rounded-xl border-2 py-3 text-sm font-bold transition-all
+                  ${fillingForOther ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
+                แทนผู้อื่น
+                <span className="block text-xs font-normal opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>သူများအတွက်</span>
+              </button>
+            </div>
+            {fillingForOther && (
+              <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 text-xs text-amber-800">
+                <div className="font-bold mb-0.5">ℹ️ กรอกแทนเพื่อน / ครอบครัว</div>
+                <div className="leading-relaxed">กรุณาตรวจสอบว่าเจ้าของข้อมูลรับรู้และยินยอมให้คุณกรอกข้อมูลแทนแล้ว หากไม่ได้รับความยินยอม อาจผิด พ.ร.บ. PDPA</div>
+                <div className="mt-1 opacity-80" style={{fontFamily:'Noto Sans Myanmar'}}>မိတ်ဆွေ/မိသားစု၏ ခွင့်ပြုချက်ရပြီးမှ ဖြည့်သွင်းပါ</div>
+              </div>
+            )}
+          </div>
+
+          {/* Consent checkboxes */}
+          <div className="space-y-3">
+            {/* Main consent */}
+            <label className="flex items-start gap-3 bg-white rounded-2xl p-4 shadow-sm cursor-pointer active:bg-gray-50">
+              <input type="checkbox" checked={pdpaMain} onChange={e => setPdpaMain(e.target.checked)}
+                className="mt-0.5 w-5 h-5 accent-[#2B3FBE] flex-shrink-0 cursor-pointer" />
+              <div>
+                <div className="text-sm font-black text-gray-800">
+                  {fillingForOther ? '✅ เจ้าของข้อมูลยินยอมแล้ว *' : '✅ ข้าพเจ้ายินยอม *'}
+                </div>
+                <div className="text-xs text-gray-600 mt-1 leading-relaxed">
+                  {fillingForOther
+                    ? 'เจ้าของข้อมูลได้รับทราบและยินยอมให้ Aung เก็บรวบรวมและใช้ข้อมูลส่วนบุคคลตามที่ระบุข้างต้นแล้ว'
+                    : 'ข้าพเจ้าได้อ่านและเข้าใจข้อกำหนดข้างต้น และยินยอมให้ Aung เก็บรวบรวมและใช้ข้อมูลส่วนบุคคลของข้าพเจ้าตามที่ระบุ'
+                  }
+                </div>
+                <div className="text-xs text-gray-400 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>
+                  {fillingForOther
+                    ? 'ဒေတာပိုင်ရှင်သည် Aung အား ကိုယ်ရေးအချက်အလက် သိမ်းဆည်းခွင့် ပေးပြီးဖြစ်သည်'
+                    : 'ကျွန်ုပ် Aung အား ကိုယ်ရေးအချက်အလက် စုဆောင်းပြီး အလုပ်ရှာဖွေရာတွင် အသုံးပြုခွင့် ပေးသည်'
+                  }
+                </div>
+              </div>
+            </label>
+
+            {/* Proxy consent — only when filling for other */}
+            {fillingForOther && (
+              <label className="flex items-start gap-3 bg-white rounded-2xl p-4 shadow-sm cursor-pointer border-2 border-amber-200 active:bg-amber-50">
+                <input type="checkbox" checked={pdpaProxy} onChange={e => setPdpaProxy(e.target.checked)}
+                  className="mt-0.5 w-5 h-5 accent-[#C9A84C] flex-shrink-0 cursor-pointer" />
+                <div>
+                  <div className="text-sm font-black text-gray-800">⚖️ ข้าพเจ้ามีสิทธิ์ดำเนินการแทน *</div>
+                  <div className="text-xs text-gray-600 mt-1 leading-relaxed">
+                    ข้าพเจ้าได้รับความยินยอมจากเจ้าของข้อมูลโดยตรงแล้ว และรับทราบว่าการให้ข้อมูลอันเป็นเท็จอาจมีผลทางกฎหมายตาม พ.ร.บ. PDPA
+                  </div>
+                  <div className="text-xs text-gray-400 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>
+                    ဒေတာပိုင်ရှင်ထံမှ တိုက်ရိုက်ခွင့်ပြုချက်ရပြီး — မှားယွင်းသောအချက်အလက်ပေးခြင်းသည် ဥပဒေနှင့်ဆန့်ကျင်သည်
+                  </div>
+                </div>
+              </label>
+            )}
+          </div>
+
+        </div>
+
+        {/* PDPA Confirm Button */}
+        <div className="fixed bottom-0 left-0 right-0 z-10 flex justify-center bg-[#F4F5FB] border-t border-gray-200">
+          <div className="w-full max-w-sm px-4 pb-6 pt-3">
+            <button onClick={() => { setPdpaConfirmed(true); scrollTop() }} disabled={!canConfirmPdpa}
+              className="w-full rounded-full bg-[#2B3FBE] disabled:bg-gray-200 disabled:text-gray-400 text-white py-4 font-extrabold text-base transition-colors">
+              ✅ ยินยอมและเริ่มกรอกข้อมูล
+              <span className="block text-xs font-normal opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>သဘောတူပြီး ဖြည့်သွင်းမည်</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
@@ -733,22 +888,6 @@ export default function ResumeCreatePage() {
               ⭐ ใช้ 1 เครดิต — คงเหลือ {user.credits} เครดิต
             </div>
 
-            {/* PDPA Consent */}
-            <div className="bg-gray-50 border-2 border-gray-200 rounded-2xl p-4">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" checked={pdpaAccepted} onChange={e => setPdpaAccepted(e.target.checked)}
-                  className="mt-1 w-5 h-5 accent-[#2B3FBE] flex-shrink-0 cursor-pointer" />
-                <div>
-                  <div className="text-sm font-black text-gray-800">ยินยอม PDPA *</div>
-                  <div className="text-xs text-gray-600 mt-1 leading-relaxed">
-                    ข้าพเจ้ายินยอมให้ Aung เก็บรวบรวมและใช้ข้อมูลส่วนบุคคล เพื่อจัดทำเรซูเม่และจับคู่งาน
-                  </div>
-                  <div className="text-xs text-gray-400 mt-1" style={{ fontFamily: 'Noto Sans Myanmar' }}>
-                    ကျွန်ုပ် Aung အား ကိုယ်ရေးအချက်အလက် စုဆောင်းပြီး အလုပ်ရှာဖွေရာတွင် အသုံးပြုခွင့် ပေးသည်
-                  </div>
-                </div>
-              </label>
-            </div>
           </>}
 
         </div>
@@ -772,12 +911,12 @@ export default function ResumeCreatePage() {
           ) : (
             <div className="flex flex-col gap-2">
               <div className="flex gap-3">
-                <button onClick={() => handleSubmit(false)} disabled={saving || !pdpaAccepted}
+                <button onClick={() => handleSubmit(false)} disabled={saving}
                   className="flex-1 rounded-full border-2 border-gray-300 bg-white text-gray-600 py-3.5 font-extrabold text-sm disabled:opacity-40">
                   🔒 เก็บไว้ส่วนตัว
                   <span className="block text-xs font-normal opacity-60 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ကိုယ်ပိုင်သိမ်းမည်</span>
                 </button>
-                <button onClick={() => handleSubmit(true)} disabled={saving || !pdpaAccepted}
+                <button onClick={() => handleSubmit(true)} disabled={saving}
                   className="flex-1 rounded-full bg-[#C9A84C] disabled:bg-gray-200 disabled:text-gray-400 text-white py-3.5 font-extrabold text-sm transition-colors">
                   {saving ? '...' : '✅ ยืนยันเผยแพร่'}
                   {!saving && <span className="block text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>အတည်ပြု</span>}
