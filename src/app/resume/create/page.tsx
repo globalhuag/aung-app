@@ -419,10 +419,57 @@ export default function ResumeCreatePage() {
             <div className="text-xs text-[#2B3FBE]/80 leading-relaxed">
               เพื่อจัดทำเรซูเม่และจับคู่กับนายจ้าง/นายหน้าที่สนใจ
               ข้อมูลจะถูกแชร์เฉพาะเมื่อคุณเลือก <span className="font-black">เผยแพร่เรซูเม่</span> เท่านั้น
-              คุณสามารถลบข้อมูลได้ทุกเมื่อ
             </div>
             <div className="text-xs text-[#2B3FBE]/60 mt-1.5" style={{fontFamily:'Noto Sans Myanmar'}}>
               Resume ပြုလုပ်ပြီး အလုပ်ရှင်နှင့် ချိတ်ဆက်ရန်သာ — ထုတ်ဝေမှသာ မျှဝေမည်
+            </div>
+          </div>
+
+          {/* Retention + Controller */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+            <div>
+              <div className="text-xs font-black text-gray-800 mb-1">🗓️ ระยะเวลาเก็บข้อมูล</div>
+              <div className="text-xs text-gray-600 leading-relaxed">
+                เก็บข้อมูลไว้ <span className="font-black text-gray-800">2 ปี</span> นับจากวันที่สร้างเรซูเม่
+                หรือจนกว่าคุณจะขอลบ หลังจากนั้นข้อมูลจะถูกทำลายอย่างถาวร
+              </div>
+              <div className="text-xs text-gray-400 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>
+                Resume ပြုလုပ်သည့်နေ့မှ နှစ် ၂ နှစ် — ဖျက်တောင်းဆိုနိုင်သည်
+              </div>
+            </div>
+            <div className="border-t border-gray-100 pt-3">
+              <div className="text-xs font-black text-gray-800 mb-1">🏢 ผู้ควบคุมข้อมูลส่วนบุคคล</div>
+              <div className="text-xs text-gray-600 leading-relaxed">
+                <span className="font-bold">Aung (အောင်)</span> — ผู้ให้บริการแพลตฟอร์มจัดหางาน<br/>
+                ติดต่อ: แชทในแอป (เมนู ติดต่อเรา)
+              </div>
+              <div className="text-xs text-gray-400 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>
+                Aung — အလုပ်ရှာဖွေရေး ပလက်ဖောင်း · အပ်တွင်း ချတ်မှ ဆက်သွယ်နိုင်
+              </div>
+            </div>
+          </div>
+
+          {/* Your rights */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <div className="text-sm font-black text-gray-800 mb-3">⚖️ สิทธิ์ของคุณ (ม.30-37)</div>
+            {[
+              { icon: '👁️', th: 'เข้าถึงและขอสำเนาข้อมูล', mm: 'ဒေတာကြည့်ရှု/မိတ္တူတောင်းနိုင်' },
+              { icon: '✏️', th: 'แก้ไขข้อมูลให้ถูกต้อง', mm: 'အချက်အလက်ပြင်ဆင်နိုင်' },
+              { icon: '🗑️', th: 'ลบ / ขอทำลายข้อมูล', mm: 'ဒေတာဖျက်ရန် တောင်းဆိုနိုင်' },
+              { icon: '🚫', th: 'คัดค้านการประมวลผลข้อมูล', mm: 'ဒေတာအသုံးပြုမှုကန့်ကွက်နိုင်' },
+              { icon: '↩️', th: 'ถอนความยินยอมได้ทุกเมื่อ', mm: 'သဘောတူညီချက် မည်သည့်အချိန်မဆို ရုပ်သိမ်းနိုင်' },
+            ].map((r, i) => (
+              <div key={i} className="flex items-start gap-2 mb-2 last:mb-0">
+                <span className="text-sm flex-shrink-0 mt-0.5">{r.icon}</span>
+                <div>
+                  <div className="text-xs font-bold text-gray-700">{r.th}</div>
+                  <div className="text-xs text-gray-400 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>{r.mm}</div>
+                </div>
+              </div>
+            ))}
+            <div className="mt-3 text-xs text-gray-400 border-t border-gray-100 pt-2">
+              ใช้สิทธิ์ได้ผ่าน: แชทในแอป (เมนู ติดต่อเรา)
+              <span className="block mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>အပ်တွင်း ချတ်မှ အခွင့်အရေး တောင်းဆိုနိုင်</span>
             </div>
           </div>
 
