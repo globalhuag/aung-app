@@ -167,10 +167,19 @@ export default function DashboardPage() {
 
           {/* Processing banner — shown while suit generating */}
           {resumes.some(r => r.suit_status === 'pending' || r.suit_status === 'processing') && (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-700 flex gap-2 mb-3">
-              <span className="animate-pulse">⚙️</span>
-              <div>กำลังสร้างชุดสูทด้วย AI อยู่ รอสักครู่นะครับ<br/>
-                <span style={{fontFamily:'Noto Sans Myanmar'}}>AI ဖြင့် suit ပြုလုပ်နေပါသည် — ခဏစောင့်ပါ</span>
+            <div className="mb-3 rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg,#2B3FBE,#6a11cb)', boxShadow: '0 4px 18px rgba(43,63,190,0.35)' }}>
+              <div className="flex items-center gap-3 px-4 py-3.5">
+                {/* spinning gear */}
+                <span className="inline-block animate-spin text-2xl flex-shrink-0" style={{ animationDuration: '1.2s' }}>⚙️</span>
+                <div className="flex-1">
+                  <div className="text-white font-black text-sm animate-pulse">กำลังสร้างชุดสูทด้วย AI...</div>
+                  <div className="text-white/70 text-xs mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>AI ဖြင့် suit ပြုလုပ်နေပါသည် — ခဏစောင့်ပါ</div>
+                </div>
+                {/* ping dot */}
+                <span className="relative flex h-3 w-3 flex-shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-white" />
+                </span>
               </div>
             </div>
           )}
@@ -212,9 +221,16 @@ export default function DashboardPage() {
                     <div className="text-xs text-gray-400 mt-0.5">{r.job_type} · {r.province} · {new Date(r.created_at).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'})}</div>
                   </div>
                   <div className="flex flex-col gap-1 items-end flex-shrink-0">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.suit_status==='done'?'bg-green-50 text-green-600':r.suit_status==='error'?'bg-red-50 text-red-500':r.suit_status==='processing'?'bg-blue-50 text-blue-600':'bg-yellow-50 text-yellow-600'}`}>
-                      {r.suit_status==='done'?'✓ สูทเสร็จ · ပြုလုပ်ပြီး':r.suit_status==='error'?'✕ ผิดพลาด · အမှား':r.suit_status==='processing'?'⚙️ กำลังสร้าง · ဆောင်ရွက်နေ':'⏳ รอดำเนินการ · စောင့်ဆိုင်း'}
-                    </span>
+                    {(r.suit_status === 'processing' || r.suit_status === 'pending') ? (
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#2B3FBE] text-white flex items-center gap-1 animate-pulse">
+                        <span className="inline-block animate-spin" style={{ animationDuration: '1.2s' }}>⚙️</span>
+                        {r.suit_status === 'processing' ? 'กำลังสร้าง' : 'รอดำเนินการ'}
+                      </span>
+                    ) : (
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.suit_status==='done'?'bg-green-50 text-green-600':'bg-red-50 text-red-500'}`}>
+                        {r.suit_status==='done'?'✓ สูทเสร็จ · ပြုလုပ်ပြီး':'✕ ผิดพลาด · အမှား'}
+                      </span>
+                    )}
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.is_public?'bg-blue-50 text-blue-600':'bg-gray-100 text-gray-500'}`}>
                       {r.is_public?'🌐 สาธารณะ':'🔒 ส่วนตัว'}
                     </span>

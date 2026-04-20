@@ -476,8 +476,15 @@ export default function ResumeDetailPage() {
           </button>
         </div>
         {generating && (
-          <div className="mt-2 bg-blue-50 border border-blue-200 rounded-xl py-2 px-3 text-xs text-blue-700 text-center animate-pulse">
-            ⚙️ AI กำลังสร้างชุดสูท... / AI ဝတ်စုံ ဖန်တီးနေသည်...
+          <div className="mt-2 rounded-xl overflow-hidden" style={{ background: 'linear-gradient(135deg,#2B3FBE,#6a11cb)' }}>
+            <div className="flex items-center justify-center gap-2 py-2.5 px-3">
+              <span className="inline-block animate-spin text-base" style={{ animationDuration: '1.2s' }}>⚙️</span>
+              <span className="text-white text-xs font-black animate-pulse">AI กำลังสร้างชุดสูท... / AI ဝတ်စုံ ဖန်တီးနေသည်...</span>
+              <span className="relative flex h-2 w-2 flex-shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+              </span>
+            </div>
           </div>
         )}
       </div>
