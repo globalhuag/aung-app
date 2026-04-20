@@ -124,8 +124,12 @@ export default function ChatPage() {
 
           {messages.map(msg => (
             <div key={msg.id} className={`flex gap-2 ${msg.is_admin ? '' : 'flex-row-reverse'}`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {msg.is_admin && <img src="/logo.png" alt="Aung" className="w-8 h-8 flex-shrink-0 rounded-xl" style={{ mixBlendMode: 'multiply' }} />}
+              {msg.is_admin && (
+                <div className="w-8 h-8 rounded-xl bg-[#2B3FBE] overflow-hidden flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo.png" alt="Aung" className="w-full h-full object-cover" />
+                </div>
+              )}
               <div className={`max-w-[75%] ${msg.is_admin ? '' : 'items-end flex flex-col'}`}>
                 <div className={`px-4 py-3 rounded-2xl shadow-sm ${msg.is_admin
                   ? 'bg-white text-gray-800 rounded-tl-sm'
