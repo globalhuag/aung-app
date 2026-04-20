@@ -126,9 +126,9 @@ export default function ChatPage() {
           {messages.map(msg => (
             <div key={msg.id} className={`flex gap-2 ${msg.is_admin ? '' : 'flex-row-reverse'}`}>
               {msg.is_admin && (
-                <div className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center" style={{ background: '#2B3FBE' }}>
+                <div className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center bg-[#2B3FBE]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo.png" alt="Aung" style={{ width: 24, height: 24, objectFit: 'contain' }} />
+                  <img src="/logo.png" alt="Aung" style={{ width: 28, height: 28, objectFit: 'contain', mixBlendMode: 'multiply' }} />
                 </div>
               )}
               <div className={`max-w-[75%] ${msg.is_admin ? '' : 'items-end flex flex-col'}`}>

@@ -61,9 +61,9 @@ export default function LoginPage() {
         {/* Header */}
         <div className="bg-[#2B3FBE] px-4 py-6 flex flex-col items-center">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center" style={{ background: '#2B3FBE' }}>
+            <div className="flex-shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Aung" style={{ width: 44, height: 44, objectFit: 'contain' }} />
+              <img src="/logo.png" alt="Aung" style={{ width: 54, height: 54, objectFit: 'contain', mixBlendMode: 'multiply' }} />
             </div>
             <div className="text-left">
               <div className="text-white font-black text-3xl tracking-wide leading-none">Aung</div>

@@ -71,9 +71,9 @@ export default function RegisterPage() {
           <button onClick={() => { if (step === 'phone') { router.push('/login') } else { setStep(s => s === 'otp' ? 'phone' : 'otp'); window.scrollTo(0, 0) } }}
             className="text-white text-xl font-bold">←</button>
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center" style={{ background: '#2B3FBE' }}>
+            <div className="flex-shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Aung" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+              <img src="/logo.png" alt="Aung" style={{ width: 36, height: 36, objectFit: 'contain', mixBlendMode: 'multiply' }} />
             </div>
             <div>
               <div className="text-white font-black text-lg tracking-wide leading-none">Aung</div>
