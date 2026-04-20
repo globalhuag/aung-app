@@ -10,7 +10,7 @@ function formatPhone(p: string) {
   if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
   return p
 }
-type Resume = { id: string; name: string; job_type: string; province: string; suit_status: string; is_public: boolean; created_at: string }
+type Resume = { id: string; name: string; job_type: string; province: string; suit_status: string; is_public: boolean; created_at: string; photo_url: string; suit_photo_url: string }
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -194,11 +194,18 @@ export default function DashboardPage() {
             </div>
           ) : (
             /* Resume cards */
-            resumes.map(r => (
-              <div key={r.id} className="bg-white rounded-xl border border-gray-100 mb-3 overflow-hidden">
+            resumes.map(r => {
+              const photoSrc = r.suit_photo_url || r.photo_url || ''
+              const accentColor = r.suit_status==='done' ? '#16a34a' : r.suit_status==='error' ? '#dc2626' : r.suit_status==='processing' ? '#2B3FBE' : '#d97706'
+              return (
+              <div key={r.id} className="bg-white rounded-2xl mb-3 overflow-hidden"
+                style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.08)', borderLeft: `4px solid ${accentColor}` }}>
                 <div className="flex items-center gap-3 px-3 py-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#E8EBFF] flex items-center justify-center text-lg flex-shrink-0">
-                    {r.job_type?.includes('หญิง') || r.name?.endsWith('a') ? '👩' : '👨'}
+                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-[#E8EBFF] flex items-center justify-center text-xl flex-shrink-0 border border-gray-100">
+                    {photoSrc
+                      ? <img src={photoSrc} alt={r.name} style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center 20%' }} />
+                      : (r.job_type?.includes('หญิง') ? '👩' : '👨')
+                    }
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-bold text-gray-800 truncate">{r.name || 'ไม่ระบุชื่อ'}</div>
@@ -221,7 +228,7 @@ export default function DashboardPage() {
                   <button onClick={() => deleteResume(r.id)} className="flex-1 py-2 text-xs font-bold text-red-400">🗑️</button>
                 </div>
               </div>
-            ))
+            )})
           )}
         </div>
 
