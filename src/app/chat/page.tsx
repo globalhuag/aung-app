@@ -110,7 +110,7 @@ export default function ChatPage() {
           {messages.length === 0 && (
             <div className="flex gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Aung" className="w-8 h-8 flex-shrink-0" />
+              <img src="/logo.png" alt="Aung" className="w-8 h-8 flex-shrink-0 rounded-xl" />
               <div className="max-w-[75%]">
                 <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
                   <p className="text-sm text-gray-800">สวัสดีครับ! ยินดีต้อนรับสู่ Aung 🙏</p>
@@ -125,7 +125,7 @@ export default function ChatPage() {
           {messages.map(msg => (
             <div key={msg.id} className={`flex gap-2 ${msg.is_admin ? '' : 'flex-row-reverse'}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              {msg.is_admin && <img src="/logo.png" alt="Aung" className="w-8 h-8 flex-shrink-0" />}
+              {msg.is_admin && <img src="/logo.png" alt="Aung" className="w-8 h-8 flex-shrink-0 rounded-xl" style={{ mixBlendMode: 'multiply' }} />}
               <div className={`max-w-[75%] ${msg.is_admin ? '' : 'items-end flex flex-col'}`}>
                 <div className={`px-4 py-3 rounded-2xl shadow-sm ${msg.is_admin
                   ? 'bg-white text-gray-800 rounded-tl-sm'

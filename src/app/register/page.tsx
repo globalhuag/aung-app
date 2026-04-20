@@ -72,7 +72,7 @@ export default function RegisterPage() {
             className="text-white text-xl font-bold">←</button>
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Aung" className="w-9 h-9 flex-shrink-0" />
+            <img src="/logo.png" alt="Aung" className="w-9 h-9 flex-shrink-0 rounded-xl" style={{ mixBlendMode: 'multiply' }} />
             <div>
               <div className="text-white font-black text-lg tracking-wide leading-none">Aung</div>
               <div className="text-white/60 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အောင်</div>

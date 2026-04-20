@@ -62,7 +62,7 @@ export default function LoginPage() {
         <div className="bg-[#2B3FBE] px-4 py-6 flex flex-col items-center">
           <div className="flex items-center gap-3 mb-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Aung" className="w-14 h-14 flex-shrink-0" />
+            <img src="/logo.png" alt="Aung" className="w-14 h-14 flex-shrink-0 rounded-2xl" style={{ mixBlendMode: 'multiply' }} />
             <div className="text-left">
               <div className="text-white font-black text-3xl tracking-wide leading-none">Aung</div>
               <div className="text-white/60 text-xs mt-1" style={{fontFamily:'Noto Sans Myanmar, sans-serif'}}>အောင်</div>
