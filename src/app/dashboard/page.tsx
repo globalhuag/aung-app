@@ -127,10 +127,8 @@ export default function DashboardPage() {
 
         {/* Header: โลโก้ + ชื่อแอพ */}
         <div className="bg-[#2B3FBE] px-4 py-3 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Aung" className="w-full h-full object-cover" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Aung" className="w-10 h-10 flex-shrink-0" />
           <div>
             <div className="text-white font-black text-xl tracking-wide leading-none">Aung</div>
             <div className="text-white/60 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အောင်</div>
