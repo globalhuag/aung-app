@@ -5,6 +5,29 @@ import { supabase } from '@/lib/supabase'
 
 type User = { id: string; phone: string; credits: number; avatar_url?: string }
 
+// Resize image file to square, return base64 data URL
+function resizeToBase64(file: File, size: number, quality: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const canvas = document.createElement('canvas')
+      canvas.width  = size
+      canvas.height = size
+      const ctx = canvas.getContext('2d')!
+      // center-crop to square
+      const s   = Math.min(img.width, img.height)
+      const sx  = (img.width  - s) / 2
+      const sy  = (img.height - s) / 2
+      ctx.drawImage(img, sx, sy, s, s, 0, 0, size, size)
+      resolve(canvas.toDataURL('image/jpeg', quality))
+    }
+    img.onerror = reject
+    img.src = url
+  })
+}
+
 function formatPhone(p: string) {
   const d = p.replace(/\D/g, '')
   if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
@@ -62,17 +85,10 @@ export default function ProfilePage() {
     if (!file || !user) return
     setUploadingAvatar(true)
     try {
-      const ext  = file.name.split('.').pop() || 'jpg'
-      const path = `${user.id}/avatar.${ext}`
-      const { error: upErr } = await supabase.storage
-        .from('avatars')
-        .upload(path, file, { upsert: true, contentType: file.type })
-      if (upErr) throw upErr
-
-      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
-      const avatar_url = urlData.publicUrl + `?t=${Date.now()}`
-
-      await supabase.from('users').update({ avatar_url }).eq('id', user.id)
+      // Resize + compress to ~150×150 JPEG via canvas — no Storage bucket needed
+      const avatar_url = await resizeToBase64(file, 150, 0.75)
+      const { error } = await supabase.from('users').update({ avatar_url }).eq('id', user.id)
+      if (error) throw error
       setUser(prev => prev ? { ...prev, avatar_url } : prev)
       const stored = JSON.parse(localStorage.getItem('aung_user') || '{}')
       localStorage.setItem('aung_user', JSON.stringify({ ...stored, avatar_url }))
@@ -81,6 +97,8 @@ export default function ProfilePage() {
       alert('อัปโหลดรูปไม่สำเร็จ กรุณาลองใหม่')
     } finally {
       setUploadingAvatar(false)
+      // reset input so same file can be re-selected
+      if (fileRef.current) fileRef.current.value = ''
     }
   }
 
