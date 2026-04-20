@@ -1,138 +1,70 @@
 'use client'
-import { Suspense, useEffect, useState, useRef } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
-
-type PollStatus = 'polling' | 'paid' | 'timeout'
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 function ReturnContent() {
-  const searchParams  = useSearchParams()
-  const router        = useRouter()
-  // ดึง order_no จาก URL ก่อน ถ้าไม่มีให้ดึงจาก localStorage (ChillPay อาจตัด query params)
-  const order_no      = searchParams.get('order_no')
-                     || searchParams.get('OrderNo')
-                     || (typeof window !== 'undefined' ? localStorage.getItem('pending_order_no') : '')
-                     || ''
-  const [status, setStatus]   = useState<PollStatus>('polling')
-  const [credits, setCredits] = useState(0)
-  const [dots, setDots]       = useState('.')
-  const tries   = useRef(0)
-  const maxTries = 24 // 24 × 5s = 2 minutes
+  const router     = useRouter()
+  const [count, setCount] = useState(4)   // countdown seconds before redirect
 
-  // Animate dots
   useEffect(() => {
-    if (status !== 'polling') return
-    const id = setInterval(() => setDots(d => d.length >= 3 ? '.' : d + '.'), 600)
-    return () => clearInterval(id)
-  }, [status])
+    // Clear any pending order ref
+    localStorage.removeItem('pending_order_no')
 
-  // Poll /api/chillpay/status every 5 seconds
-  useEffect(() => {
-    if (!order_no || status !== 'polling') return
-
-    const poll = async () => {
-      tries.current += 1
-      try {
-        const res  = await fetch(`/api/chillpay/status?order_no=${order_no}`)
-        const data = await res.json()
-
-        if (data.status === 'paid') {
-          setCredits(data.credits ?? 0)
-          setStatus('paid')
-          localStorage.removeItem('pending_order_no')
-
-          // Update localStorage credits
-          try {
-            const raw = localStorage.getItem('aung_user')
-            if (raw) {
-              const u = JSON.parse(raw)
-              const { data: fresh } = await supabase
-                .from('users')
-                .select('credits')
-                .eq('id', u.id)
-                .single()
-              if (fresh) {
-                localStorage.setItem('aung_user', JSON.stringify({ ...u, credits: fresh.credits }))
-              }
-            }
-          } catch (_) { /* non-critical */ }
-
-          return
+    // Countdown then go to dashboard
+    const id = setInterval(() => {
+      setCount(c => {
+        if (c <= 1) {
+          clearInterval(id)
+          router.push('/dashboard')
         }
-      } catch (_) { /* keep polling */ }
-
-      if (tries.current >= maxTries) {
-        setStatus('timeout')
-        localStorage.removeItem('pending_order_no')
-        return
-      }
-      setTimeout(poll, 5000)
-    }
-
-    setTimeout(poll, 3000)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order_no])
+        return c - 1
+      })
+    }, 1000)
+    return () => clearInterval(id)
+  }, [router])
 
   return (
     <div className="min-h-screen bg-[#F4F5FB] flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm text-center">
+      <div className="w-full max-w-sm">
 
-        {/* POLLING */}
-        {status === 'polling' && (
-          <div className="space-y-5">
-            <div className="text-5xl animate-pulse">💳</div>
-            <div className="text-xl font-black text-gray-800">กำลังตรวจสอบการชำระเงิน{dots}</div>
-            <div className="text-sm text-gray-500">รอสักครู่ ระบบกำลังยืนยันการชำระเงินของคุณ</div>
-            <div className="text-xs text-gray-400 mt-1" style={{ fontFamily: 'Noto Sans Myanmar' }}>
-              ငွေပေးချေမှု အတည်ပြုနေသည်{dots}
-            </div>
-            <div className="mt-4 bg-white rounded-2xl border border-gray-100 px-4 py-3 text-xs text-gray-400">
-              Order: <span className="font-mono text-gray-600">{order_no}</span>
-            </div>
+        {/* Card popup */}
+        <div className="bg-white rounded-3xl overflow-hidden shadow-xl">
+
+          {/* Top accent */}
+          <div style={{ background: 'linear-gradient(135deg,#2B3FBE,#6a11cb)', padding: '32px 24px', textAlign: 'center' }}>
+            <div className="text-6xl mb-3">✅</div>
+            <div className="text-white font-black text-xl leading-snug">สแกน QR สำเร็จแล้ว!</div>
+            <div className="text-white/70 text-sm mt-1" style={{ fontFamily: 'Noto Sans Myanmar' }}>QR code ဖတ်ပြီးပါပြီ</div>
           </div>
-        )}
 
-        {/* SUCCESS */}
-        {status === 'paid' && (
-          <div className="space-y-5">
-            <div className="text-6xl">🎉</div>
-            <div className="text-2xl font-black text-gray-800">ชำระเงินสำเร็จ!</div>
-            <div className="bg-[#E8EBFF] rounded-2xl px-6 py-4">
-              <div className="text-3xl font-black text-[#2B3FBE]">⭐ +{credits}</div>
-              <div className="text-sm text-gray-600 mt-1">เครดิตถูกเพิ่มเข้าบัญชีแล้ว</div>
-              <div className="text-xs text-gray-400 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>
-                ခရက်ဒစ် {credits} ထည့်သွင်းပြီး
-              </div>
+          {/* Message */}
+          <div className="px-6 py-6 text-center space-y-3">
+            <div className="text-4xl">⭐</div>
+            <div className="text-base font-black text-gray-800 leading-snug">
+              เครดิตจะเพิ่มในระบบ<br />ภายในไม่เกิน 2 นาที
             </div>
-            <button onClick={() => router.push('/dashboard')}
-              className="w-full bg-[#2B3FBE] text-white rounded-2xl py-4 font-extrabold text-base">
-              กลับหน้าหลัก
-            </button>
-          </div>
-        )}
-
-        {/* TIMEOUT */}
-        {status === 'timeout' && (
-          <div className="space-y-5">
-            <div className="text-5xl">⏳</div>
-            <div className="text-xl font-black text-gray-800">ยังไม่ได้รับการยืนยัน</div>
             <div className="text-sm text-gray-500">
-              ระบบยังไม่ได้รับการยืนยันจาก ChillPay<br />
-              หากโอนเงินแล้ว เครดิตจะเพิ่มภายใน 15-30 นาที
+              ไม่ต้องรอในหน้านี้ กลับไปใช้งานแอปได้เลย
             </div>
             <div className="text-xs text-gray-400" style={{ fontFamily: 'Noto Sans Myanmar' }}>
-              ChillPay မှ အတည်ပြုချက် မရသေးပါ<br />
-              ငွေလွှဲပြီးပါက မိနစ် ၁၅-၃၀ အတွင်း ခရက်ဒစ် ဖြည့်မည်
+              ခရက်ဒစ် မိနစ် ၂ အတွင်း ဖြည့်မည် — အက်ပ် ဆက်သုံးနိုင်သည်
             </div>
-            <div className="bg-white rounded-2xl border border-gray-100 px-4 py-3 text-xs text-gray-400">
-              Order: <span className="font-mono text-gray-600">{order_no}</span>
+
+            {/* Countdown */}
+            <div className="bg-[#F4F5FB] rounded-2xl px-4 py-3 mt-2">
+              <div className="text-xs text-gray-400">กลับหน้าหลักในอีก</div>
+              <div className="text-2xl font-black text-[#2B3FBE]">{count}</div>
+              <div className="text-xs text-gray-400">วินาที</div>
             </div>
-            <button onClick={() => router.push('/dashboard')}
-              className="w-full bg-[#2B3FBE] text-white rounded-2xl py-4 font-extrabold text-base">
-              กลับหน้าหลัก
+
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="w-full bg-[#2B3FBE] text-white rounded-2xl py-3.5 font-extrabold text-sm mt-1"
+            >
+              กลับหน้าหลักเลย →
             </button>
           </div>
-        )}
+        </div>
 
       </div>
     </div>
