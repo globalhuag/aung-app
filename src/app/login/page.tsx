@@ -61,8 +61,9 @@ export default function LoginPage() {
         {/* Header */}
         <div className="bg-[#2B3FBE] px-4 py-6 flex flex-col items-center">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
-              <span className="text-white font-black text-xl">A</span>
+            <div className="w-12 h-12 rounded-2xl overflow-hidden flex-shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="Aung" className="w-full h-full object-cover" />
             </div>
             <div className="text-left">
               <div className="text-white font-black text-3xl tracking-wide leading-none">Aung</div>

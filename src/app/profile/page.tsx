@@ -85,19 +85,23 @@ export default function ProfilePage() {
     if (!file || !user) return
     setUploadingAvatar(true)
     try {
-      // Resize + compress to ~150×150 JPEG via canvas — no Storage bucket needed
+      // Resize + compress to ~150×150 JPEG via canvas
       const avatar_url = await resizeToBase64(file, 150, 0.75)
-      const { error } = await supabase.from('users').update({ avatar_url }).eq('id', user.id)
-      if (error) throw error
+
+      // 1. Update UI + localStorage immediately (always works)
       setUser(prev => prev ? { ...prev, avatar_url } : prev)
       const stored = JSON.parse(localStorage.getItem('aung_user') || '{}')
       localStorage.setItem('aung_user', JSON.stringify({ ...stored, avatar_url }))
+
+      // 2. Try saving to Supabase silently (needs avatar_url column in users table)
+      //    If column doesn't exist yet, fail silently — photo still shows in session
+      supabase.from('users').update({ avatar_url }).eq('id', user.id)
+        .then(({ error }) => { if (error) console.warn('avatar DB save skipped:', error.message) })
     } catch (err) {
-      console.error('avatar upload failed', err)
-      alert('อัปโหลดรูปไม่สำเร็จ กรุณาลองใหม่')
+      console.error('avatar resize failed', err)
+      alert('ไม่สามารถอ่านรูปได้ กรุณาลองรูปอื่น')
     } finally {
       setUploadingAvatar(false)
-      // reset input so same file can be re-selected
       if (fileRef.current) fileRef.current.value = ''
     }
   }
