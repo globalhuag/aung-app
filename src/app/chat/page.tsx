@@ -109,8 +109,10 @@ export default function ChatPage() {
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
           {messages.length === 0 && (
             <div className="flex gap-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Aung" className="w-8 h-8 flex-shrink-0 rounded-xl" />
+              <div className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center" style={{ background: '#2B3FBE' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt="Aung" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+              </div>
               <div className="max-w-[75%]">
                 <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
                   <p className="text-sm text-gray-800">สวัสดีครับ! ยินดีต้อนรับสู่ Aung 🙏</p>
@@ -125,9 +127,9 @@ export default function ChatPage() {
           {messages.map(msg => (
             <div key={msg.id} className={`flex gap-2 ${msg.is_admin ? '' : 'flex-row-reverse'}`}>
               {msg.is_admin && (
-                <div className="w-8 h-8 rounded-xl bg-[#2B3FBE] overflow-hidden flex-shrink-0">
+                <div className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center" style={{ background: '#2B3FBE' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo.png" alt="Aung" className="w-full h-full object-cover" />
+                  <img src="/logo.png" alt="Aung" style={{ width: 22, height: 22, objectFit: 'contain' }} />
                 </div>
               )}
               <div className={`max-w-[75%] ${msg.is_admin ? '' : 'items-end flex flex-col'}`}>
