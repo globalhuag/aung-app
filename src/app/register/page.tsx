@@ -1,8 +1,6 @@
 ﻿'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
-import bcrypt from 'bcryptjs'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -13,6 +11,14 @@ export default function RegisterPage() {
   const [pinConfirm, setPinConfirm] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)  // seconds
+
+  // Countdown tick for resend button
+  useEffect(() => {
+    if (resendCooldown <= 0) return
+    const t = setTimeout(() => setResendCooldown(s => s - 1), 1000)
+    return () => clearTimeout(t)
+  }, [resendCooldown])
 
   const formatPhone = (d: string) => {
     if (d.length <= 3) return d
@@ -20,25 +26,63 @@ export default function RegisterPage() {
     return d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6)
   }
 
+  const sendOtp = async () => {
+    const resp = await fetch('/api/otp/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone }),
+    })
+    const data = await resp.json()
+    if (!resp.ok) throw new Error(data.error || 'ส่ง OTP ไม่สำเร็จ')
+    setResendCooldown(60)
+  }
+
   const handlePhoneNext = async () => {
     if (phone.length !== 10) { setError('กรอกเบอร์ให้ครบ 10 หลัก'); return }
     setError('')
     setLoading(true)
-    // ตรวจว่าเบอร์ซ้ำไหม
-    const { data } = await supabase.from('users').select('id').eq('phone', phone).single()
-    if (data) { setError('เบอร์นี้มีบัญชีแล้ว กรุณา Login'); setLoading(false); return }
-    // Mock OTP — ระบบยังไม่เชื่อม Thaibulksms
-    setStep('otp')
-    window.scrollTo(0, 0)
+    try {
+      await sendOtp()
+      setOtp('')
+      setStep('otp')
+      window.scrollTo(0, 0)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'เกิดข้อผิดพลาด')
+    }
     setLoading(false)
   }
 
-  const handleOtpNext = () => {
-    // Mock: รับ OTP อะไรก็ผ่าน
+  const handleResend = async () => {
+    if (resendCooldown > 0 || loading) return
+    setError('')
+    setLoading(true)
+    try {
+      await sendOtp()
+      setOtp('')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'เกิดข้อผิดพลาด')
+    }
+    setLoading(false)
+  }
+
+  const handleOtpNext = async () => {
     if (otp.length !== 6) { setError('กรอก OTP ให้ครบ 6 หลัก'); return }
     setError('')
-    setStep('pin')
-    window.scrollTo(0, 0)
+    setLoading(true)
+    try {
+      const resp = await fetch('/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code: otp }),
+      })
+      const data = await resp.json()
+      if (!resp.ok) { setError(data.error || 'ยืนยัน OTP ไม่สำเร็จ'); setLoading(false); return }
+      setStep('pin')
+      window.scrollTo(0, 0)
+    } catch {
+      setError('เกิดข้อผิดพลาด กรุณาลองใหม่')
+    }
+    setLoading(false)
   }
 
   const handleRegister = async () => {
@@ -47,14 +91,14 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
     try {
-      const hash = await bcrypt.hash(pin, 10)
-      const { data, error: err } = await supabase
-        .from('users')
-        .insert({ phone, password_hash: hash, credits: 1 })
-        .select()
-        .single()
-      if (err) throw err
-      localStorage.setItem('aung_user', JSON.stringify(data))
+      const resp = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, pin }),
+      })
+      const data = await resp.json()
+      if (!resp.ok) { setError(data.error || 'สมัครสมาชิกไม่สำเร็จ'); setLoading(false); return }
+      localStorage.setItem('aung_user', JSON.stringify(data.user))
       router.push('/dashboard')
     } catch {
       setError('เกิดข้อผิดพลาด กรุณาลองใหม่')
@@ -135,7 +179,7 @@ export default function RegisterPage() {
               <div className="text-center mb-4">
                 <div className="text-sm font-bold text-gray-700 mb-1">กรอกรหัส OTP 6 หลัก</div>
                 <div className="text-xs text-gray-500">ส่งไปที่ <strong>{formatPhone(phone)}</strong></div>
-                <div className="text-xs text-orange-500 mt-1">⚠️ ระบบ OTP อยู่ระหว่างพัฒนา — กรอกเลขอะไรก็ได้ 6 หลัก</div>
+                <div className="text-xs text-gray-400 mt-1" style={{fontFamily:'Noto Sans Myanmar'}}>ဖုန်းထဲမှ OTP ကုဒ် ၆ လုံး ရိုက်ထည့်ပါ</div>
               </div>
               <div className="flex justify-center gap-2 mb-2">
                 {Array.from({length:6}).map((_,i)=>(
@@ -145,15 +189,24 @@ export default function RegisterPage() {
                   </div>
                 ))}
               </div>
-              <div className="text-gray-400 text-xs text-center mb-4">{otp.length}/6 หลัก</div>
+              <div className="text-gray-400 text-xs text-center mb-2">{otp.length}/6 หลัก</div>
+              <div className="text-center mb-3">
+                <button
+                  onClick={handleResend}
+                  disabled={resendCooldown > 0 || loading}
+                  className={`text-xs font-bold ${resendCooldown > 0 || loading ? 'text-gray-400' : 'text-[#2B3FBE]'}`}>
+                  {resendCooldown > 0 ? `ส่งรหัสอีกครั้งใน ${resendCooldown}s` : '🔁 ส่งรหัสอีกครั้ง'}
+                </button>
+              </div>
               <Numpad onNum={n=>otp.length<6&&setOtp(p=>p+n)} onDel={()=>setOtp(p=>p.slice(0,-1))} onClear={()=>setOtp('')} />
               <div className="flex gap-3 mt-4">
                 <button onClick={()=>{setStep('phone');setOtp('');window.scrollTo(0,0)}} className="flex-[0.8] bg-[#4A4845] text-white rounded-xl py-3 text-sm font-bold">
                   ← กลับ<span className="block text-xs opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>နောက်သို့</span>
                 </button>
-                <button onClick={handleOtpNext} disabled={otp.length!==6}
-                  className={`flex-[1.2] rounded-xl py-3 text-sm font-bold text-white ${otp.length===6?'bg-[#2B3FBE]':'bg-[#2B3FBE] opacity-40 cursor-not-allowed'}`}>
-                  ยืนยัน →<span className="block text-xs opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>အတည်ပြု</span>
+                <button onClick={handleOtpNext} disabled={otp.length!==6 || loading}
+                  className={`flex-[1.2] rounded-xl py-3 text-sm font-bold text-white ${otp.length===6 && !loading ?'bg-[#2B3FBE]':'bg-[#2B3FBE] opacity-40 cursor-not-allowed'}`}>
+                  {loading ? 'กำลังตรวจสอบ...' : 'ยืนยัน →'}
+                  <span className="block text-xs opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>အတည်ပြု</span>
                 </button>
               </div>
             </>
