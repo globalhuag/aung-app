@@ -104,13 +104,13 @@ export default function TopupPage() {
                 )}
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-2xl font-black text-[#2B3FBE]">{p.price} <span className="text-sm font-bold text-gray-500">บาท</span></div>
+                    <div className="text-2xl font-black text-[#2B3FBE]">{p.price} <span className="text-sm font-bold text-gray-500">บาท · <span style={{fontFamily:'Noto Sans Myanmar'}}>ဘတ်</span></span></div>
                     <div className="text-xs text-gray-400 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>{p.mm}</div>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-black text-gray-800">⭐ {p.credits}</div>
-                    <div className="text-xs text-gray-400">เครดิต</div>
-                    <div className="text-xs text-green-600 font-bold mt-0.5">≈ {p.credits} เรซูเม่</div>
+                    <div className="text-xs text-gray-400">เครดิต · <span style={{fontFamily:'Noto Sans Myanmar'}}>ခရက်ဒစ်</span></div>
+                    <div className="text-xs text-green-600 font-bold mt-0.5">≈ {p.credits} <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal">Resume</span></div>
                   </div>
                 </div>
                 {selected === p.id && (
@@ -144,12 +144,12 @@ export default function TopupPage() {
             disabled={loading}
             className="w-full bg-[#C9A84C] disabled:bg-gray-300 disabled:text-gray-400 text-white rounded-2xl py-4 font-extrabold text-base transition-colors">
             {loading ? (
-              <span className="animate-pulse">กำลังสร้าง QR...</span>
+              <span className="animate-pulse">กำลังสร้าง QR... · <span style={{fontFamily:'Noto Sans Myanmar'}}>QR ပြုလုပ်နေ...</span></span>
             ) : (
               <>
                 💳 จ่ายด้วย QR PromptPay — {pkg.price} บาท
                 <div className="text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>
-                  QR PromptPay ဖြင့် ပေးချေမည်
+                  QR PromptPay ဖြင့် {pkg.price} ဘတ်ပေးချေမည်
                 </div>
               </>
             )}

@@ -97,7 +97,7 @@ export default function ChatPage() {
             👨‍💼
           </div>
           <div className="flex-1">
-            <div className="text-white font-black text-sm">ทีมงาน Aung <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal text-white/70">အောင်</span></div>
+            <div className="text-white font-black text-sm">ทีมงาน Aung <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal text-white/70">အောင် အဖွဲ့</span></div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-green-400"></div>
               <span className="text-white/70 text-xs">ออนไลน์ / အွန်လိုင်း</span>
@@ -187,19 +187,20 @@ export default function ChatPage() {
 
 function BottomNav({ active, router }: { active: string; router: ReturnType<typeof useRouter> }) {
   const items = [
-    { icon: '📄', label: 'เรซูเม่', key: 'resume', path: '/dashboard' },
-    { icon: '📢', label: 'งาน', key: 'jobs', path: '/jobs' },
-    { icon: '💬', label: 'แชท', key: 'chat', path: '/chat' },
-    { icon: '👤', label: 'โปรไฟล์', key: 'profile', path: '/profile' },
+    { icon: '📄', label: 'เรซูเม่',  mm: 'Resume',   key: 'resume',  path: '/dashboard' },
+    { icon: '📢', label: 'งาน',     mm: 'အလုပ်',    key: 'jobs',    path: '/jobs' },
+    { icon: '💬', label: 'แชท',     mm: 'ချက်တ်',   key: 'chat',    path: '/chat' },
+    { icon: '👤', label: 'โปရไฟล์', mm: 'ပရိုဖိုင်', key: 'profile', path: '/profile' },
   ]
   return (
     <div className="bg-white border-t border-gray-100 flex px-3 py-2 pb-4">
       {items.map(item => (
         <button key={item.key} onClick={() => router.push(item.path)}
           className="flex-1 flex flex-col items-center gap-0.5">
-          <span className="text-lg">{item.icon}</span>
-          <span className={`text-xs font-bold ${active === item.key ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
-          {active === item.key && <div className="w-1 h-1 rounded-full bg-[#2B3FBE]" />}
+          <span className="text-lg leading-none">{item.icon}</span>
+          <span className={`text-xs font-bold leading-tight ${active === item.key ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
+          <span className={`text-[9px] leading-none ${active === item.key ? 'text-[#2B3FBE]/70' : 'text-gray-400/70'}`} style={{fontFamily:'Noto Sans Myanmar'}}>{item.mm}</span>
+          {active === item.key && <div className="w-1 h-1 rounded-full bg-[#2B3FBE] mt-0.5" />}
         </button>
       ))}
     </div>

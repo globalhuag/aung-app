@@ -5,7 +5,7 @@ import { HomeButton } from '@/components/HomeButton'
 
 export const metadata: Metadata = {
   title: 'Aung — အောင်',
-  description: 'Super App สำหรับแรงงานพม่าในไทย',
+  description: 'Super App สำหรับแรงงานพม่าในไทย · မြန်မာ အလုပ်သမားများအတွက် Super App',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

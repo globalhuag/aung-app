@@ -113,8 +113,8 @@ export default function RegisterPage() {
                 {phone ? formatPhone(phone) : <span className="text-gray-300">088-888-8888</span>}
               </div>
               {phone.length===10
-                ? <div className="text-green-600 text-xs font-bold text-center mb-4">✓ รูปแบบถูกต้อง</div>
-                : <div className="text-gray-400 text-xs text-center mb-4">{phone.length}/10 หลัก</div>
+                ? <div className="text-green-600 text-xs font-bold text-center mb-4">✓ รูปแบบถูกต้อง · <span style={{fontFamily:'Noto Sans Myanmar'}}>ပုံစံမှန်ပါသည်</span></div>
+                : <div className="text-gray-400 text-xs text-center mb-4">{phone.length}/10 หลัก · <span style={{fontFamily:'Noto Sans Myanmar'}}>လုံး</span></div>
               }
               <Numpad onNum={n=>phone.length<10&&setPhone(p=>p+n)} onDel={()=>setPhone(p=>p.slice(0,-1))} onClear={()=>setPhone('')} />
               <div className="flex gap-3 mt-4">
@@ -134,8 +134,8 @@ export default function RegisterPage() {
             <>
               <div className="text-center mb-4">
                 <div className="text-sm font-bold text-gray-700 mb-1">กรอกรหัส OTP 6 หลัก</div>
-                <div className="text-xs text-gray-500">ส่งไปที่ <strong>{formatPhone(phone)}</strong></div>
-                <div className="text-xs text-orange-500 mt-1">⚠️ ระบบ OTP อยู่ระหว่างพัฒนา — กรอกเลขอะไรก็ได้ 6 หลัก</div>
+                <div className="text-xs text-gray-400 mb-1" style={{fontFamily:'Noto Sans Myanmar'}}>OTP ကုဒ် ၆ လုံး ရိုက်ထည့်ပါ</div>
+                <div className="text-xs text-gray-500">ส่งไปที่ · <span style={{fontFamily:'Noto Sans Myanmar'}}>ပို့ဆောင်ခဲ့သည်</span> <strong>{formatPhone(phone)}</strong></div>
               </div>
               <div className="flex justify-center gap-2 mb-2">
                 {Array.from({length:6}).map((_,i)=>(
@@ -145,7 +145,7 @@ export default function RegisterPage() {
                   </div>
                 ))}
               </div>
-              <div className="text-gray-400 text-xs text-center mb-4">{otp.length}/6 หลัก</div>
+              <div className="text-gray-400 text-xs text-center mb-4">{otp.length}/6 หลัก · <span style={{fontFamily:'Noto Sans Myanmar'}}>လုံး</span></div>
               <Numpad onNum={n=>otp.length<6&&setOtp(p=>p+n)} onDel={()=>setOtp(p=>p.slice(0,-1))} onClear={()=>setOtp('')} />
               <div className="flex gap-3 mt-4">
                 <button onClick={()=>{setStep('phone');setOtp('');window.scrollTo(0,0)}} className="flex-[0.8] bg-[#4A4845] text-white rounded-xl py-3 text-sm font-bold">
@@ -172,7 +172,7 @@ export default function RegisterPage() {
               </div>
               {pin.length===6 && (
                 <>
-                  <div className="text-sm font-bold text-gray-500 mb-1 mt-3">ยืนยันรหัสผ่านอีกครั้ง</div>
+                  <div className="text-sm font-bold text-gray-500 mb-1 mt-3">ยืนยันรหัสผ่านอีกครั้ง · <span style={{fontFamily:'Noto Sans Myanmar'}}>စကားဝှက် ထပ်မံ အတည်ပြု</span></div>
                   <div className={`bg-white rounded-xl border-2 py-4 px-4 flex justify-center gap-3 mb-3 ${pinConfirm.length===6?(pin===pinConfirm?'border-green-500':'border-red-400'):'border-gray-200'}`}>
                     {Array.from({length:6}).map((_,i)=>(
                       <div key={i} className={`w-4 h-4 rounded-full ${i<pinConfirm.length?(pin.slice(0,i+1)===pinConfirm.slice(0,i+1)?'bg-[#2B3FBE]':'bg-red-400'):'bg-gray-200'}`} />

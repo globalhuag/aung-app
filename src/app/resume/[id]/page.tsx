@@ -173,7 +173,11 @@ export default function ResumeDetailPage() {
     <div className="min-h-screen bg-[#F4F5FB] flex flex-col items-center justify-center gap-4 px-6">
       <div className="text-5xl">😕</div>
       <div className="text-base font-bold text-gray-700">ไม่พบเรซูเม่นี้</div>
-      <button onClick={() => router.back()} className="bg-[#2B3FBE] text-white rounded-xl px-6 py-2.5 text-sm font-bold">← ย้อนกลับ</button>
+      <div className="text-xs text-gray-400 -mt-3" style={{fontFamily:'Noto Sans Myanmar'}}>Resume မတွေ့ရှိပါ</div>
+      <button onClick={() => router.back()} className="bg-[#2B3FBE] text-white rounded-xl px-6 py-2.5 text-sm font-bold flex flex-col items-center leading-tight">
+        <span>← ย้อนกลับ</span>
+        <span className="text-[10px] font-normal opacity-80" style={{fontFamily:'Noto Sans Myanmar'}}>နောက်သို့</span>
+      </button>
     </div>
   )
 
@@ -459,20 +463,25 @@ export default function ResumeDetailPage() {
       {/* ── Action bar ── */}
       <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-3 py-2 max-w-lg mx-auto">
         <div className="flex items-center gap-2">
-          <button onClick={() => router.back()} className="p-2 rounded-xl text-gray-500 hover:bg-gray-50 text-sm font-bold">← กลับ</button>
+          <button onClick={() => router.back()} className="p-2 rounded-xl text-gray-500 hover:bg-gray-50 text-sm font-bold flex flex-col items-center leading-tight">
+            <span>← กลับ</span>
+            <span className="text-[9px] font-normal opacity-70" style={{fontFamily:'Noto Sans Myanmar'}}>နောက်သို့</span>
+          </button>
           <div className="flex-1" />
           {isOwner && resume.suit_status === 'error' && (
             <button onClick={() => { hasTriedRef.current = false; triggerGenerate(resume.id) }}
-              className="bg-orange-500 text-white rounded-xl px-3 py-1.5 text-xs font-bold">
-              🔄 สร้างสูทใหม่
+              className="bg-orange-500 text-white rounded-xl px-3 py-1.5 text-xs font-bold flex flex-col items-center leading-tight">
+              <span>🔄 สร้างสูทใหม่</span>
+              <span className="text-[9px] font-normal opacity-90" style={{fontFamily:'Noto Sans Myanmar'}}>Suit ထပ်ပြုလုပ်</span>
             </button>
           )}
           <button
             onClick={handleDownloadImage}
             disabled={saving}
-            className="bg-[#2575fc] text-white rounded-xl px-3 py-1.5 text-xs font-bold disabled:opacity-60"
+            className="bg-[#2575fc] text-white rounded-xl px-3 py-1.5 text-xs font-bold disabled:opacity-60 flex flex-col items-center leading-tight"
           >
-            {saving ? '⏳ กำลังสร้าง...' : '🖼️ บันทึกรูป'}
+            <span>{saving ? '⏳ กำลังสร้าง...' : '🖼️ บันทึกรูป'}</span>
+            <span className="text-[9px] font-normal opacity-90" style={{fontFamily:'Noto Sans Myanmar'}}>{saving ? 'ပြုလုပ်နေ...' : 'ရုပ်ပုံ သိမ်းမည်'}</span>
           </button>
         </div>
         {generating && (

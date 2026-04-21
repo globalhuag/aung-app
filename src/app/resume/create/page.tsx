@@ -118,6 +118,7 @@ const YEARS = Array.from({ length: 42 }, (_, i) => String(2007 - i)) // 2007→1
 
 const TOTAL_STEPS = 7
 const STEP_LABELS = ['ส่วนตัว', 'เอกสาร', 'ภาษา', 'ประวัติงาน', 'ต้องการ', 'รูปถ่าย', 'ยืนยัน']
+const STEP_LABELS_MM = ['ကိုယ်ရေး', 'စာရွက်', 'ဘာသာ', 'အလုပ်', 'လိုအပ်', 'ဓာတ်ပုံ', 'အတည်ပြု']
 
 type FormData = {
   name: string
@@ -389,6 +390,7 @@ export default function ResumeCreatePage() {
           <div className="text-center py-1">
             <div className="text-5xl mb-2">🔐</div>
             <div className="text-base font-black text-gray-800">ก่อนเริ่มกรอกข้อมูล</div>
+            <div className="text-xs text-gray-400" style={{fontFamily:'Noto Sans Myanmar'}}>အချက်အလက် မဖြည့်သွင်းမီ</div>
             <div className="text-xs text-gray-500 mt-1 leading-relaxed">
               Aung จำเป็นต้องได้รับความยินยอมของคุณในการเก็บข้อมูล<br/>
               ตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562
@@ -400,7 +402,8 @@ export default function ResumeCreatePage() {
 
           {/* What we collect */}
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="text-sm font-black text-gray-800 mb-3">📋 ข้อมูลที่เราเก็บรวบรวม</div>
+            <div className="text-sm font-black text-gray-800">📋 ข้อมูลที่เราเก็บรวบรวม</div>
+            <div className="text-xs text-gray-400 mb-3" style={{fontFamily:'Noto Sans Myanmar'}}>စုဆောင်းမည့် အချက်အလက်များ</div>
             {[
               { th: 'ชื่อ-นามสกุล, วันเกิด, เพศ, เชื้อชาติ', mm: 'အမည်၊ မွေးသက္ကရာဇ်၊ ကျား/မ၊ လူမျိုး' },
               { th: 'จังหวัดที่อยู่ปัจจุบัน, เบอร์โทรศัพท์', mm: 'နေရပ်လိပ်စာ၊ ဖုန်းနံပါတ်' },
@@ -421,7 +424,8 @@ export default function ResumeCreatePage() {
 
           {/* Purpose */}
           <div className="bg-[#E8EBFF] rounded-2xl p-4">
-            <div className="text-xs font-black text-[#2B3FBE] mb-1.5">🎯 วัตถุประสงค์การใช้ข้อมูล</div>
+            <div className="text-xs font-black text-[#2B3FBE]">🎯 วัตถุประสงค์การใช้ข้อมูล</div>
+            <div className="text-[10px] text-[#2B3FBE]/60 mb-1.5" style={{fontFamily:'Noto Sans Myanmar'}}>ဒေတာ အသုံးပြုသည့် ရည်ရွယ်ချက်</div>
             <div className="text-xs text-[#2B3FBE]/80 leading-relaxed">
               เพื่อจัดทำเรซูเม่และจับคู่กับนายจ้าง/นายหน้าที่สนใจ
               ข้อมูลจะถูกแชร์เฉพาะเมื่อคุณเลือก <span className="font-black">เผยแพร่เรซูเม่</span> เท่านั้น
@@ -434,7 +438,7 @@ export default function ResumeCreatePage() {
           {/* Retention + Controller */}
           <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
             <div>
-              <div className="text-xs font-black text-gray-800 mb-1">🗓️ ระยะเวลาเก็บข้อมูล</div>
+              <div className="text-xs font-black text-gray-800">🗓️ ระยะเวลาเก็บข้อมูล · <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal text-gray-500">သိမ်းဆည်းမည့် ကာလ</span></div>
               <div className="text-xs text-gray-600 leading-relaxed">
                 เก็บข้อมูลไว้ <span className="font-black text-gray-800">2 ปี</span> นับจากวันที่สร้างเรซูเม่
                 หรือจนกว่าคุณจะขอลบ หลังจากนั้นข้อมูลจะถูกทำลายอย่างถาวร
@@ -444,7 +448,7 @@ export default function ResumeCreatePage() {
               </div>
             </div>
             <div className="border-t border-gray-100 pt-3">
-              <div className="text-xs font-black text-gray-800 mb-1">🏢 ผู้ควบคุมข้อมูลส่วนบุคคล</div>
+              <div className="text-xs font-black text-gray-800">🏢 ผู้ควบคุมข้อมูลส่วนบุคคล · <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal text-gray-500">ဒေတာ ထိန်းချုပ်သူ</span></div>
               <div className="text-xs text-gray-600 leading-relaxed">
                 <span className="font-bold">Aung (အောင်)</span> — ผู้ให้บริการแพลตฟอร์มจัดหางาน<br/>
                 ติดต่อ: แชทในแอป (เมนู ติดต่อเรา)
@@ -457,7 +461,8 @@ export default function ResumeCreatePage() {
 
           {/* Your rights */}
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="text-sm font-black text-gray-800 mb-3">⚖️ สิทธิ์ของคุณ (ม.30-37)</div>
+            <div className="text-sm font-black text-gray-800">⚖️ สิทธิ์ของคุณ (ม.30-37)</div>
+            <div className="text-xs text-gray-400 mb-3" style={{fontFamily:'Noto Sans Myanmar'}}>သင်၏ အခွင့်အရေးများ</div>
             {[
               { icon: '👁️', th: 'เข้าถึงและขอสำเนาข้อมูล', mm: 'ဒေတာကြည့်ရှု/မိတ္တူတောင်းနိုင်' },
               { icon: '✏️', th: 'แก้ไขข้อมูลให้ถูกต้อง', mm: 'အချက်အလက်ပြင်ဆင်နိုင်' },
@@ -577,7 +582,7 @@ export default function ResumeCreatePage() {
               className="w-7 h-7 rounded-full bg-white/25 flex items-center justify-center text-white font-bold">
               ←
             </button>
-            <div className="text-white/80 text-xs font-bold">ข้อ {step} จาก {TOTAL_STEPS}</div>
+            <div className="text-white/80 text-xs font-bold">ข้อ {step} จาก {TOTAL_STEPS} · <span style={{fontFamily:'Noto Sans Myanmar'}}>အဆင့် {step}/{TOTAL_STEPS}</span></div>
             <div className="ml-auto text-right">
               <div className="text-white font-black text-xs leading-none">Aung</div>
               <div className="text-white/60 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အောင်</div>
@@ -591,7 +596,10 @@ export default function ResumeCreatePage() {
           </div>
           <div className="flex justify-between mt-1">
             {STEP_LABELS.map((l, i) => (
-              <span key={i} className={`text-[9px] font-bold ${i + 1 === step ? 'text-white' : 'text-white/40'}`}>{l}</span>
+              <span key={i} className={`text-[9px] font-bold flex flex-col items-center leading-tight ${i + 1 === step ? 'text-white' : 'text-white/40'}`}>
+                <span>{l}</span>
+                <span className="font-normal opacity-80" style={{fontFamily:'Noto Sans Myanmar',fontSize:'8px'}}>{STEP_LABELS_MM[i]}</span>
+              </span>
             ))}
           </div>
         </div>
@@ -939,6 +947,7 @@ export default function ResumeCreatePage() {
 
             <div className="text-center text-xs text-gray-400">
               ⭐ ใช้ 1 เครดิต — คงเหลือ {user.credits} เครดิต
+              <div className="mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>ခရက်ဒစ် ၁ ခု သုံးမည် — ကျန် {user.credits} ခု</div>
             </div>
 
           </>}

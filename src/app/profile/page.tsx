@@ -183,8 +183,8 @@ export default function ProfilePage() {
               <div className="text-white font-black text-lg">{formatPhone(user.phone)}</div>
               <div className="text-white/70 text-xs mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ဖုန်းနံပါတ်</div>
               <div className="flex items-center gap-2 mt-1.5">
-                <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">⭐ {user.credits} เครดิต</span>
-                <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">📄 {loading ? '…' : resumeCount} เรซูเม่</span>
+                <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">⭐ {user.credits} เครดิต · <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal">ခရက်ဒစ်</span></span>
+                <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">📄 {loading ? '…' : resumeCount} <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal">Resume</span></span>
               </div>
             </div>
           </div>
@@ -217,7 +217,7 @@ export default function ProfilePage() {
             </div>
             <div className="bg-white/20 rounded-full px-3 py-1.5 flex items-center gap-1">
               <span className="text-white text-sm font-black">{user.credits}</span>
-              <span className="text-white/80 text-xs">เครดิต</span>
+              <span className="text-white/80 text-xs">เครดิต · <span style={{fontFamily:'Noto Sans Myanmar'}}>ခရက်ဒစ်</span></span>
             </div>
             <span className="text-white font-black text-lg ml-1">→</span>
           </button>
@@ -281,17 +281,17 @@ export default function ProfilePage() {
         <Sheet title="เปลี่ยนรหัสผ่าน" titleMM="စကားဝှက်ပြောင်းရန်" onClose={() => setShowChangePass(false)}>
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-bold text-gray-500 mb-1 block">รหัสผ่านเดิม</label>
+              <label className="text-xs font-bold text-gray-500 mb-1 block">รหัสผ่านเดิม · <span style={{fontFamily:'Noto Sans Myanmar'}}>မူရင်း စကားဝှက်</span></label>
               <input type="password" value={oldPass} onChange={e => setOldPass(e.target.value)}
                 placeholder="••••••" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2B3FBE]" />
             </div>
             <div>
-              <label className="text-xs font-bold text-gray-500 mb-1 block">รหัสผ่านใหม่</label>
+              <label className="text-xs font-bold text-gray-500 mb-1 block">รหัสผ่านใหม่ · <span style={{fontFamily:'Noto Sans Myanmar'}}>စကားဝှက်အသစ်</span></label>
               <input type="password" value={newPass} onChange={e => setNewPass(e.target.value)}
                 placeholder="••••••" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2B3FBE]" />
             </div>
             <div>
-              <label className="text-xs font-bold text-gray-500 mb-1 block">ยืนยันรหัสผ่านใหม่</label>
+              <label className="text-xs font-bold text-gray-500 mb-1 block">ยืนยันรหัสผ่านใหม่ · <span style={{fontFamily:'Noto Sans Myanmar'}}>စကားဝှက်အသစ် အတည်ပြု</span></label>
               <input type="password" value={confirmPass} onChange={e => setConfirmPass(e.target.value)}
                 placeholder="••••••" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2B3FBE]" />
             </div>
@@ -301,8 +301,9 @@ export default function ProfilePage() {
               </div>
             )}
             <button onClick={handleChangePassword} disabled={changingPass}
-              className="w-full bg-[#2B3FBE] text-white font-bold rounded-xl py-3 text-sm disabled:opacity-60 mt-1">
-              {changingPass ? '⏳ กำลังบันทึก...' : '🔑 บันทึกรหัสผ่านใหม่'}
+              className="w-full bg-[#2B3FBE] text-white font-bold rounded-xl py-3 text-sm disabled:opacity-60 mt-1 flex flex-col items-center leading-tight">
+              <span>{changingPass ? '⏳ กำลังบันทึก...' : '🔑 บันทึกรหัสผ่านใหม่'}</span>
+              <span className="text-[10px] font-normal opacity-80" style={{fontFamily:'Noto Sans Myanmar'}}>{changingPass ? 'သိမ်းနေ...' : 'စကားဝှက်အသစ် သိမ်းမည်'}</span>
             </button>
           </div>
         </Sheet>
@@ -427,10 +428,10 @@ function Sheet({ title, titleMM, onClose, children }: {
 
 function BottomNav({ active, router }: { active: string; router: ReturnType<typeof useRouter> }) {
   const items = [
-    { icon: '📄', label: 'เรซูเม่', key: 'resume', path: '/dashboard' },
-    { icon: '📢', label: 'งาน', key: 'jobs', path: '/jobs' },
-    { icon: '💬', label: 'แชท', key: 'chat', path: '/chat' },
-    { icon: '👤', label: 'โปรไฟล์', key: 'profile', path: '/profile' },
+    { icon: '📄', label: 'เรซูเม่',  mm: 'Resume',   key: 'resume',  path: '/dashboard' },
+    { icon: '📢', label: 'งาน',     mm: 'အလုပ်',    key: 'jobs',    path: '/jobs' },
+    { icon: '💬', label: 'แชท',     mm: 'ချက်တ်',   key: 'chat',    path: '/chat' },
+    { icon: '👤', label: 'โปรไฟล์', mm: 'ပရိုဖိုင်', key: 'profile', path: '/profile' },
   ]
   return (
     <div className="fixed bottom-0 left-0 right-0 z-20 flex justify-center bg-white border-t border-gray-100">
@@ -438,9 +439,10 @@ function BottomNav({ active, router }: { active: string; router: ReturnType<type
         {items.map(item => (
           <button key={item.key} onClick={() => router.push(item.path)}
             className="flex-1 flex flex-col items-center gap-0.5">
-            <span className="text-lg">{item.icon}</span>
-            <span className={`text-xs font-bold ${active === item.key ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
-            {active === item.key && <div className="w-1 h-1 rounded-full bg-[#2B3FBE]" />}
+            <span className="text-lg leading-none">{item.icon}</span>
+            <span className={`text-xs font-bold leading-tight ${active === item.key ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
+            <span className={`text-[9px] leading-none ${active === item.key ? 'text-[#2B3FBE]/70' : 'text-gray-400/70'}`} style={{fontFamily:'Noto Sans Myanmar'}}>{item.mm}</span>
+            {active === item.key && <div className="w-1 h-1 rounded-full bg-[#2B3FBE] mt-0.5" />}
           </button>
         ))}
       </div>

@@ -144,9 +144,12 @@ export default function DashboardPage() {
           <button onClick={() => router.push('/topup')}
             className="flex items-center rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
             <div className={`px-3 py-1.5 text-xs font-bold flex items-center gap-1 ${noCredit ? 'bg-red-50 text-red-500' : 'bg-[#E8EBFF] text-[#2B3FBE]'}`}>
-              ⭐ {user.credits} เครดิต
+              ⭐ {user.credits} เครดิต · <span style={{fontFamily:'Noto Sans Myanmar'}}>ခရက်ဒစ်</span>
             </div>
-            <div className="px-2.5 py-1.5 bg-[#C9A84C] text-white text-xs font-extrabold">+ เติม</div>
+            <div className="px-2.5 py-1.5 bg-[#C9A84C] text-white text-xs font-extrabold flex flex-col items-center leading-tight">
+              <span>+ เติม</span>
+              <span className="text-[9px] font-bold opacity-90" style={{fontFamily:'Noto Sans Myanmar'}}>ဖြည့်မည်</span>
+            </div>
           </button>
         </div>
 
@@ -159,8 +162,9 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => noCredit ? router.push('/topup') : router.push('/resume/create')}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold text-white ${noCredit ? 'bg-[#C9A84C]' : 'bg-[#2B3FBE]'}`}>
-              {noCredit ? '⚡ เติมเครดิต' : '+ สร้างใหม่'}
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold text-white flex flex-col items-center leading-tight ${noCredit ? 'bg-[#C9A84C]' : 'bg-[#2B3FBE]'}`}>
+              <span>{noCredit ? '⚡ เติมเครดิต' : '+ สร้างใหม่'}</span>
+              <span className="text-[9px] font-bold opacity-90" style={{fontFamily:'Noto Sans Myanmar'}}>{noCredit ? 'ခရက်ဒစ်ဖြည့်မည်' : 'အသစ်ပြုလုပ်'}</span>
             </button>
           </div>
 
@@ -189,9 +193,10 @@ export default function DashboardPage() {
             /* Empty state */
             <div className="text-center py-10">
               <div className="text-5xl mb-3">📄</div>
-              <div className="text-sm font-bold text-gray-700 mb-1">ยังไม่มีเรซูเม่</div>
+              <div className="text-sm font-bold text-gray-700">ยังไม่มีเรซูเม่</div>
+              <div className="text-xs text-gray-500 mb-2" style={{fontFamily:'Noto Sans Myanmar'}}>Resume မရှိသေးပါ</div>
               <div className="text-xs text-gray-400 mb-1">สร้างเรซูเม่แรกได้เลย ใช้ 1 เครดิต</div>
-              <div className="text-xs text-gray-400 mb-5" style={{fontFamily:'Noto Sans Myanmar'}}>Resume ပထမဆုံး ပြုလုပ်ပါ</div>
+              <div className="text-xs text-gray-400 mb-5" style={{fontFamily:'Noto Sans Myanmar'}}>Resume ပထမဆုံး ပြုလုပ်ပါ · ၁ ခရက်ဒစ် သုံးသည်</div>
               {!noCredit && (
                 <button onClick={() => router.push('/resume/create')}
                   className="bg-[#2B3FBE] text-white rounded-xl px-8 py-3 text-sm font-bold">
@@ -223,7 +228,9 @@ export default function DashboardPage() {
                     {(r.suit_status === 'processing' || r.suit_status === 'pending') ? (
                       <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#2B3FBE] text-white flex items-center gap-1 animate-pulse">
                         <span className="inline-block animate-spin" style={{ animationDuration: '1.2s' }}>⚙️</span>
-                        {r.suit_status === 'processing' ? 'กำลังสร้าง' : 'รอดำเนินการ'}
+                        {r.suit_status === 'processing'
+                          ? <>กำลังสร้าง · <span style={{fontFamily:'Noto Sans Myanmar'}}>ပြုလုပ်နေ</span></>
+                          : <>รอดำเนินการ · <span style={{fontFamily:'Noto Sans Myanmar'}}>စောင့်ဆိုင်း</span></>}
                       </span>
                     ) : (
                       <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.suit_status==='done'?'bg-green-50 text-green-600':'bg-red-50 text-red-500'}`}>
@@ -231,7 +238,9 @@ export default function DashboardPage() {
                       </span>
                     )}
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.is_public?'bg-blue-50 text-blue-600':'bg-gray-100 text-gray-500'}`}>
-                      {r.is_public?'🌐 สาธารณะ':'🔒 ส่วนตัว'}
+                      {r.is_public
+                        ? <>🌐 สาธารณะ · <span style={{fontFamily:'Noto Sans Myanmar'}}>အများသုံး</span></>
+                        : <>🔒 ส่วนตัว · <span style={{fontFamily:'Noto Sans Myanmar'}}>ပုဂ္ဂလိက</span></>}
                     </span>
                   </div>
                 </div>
@@ -251,16 +260,17 @@ export default function DashboardPage() {
         <div className="fixed bottom-0 left-0 right-0 z-20 flex justify-center bg-white border-t border-gray-100">
           <div className="w-full max-w-sm flex px-3 py-2 pb-4">
             {[
-              {icon:'📄', label:'เรซูเม่', active:true, path:'/dashboard'},
-              {icon:'📢', label:'งาน', active:false, path:'/jobs'},
-              {icon:'💬', label:'แชท', active:false, path:'/chat'},
-              {icon:'👤', label:'โปรไฟล์', active:false, path:'/profile'},
+              {icon:'📄', label:'เรซูเม่',  mm:'Resume',   active:true,  path:'/dashboard'},
+              {icon:'📢', label:'งาน',     mm:'အလုပ်',    active:false, path:'/jobs'},
+              {icon:'💬', label:'แชท',     mm:'ချက်တ်',   active:false, path:'/chat'},
+              {icon:'👤', label:'โปรไฟล์', mm:'ပရိုဖိုင်', active:false, path:'/profile'},
             ].map(item => (
               <button key={item.label} onClick={() => router.push(item.path)}
                 className="flex-1 flex flex-col items-center gap-0.5">
-                <span className="text-lg">{item.icon}</span>
-                <span className={`text-xs font-bold ${item.active ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
-                {item.active && <div className="w-1 h-1 rounded-full bg-[#2B3FBE]" />}
+                <span className="text-lg leading-none">{item.icon}</span>
+                <span className={`text-xs font-bold leading-tight ${item.active ? 'text-[#2B3FBE]' : 'text-gray-400'}`}>{item.label}</span>
+                <span className={`text-[9px] leading-none ${item.active ? 'text-[#2B3FBE]/70' : 'text-gray-400/70'}`} style={{fontFamily:'Noto Sans Myanmar'}}>{item.mm}</span>
+                {item.active && <div className="w-1 h-1 rounded-full bg-[#2B3FBE] mt-0.5" />}
               </button>
             ))}
           </div>

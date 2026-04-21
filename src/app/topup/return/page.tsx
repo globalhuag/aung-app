@@ -53,15 +53,17 @@ function ReturnContent() {
             {/* Countdown */}
             <div className="bg-[#F4F5FB] rounded-2xl px-4 py-3 mt-2">
               <div className="text-xs text-gray-400">กลับหน้าหลักในอีก</div>
+              <div className="text-[10px] text-gray-400" style={{fontFamily:'Noto Sans Myanmar'}}>ပင်မ ပြန်သွားမည်</div>
               <div className="text-2xl font-black text-[#2B3FBE]">{count}</div>
-              <div className="text-xs text-gray-400">วินาที</div>
+              <div className="text-xs text-gray-400">วินาที · <span style={{fontFamily:'Noto Sans Myanmar'}}>စက္ကန့်</span></div>
             </div>
 
             <button
               onClick={() => router.push('/dashboard')}
-              className="w-full bg-[#2B3FBE] text-white rounded-2xl py-3.5 font-extrabold text-sm mt-1"
+              className="w-full bg-[#2B3FBE] text-white rounded-2xl py-3.5 font-extrabold text-sm mt-1 flex flex-col items-center leading-tight"
             >
-              กลับหน้าหลักเลย →
+              <span>กลับหน้าหลักเลย →</span>
+              <span className="text-[10px] font-normal opacity-80" style={{fontFamily:'Noto Sans Myanmar'}}>ပင်မ ပြန်သွားရန်</span>
             </button>
           </div>
         </div>

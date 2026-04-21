@@ -70,7 +70,7 @@ export default function LoginPage() {
               <div className="text-white/60 text-xs mt-1" style={{fontFamily:'Noto Sans Myanmar, sans-serif'}}>အောင်</div>
             </div>
           </div>
-          <div className="text-white/50 text-xs tracking-wide">Super App · แรงงานพม่าในไทย</div>
+          <div className="text-white/50 text-xs tracking-wide">Super App · แรงงานพม่าในไทย · <span style={{fontFamily:'Noto Sans Myanmar'}}>မြန်မာ အလုပ်သမား</span></div>
         </div>
 
         <div className="px-5 py-6">
@@ -91,8 +91,8 @@ export default function LoginPage() {
                 {phone ? formatPhone(phone) : <span className="text-gray-300">088-888-8888</span>}
               </div>
               {isPhoneDone
-                ? <div className="text-green-600 text-xs font-bold text-center mb-4">✓ รูปแบบถูกต้อง</div>
-                : <div className="text-gray-400 text-xs text-center mb-4">{phone.length}/10 หลัก</div>
+                ? <div className="text-green-600 text-xs font-bold text-center mb-4">✓ รูปแบบถูกต้อง · <span style={{fontFamily:'Noto Sans Myanmar'}}>ပုံစံမှန်ပါသည်</span></div>
+                : <div className="text-gray-400 text-xs text-center mb-4">{phone.length}/10 หลัก · <span style={{fontFamily:'Noto Sans Myanmar'}}>လုံး</span></div>
               }
               <Numpad onNum={handleNum} onDel={handleDel} onClear={handleClear} />
               <div className="flex gap-3 mt-4">
@@ -123,9 +123,9 @@ export default function LoginPage() {
                   <div key={i} className={`w-4 h-4 rounded-full ${i < pin.length ? 'bg-[#2B3FBE]' : 'bg-gray-200'} ${i === pin.length ? 'border-2 border-[#2B3FBE]' : ''}`} />
                 ))}
               </div>
-              <div className="text-gray-400 text-xs text-center mb-1">{pin.length}/6 หลัก</div>
+              <div className="text-gray-400 text-xs text-center mb-1">{pin.length}/6 หลัก · <span style={{fontFamily:'Noto Sans Myanmar'}}>လုံး</span></div>
               <div className="text-right mb-4">
-                <button onClick={() => router.push('/forgot')} className="text-xs text-[#2B3FBE] font-bold">ลืมรหัสผ่าน?</button>
+                <button onClick={() => router.push('/forgot')} className="text-xs text-[#2B3FBE] font-bold">ลืมรหัสผ่าน? · <span style={{fontFamily:'Noto Sans Myanmar'}}>စကားဝှက်မေ့နေသလား?</span></button>
               </div>
               <Numpad onNum={handlePinNum} onDel={handlePinDel} onClear={() => setPin('')} />
               <div className="flex gap-3 mt-4">
