@@ -241,7 +241,7 @@ async function callImagenInpainting(
       sampleCount:      1,
       editConfig:       { editMode: 'EDIT_MODE_INPAINT_INSERTION' },
       guidanceScale:    60,
-      personGeneration: 'allow_adult',
+      personGeneration: 'allow_all',
       safetySetting:    'block_some',
     },
   }
