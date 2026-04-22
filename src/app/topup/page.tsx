@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-type User = { id: string; phone: string; credits: number }
+type User = { id: string; phone: string | null; credits: number }
 
 const PACKAGES = [
   { id: 'a', price: 20,  credits: 4,  label: 'เริ่มต้น',  mm: 'အစပျိုး',    popular: false },
@@ -28,6 +28,10 @@ export default function TopupPage() {
 
   const handlePay = async () => {
     if (!user) return
+    if (!user.phone) {
+      setError('กรุณาเพิ่มเบอร์โทรในโปรไฟล์ก่อนเติมเครดิต · ခရက်ဒစ်ဖြည့်ရန် ဖုန်းနံပါတ် လိုအပ်ပါသည်')
+      return
+    }
     setError('')
     setLoading(true)
 

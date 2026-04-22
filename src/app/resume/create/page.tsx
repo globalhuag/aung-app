@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-type User = { id: string; phone: string; credits: number }
+type User = { id: string; phone: string | null; credits: number; display_name?: string | null }
 
-function formatPhone(p: string) {
+function formatPhone(p: string | null | undefined) {
+  if (!p) return ''
   const d = p.replace(/\D/g, '')
   if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
   return p
@@ -905,7 +906,7 @@ export default function ResumeCreatePage() {
 
               <div className="px-5 py-4 space-y-1 -mt-4 bg-white rounded-t-3xl">
                 <div className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">👤 ส่วนตัว</div>
-                <SummaryRow label="เบอร์โทร" value={formatPhone(user.phone)} />
+                <SummaryRow label="เบอร์โทร" value={formatPhone(user.phone) || '—'} />
                 <SummaryRow label="วันเกิด" value={birthday} />
                 <SummaryRow label="เพศ / ကျား:" value={form.gender} />
                 <SummaryRow label="เชื้อชาติ" value={raceVal} />

@@ -3,12 +3,24 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-type User   = { id: string; phone: string; credits: number }
+type User = {
+  id: string
+  phone: string | null
+  credits: number
+  display_name?: string | null
+  picture_url?: string | null
+  line_user_id?: string | null
+}
 
-function formatPhone(p: string) {
+function formatPhone(p: string | null | undefined) {
+  if (!p) return ''
   const d = p.replace(/\D/g, '')
   if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
   return p
+}
+
+function displayLabel(u: User) {
+  return u.display_name || formatPhone(u.phone) || 'Aung user'
 }
 type Resume = { id: string; name: string; job_type: string; province: string; suit_status: string; is_public: boolean; created_at: string; photo_url: string; suit_photo_url: string }
 
@@ -77,7 +89,7 @@ export default function DashboardPage() {
 
   const loadFreshData = async (userId: string) => {
     const [{ data: freshUser }, { data: resumeData }] = await Promise.all([
-      supabase.from('users').select('id, phone, credits').eq('id', userId).single(),
+      supabase.from('users').select('id, phone, credits, display_name, picture_url, line_user_id').eq('id', userId).single(),
       supabase.from('resumes').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
     ])
     if (freshUser) {
@@ -140,7 +152,7 @@ export default function DashboardPage() {
         <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
           <div className="flex-1 min-w-0">
             <div className="text-xs text-gray-400 font-semibold">สวัสดี / <span style={{fontFamily:'Noto Sans Myanmar'}}>မင်္ဂလာပါ</span></div>
-            <div className="text-base font-extrabold text-gray-800 truncate">{formatPhone(user.phone)}</div>
+            <div className="text-base font-extrabold text-gray-800 truncate">{displayLabel(user)}</div>
           </div>
           <button onClick={() => router.push('/topup')}
             className="flex items-center rounded-full overflow-hidden border border-gray-200 flex-shrink-0">

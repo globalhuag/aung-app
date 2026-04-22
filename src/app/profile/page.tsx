@@ -3,7 +3,15 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-type User = { id: string; phone: string; credits: number; avatar_url?: string }
+type User = {
+  id: string
+  phone: string | null
+  credits: number
+  avatar_url?: string
+  display_name?: string | null
+  picture_url?: string | null
+  line_user_id?: string | null
+}
 
 // Resize image file to square, return base64 data URL
 function resizeToBase64(file: File, size: number, quality: number): Promise<string> {
@@ -28,7 +36,8 @@ function resizeToBase64(file: File, size: number, quality: number): Promise<stri
   })
 }
 
-function formatPhone(p: string) {
+function formatPhone(p: string | null | undefined) {
+  if (!p) return ''
   const d = p.replace(/\D/g, '')
   if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
   return p
@@ -180,8 +189,10 @@ export default function ProfilePage() {
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
 
             <div>
-              <div className="text-white font-black text-lg">{formatPhone(user.phone)}</div>
-              <div className="text-white/70 text-xs mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ဖုန်းနံပါတ်</div>
+              <div className="text-white font-black text-lg">{user.display_name || formatPhone(user.phone) || 'Aung user'}</div>
+              <div className="text-white/70 text-xs mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>
+                {user.phone ? 'ဖုန်းနံပါတ်' : (user.line_user_id ? 'LINE' : '')}
+              </div>
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">⭐ {user.credits} เครดิต · <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal">ခရက်ဒစ်</span></span>
                 <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">📄 {loading ? '…' : resumeCount} <span style={{fontFamily:'Noto Sans Myanmar'}} className="font-normal">Resume</span></span>
