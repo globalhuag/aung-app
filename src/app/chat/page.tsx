@@ -127,8 +127,10 @@ export default function ChatPage() {
             <div key={msg.id} className={`flex gap-2 ${msg.is_admin ? '' : 'flex-row-reverse'}`}>
               {msg.is_admin && (
                 <div className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center bg-[#2B3FBE]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo.png" alt="Aung" style={{ width: 28, height: 28, objectFit: 'contain', mixBlendMode: 'multiply' }} />
+                  <svg width="18" height="18" viewBox="0 0 100 100" fill="white" aria-label="Aung">
+                    <polygon points="50,12 88,92 70,92 50,48 30,92 12,92" />
+                    <rect x="28" y="62" width="44" height="10" rx="2" />
+                  </svg>
                 </div>
               )}
               <div className={`max-w-[75%] ${msg.is_admin ? '' : 'items-end flex flex-col'}`}>

@@ -127,8 +127,12 @@ export default function DashboardPage() {
 
         {/* Header: โลโก้ + ชื่อแอพ */}
         <div className="bg-[#2B3FBE] px-4 py-3 flex items-center gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Aung" style={{ width: 40, height: 40, objectFit: 'contain', mixBlendMode: 'multiply', flexShrink: 0 }} />
+          <div className="w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.35)' }}>
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="white" aria-label="Aung logo">
+              <polygon points="50,12 88,92 70,92 50,48 30,92 12,92" />
+              <rect x="28" y="62" width="44" height="10" rx="2" />
+            </svg>
+          </div>
           <div>
             <div className="text-white font-black text-xl tracking-wide leading-none">Aung</div>
             <div className="text-white/60 text-xs" style={{fontFamily:'Noto Sans Myanmar'}}>အောင်</div>

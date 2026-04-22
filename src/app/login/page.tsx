@@ -61,9 +61,11 @@ export default function LoginPage() {
         {/* Header */}
         <div className="bg-[#2B3FBE] px-4 py-6 flex flex-col items-center">
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex-shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Aung" style={{ width: 54, height: 54, objectFit: 'contain', mixBlendMode: 'multiply' }} />
+            <div className="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.35)' }}>
+              <svg width="34" height="34" viewBox="0 0 100 100" fill="white" aria-label="Aung logo">
+                <polygon points="50,12 88,92 70,92 50,48 30,92 12,92" />
+                <rect x="28" y="62" width="44" height="10" rx="2" />
+              </svg>
             </div>
             <div className="text-left">
               <div className="text-white font-black text-3xl tracking-wide leading-none">Aung</div>
