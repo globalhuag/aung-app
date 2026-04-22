@@ -4,12 +4,21 @@
 -- =============================================
 
 -- ── users ────────────────────────────────────
+-- Auth is LINE-only: line_user_id comes from a verified LIFF idToken
+-- (see src/app/api/auth/line/route.ts). phone is kept optional so existing
+-- records can be linked manually; new rows may have phone = NULL.
 CREATE TABLE IF NOT EXISTS users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  phone text UNIQUE NOT NULL,
+  line_user_id text,
+  display_name text,
+  picture_url text,
+  phone text UNIQUE,
   credits integer NOT NULL DEFAULT 0,
   created_at timestamptz DEFAULT now()
 );
+CREATE UNIQUE INDEX IF NOT EXISTS users_line_user_id_key
+  ON users (line_user_id)
+  WHERE line_user_id IS NOT NULL;
 
 -- ── resumes ──────────────────────────────────
 CREATE TABLE IF NOT EXISTS resumes (
@@ -90,17 +99,8 @@ CREATE TABLE IF NOT EXISTS chat_messages (
   created_at timestamptz DEFAULT now()
 );
 
--- ── otp_codes ─────────────────────────────────
--- One active OTP per phone. Upsert on resend.
-CREATE TABLE IF NOT EXISTS otp_codes (
-  phone text PRIMARY KEY,
-  code_hash text NOT NULL,
-  attempts integer NOT NULL DEFAULT 0,
-  verified boolean NOT NULL DEFAULT false,
-  expires_at timestamptz NOT NULL,
-  last_sent_at timestamptz NOT NULL DEFAULT now(),
-  created_at timestamptz NOT NULL DEFAULT now()
-);
+-- otp_codes table was removed when auth switched to LINE LIFF (no more phone+OTP).
+-- If migrating an existing DB, run: DROP TABLE IF EXISTS otp_codes;
 
 -- =============================================
 -- Row Level Security (RLS)
@@ -111,7 +111,6 @@ ALTER TABLE resumes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE topup_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE otp_codes ENABLE ROW LEVEL SECURITY;
 
 -- Allow all operations (app uses anon key + manual auth via localStorage)
 -- Tighten these policies for production with proper auth
@@ -121,11 +120,6 @@ CREATE POLICY "allow_all_resumes" ON resumes FOR ALL USING (true) WITH CHECK (tr
 CREATE POLICY "allow_all_topup" ON topup_requests FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "allow_all_jobs" ON jobs FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "allow_all_chat" ON chat_messages FOR ALL USING (true) WITH CHECK (true);
-
--- otp_codes has NO permissive policy for anon — access requires the service_role key.
--- The server routes under /api/otp/* and /api/auth/register use SUPABASE_SERVICE_ROLE_KEY
--- which bypasses RLS. This stops anon clients from flipping verified=true directly.
-DROP POLICY IF EXISTS "allow_all_otp" ON otp_codes;
 
 -- =============================================
 -- Storage bucket: resume-files

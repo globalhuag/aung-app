@@ -35,13 +35,12 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=      # server-only, bypasses RLS — used for otp_codes & register
+SUPABASE_SERVICE_ROLE_KEY=      # server-only, bypasses RLS — used by /api/auth/line
 
-# Thaibulksms (OTP SMS)
-THAIBULKSMS_API_KEY=
-THAIBULKSMS_API_SECRET=
-THAIBULKSMS_SENDER=Aung         # sender name registered with Thaibulksms
-THAIBULKSMS_FORCE=standard      # standard | corporate
+# LINE Login + LIFF
+LINE_LOGIN_CHANNEL_ID=          # LINE Login channel (NOT the OA Messaging API channel)
+LINE_LOGIN_CHANNEL_SECRET=      # server-only
+NEXT_PUBLIC_LIFF_ID=            # LIFF app id, shape: <channelId>-<suffix>
 
 # ChillPay
 CHILLPAY_MERCHANT_CODE=
@@ -53,6 +52,15 @@ NEXT_PUBLIC_APP_URL=
 # Google Vertex AI (suit generation)
 # ...see src/app/api/suit/generate/route.ts
 ```
+
+## Auth flow (LINE LIFF)
+
+1. User enters via the LINE OA rich menu → LIFF URL `https://liff.line.me/<NEXT_PUBLIC_LIFF_ID>` → opens `/line-login`.
+2. `/line-login` calls `liff.init()` and `liff.getIDToken()`, then POSTs the idToken to `/api/auth/line`.
+3. `/api/auth/line` verifies the idToken against `https://api.line.me/oauth2/v2.1/verify` (confirms signature + that the token was issued for our `LINE_LOGIN_CHANNEL_ID`), then upserts the `users` row keyed by `line_user_id`.
+4. The user row is stored in `localStorage.aung_user` (legacy session pattern; other pages read this).
+
+Run `supabase-migration-line-login.sql` once against the existing DB to add the LINE columns.
 
 ## Deploy on Vercel
 
