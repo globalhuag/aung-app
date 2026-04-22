@@ -61,12 +61,9 @@ export default function LoginPage() {
         {/* Header */}
         <div className="bg-[#2B3FBE] px-4 py-6 flex flex-col items-center">
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.35)' }}>
-              <svg width="34" height="34" viewBox="0 0 100 100" fill="white" aria-label="Aung logo">
-                <polygon points="50,12 88,92 70,92 50,48 30,92 12,92" />
-                <rect x="28" y="62" width="44" height="10" rx="2" />
-              </svg>
-            </div>
+            <svg width="56" height="56" viewBox="0 0 200 200" fill="white" aria-label="Aung logo" className="flex-shrink-0">
+              <path fillRule="evenodd" d="M 100 15 L 106 18 L 142 95 L 160 95 C 172 95 184 99 188 108 C 184 105 176 103 166 107 L 155 112 L 182 178 C 183 183 178 186 172 183 C 166 180 158 178 148 180 L 140 180 L 118 128 L 82 128 L 60 180 L 52 180 C 42 178 34 180 28 183 C 22 186 17 183 18 178 L 45 112 L 34 107 C 24 103 16 105 12 108 C 16 99 28 95 40 95 L 58 95 L 94 18 Z M 100 55 L 82 95 L 118 95 Z" />
+            </svg>
             <div className="text-left">
               <div className="text-white font-black text-3xl tracking-wide leading-none">Aung</div>
               <div className="text-white/60 text-xs mt-1" style={{fontFamily:'Noto Sans Myanmar, sans-serif'}}>အောင်</div>

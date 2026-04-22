@@ -109,8 +109,10 @@ export default function ChatPage() {
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
           {messages.length === 0 && (
             <div className="flex gap-2">
-              <div className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center" style={{ background: '#2B3FBE', border: '1.5px solid rgba(255,255,255,0.3)' }}>
-                <span className="text-white font-black" style={{ fontSize: 14 }}>A</span>
+              <div className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center bg-[#2B3FBE]">
+                <svg width="18" height="18" viewBox="0 0 200 200" fill="white" aria-label="Aung">
+                  <path fillRule="evenodd" d="M 100 15 L 106 18 L 142 95 L 160 95 C 172 95 184 99 188 108 C 184 105 176 103 166 107 L 155 112 L 182 178 C 183 183 178 186 172 183 C 166 180 158 178 148 180 L 140 180 L 118 128 L 82 128 L 60 180 L 52 180 C 42 178 34 180 28 183 C 22 186 17 183 18 178 L 45 112 L 34 107 C 24 103 16 105 12 108 C 16 99 28 95 40 95 L 58 95 L 94 18 Z M 100 55 L 82 95 L 118 95 Z" />
+                </svg>
               </div>
               <div className="max-w-[75%]">
                 <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
@@ -127,9 +129,8 @@ export default function ChatPage() {
             <div key={msg.id} className={`flex gap-2 ${msg.is_admin ? '' : 'flex-row-reverse'}`}>
               {msg.is_admin && (
                 <div className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center bg-[#2B3FBE]">
-                  <svg width="18" height="18" viewBox="0 0 100 100" fill="white" aria-label="Aung">
-                    <polygon points="50,12 88,92 70,92 50,48 30,92 12,92" />
-                    <rect x="28" y="62" width="44" height="10" rx="2" />
+                  <svg width="18" height="18" viewBox="0 0 200 200" fill="white" aria-label="Aung">
+                    <path fillRule="evenodd" d="M 100 15 L 106 18 L 142 95 L 160 95 C 172 95 184 99 188 108 C 184 105 176 103 166 107 L 155 112 L 182 178 C 183 183 178 186 172 183 C 166 180 158 178 148 180 L 140 180 L 118 128 L 82 128 L 60 180 L 52 180 C 42 178 34 180 28 183 C 22 186 17 183 18 178 L 45 112 L 34 107 C 24 103 16 105 12 108 C 16 99 28 95 40 95 L 58 95 L 94 18 Z M 100 55 L 82 95 L 118 95 Z" />
                   </svg>
                 </div>
               )}
