@@ -534,6 +534,10 @@ export default function ResumeDetailPage() {
           <div style={{ color: 'white', fontSize: 15, fontWeight: 'bold', marginBottom: 12, textAlign: 'center', lineHeight: 1.6 }}>
             📥 กดค้างที่รูปเพื่อบันทึกลงอัลบั้ม
             <br />
+            <span style={{ fontFamily: 'Noto Sans Myanmar, sans-serif', fontSize: 13 }}>
+              ပုံကိုဖိထား၍ အယ်လ်ဘမ်သို့ သိမ်းဆည်းပါ
+            </span>
+            <br />
             <span style={{ fontSize: 12, opacity: 0.7 }}>Long-press image → Save to Photos</span>
           </div>
 
