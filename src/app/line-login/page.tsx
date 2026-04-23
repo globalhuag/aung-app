@@ -24,10 +24,11 @@ export default function LineLoginPage() {
       // Flag below forces a fresh OAuth when the server rejects our token.
       const params = new URLSearchParams(window.location.search)
       const forceFresh = params.has('fresh')
-      // LIFF passes through ?liff.state=<path> when opening from a rich-menu /
-      // deep-link URL like `liff.line.me/<LIFF_ID>?liff.state=%2Fresume%2Fcreate`.
-      // Same-origin absolute paths only — never honor external URLs.
-      const rawNext = params.get('liff.state') || ''
+      // Rich-menu deep-link via our own ?next=<path> query param.
+      // liff.state is reserved by LIFF itself (LINE rewrites it into a path
+      // append on the endpoint, which 404s here), so do NOT read that — use
+      // our own key. Same-origin absolute paths only.
+      const rawNext = params.get('next') || ''
       const nextPath = rawNext.startsWith('/') && !rawNext.startsWith('//')
         ? rawNext
         : '/dashboard'
