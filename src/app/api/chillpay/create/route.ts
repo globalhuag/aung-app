@@ -132,7 +132,17 @@ export async function POST(req: Request) {
       console.error('[ChillPay create] DB error:', dbErr.message)
     }
 
-    return Response.json({ payment_url, order_no, transaction_id })
+    // Cookie fallback: ChillPay sometimes strips the query string on return
+    // and doesn't always include OrderNo in the POST body either (seen on
+    // mobile flows). Stashing order_no in a same-site cookie means the
+    // browser carries it back to /api/chillpay/return no matter what
+    // ChillPay forwards in the request.
+    const res = Response.json({ payment_url, order_no, transaction_id })
+    res.headers.append(
+      'Set-Cookie',
+      `aung_pending_order=${order_no}; Path=/; Max-Age=1800; SameSite=Lax`,
+    )
+    return res
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[ChillPay create] error:', msg)
