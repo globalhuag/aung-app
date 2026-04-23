@@ -25,8 +25,17 @@ export async function POST(req: Request) {
     })
     if (!verifyRes.ok) {
       const txt = await verifyRes.text()
-      console.error('[auth/line] verify failed:', verifyRes.status, txt)
-      return Response.json({ error: 'LINE verify failed' }, { status: 401 })
+      console.error('[auth/line] verify failed:', verifyRes.status, txt, 'channelId=', channelId)
+      let detail = txt
+      try {
+        const j = JSON.parse(txt) as { error?: string; error_description?: string }
+        detail = j.error_description || j.error || txt
+      } catch {}
+      return Response.json({
+        error: `LINE verify failed: ${detail}`,
+        status: verifyRes.status,
+        channelId,
+      }, { status: 401 })
     }
     const claims = await verifyRes.json() as {
       sub: string // LINE user ID (Uxxxx…)
