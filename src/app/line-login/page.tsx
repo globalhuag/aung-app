@@ -22,7 +22,15 @@ export default function LineLoginPage() {
       // LIFF idTokens last ~1 hour. If we returned from a previous login yesterday,
       // the cached session still looks "logged in" but the idToken is expired.
       // Flag below forces a fresh OAuth when the server rejects our token.
-      const forceFresh = new URLSearchParams(window.location.search).has('fresh')
+      const params = new URLSearchParams(window.location.search)
+      const forceFresh = params.has('fresh')
+      // LIFF passes through ?liff.state=<path> when opening from a rich-menu /
+      // deep-link URL like `liff.line.me/<LIFF_ID>?liff.state=%2Fresume%2Fcreate`.
+      // Same-origin absolute paths only — never honor external URLs.
+      const rawNext = params.get('liff.state') || ''
+      const nextPath = rawNext.startsWith('/') && !rawNext.startsWith('//')
+        ? rawNext
+        : '/dashboard'
 
       try {
         const { default: liff } = await import('@line/liff')
@@ -63,7 +71,7 @@ export default function LineLoginPage() {
         }
 
         localStorage.setItem('aung_user', JSON.stringify(data.user))
-        router.replace('/dashboard')
+        router.replace(nextPath)
       } catch (err) {
         if (cancelled) return
         const m = err instanceof Error ? err.message : String(err)
