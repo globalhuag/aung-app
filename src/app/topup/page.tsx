@@ -28,10 +28,6 @@ export default function TopupPage() {
 
   const handlePay = async () => {
     if (!user) return
-    if (!user.phone) {
-      setError('กรุณาเพิ่มเบอร์โทรในโปรไฟล์ก่อนเติมเครดิต · ခရက်ဒစ်ဖြည့်ရန် ဖုန်းနံပါတ် လိုအပ်ပါသည်')
-      return
-    }
     setError('')
     setLoading(true)
 
@@ -41,7 +37,7 @@ export default function TopupPage() {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
           user_id:    user.id,
-          phone:      user.phone,
+          phone:      user.phone || '',
           package_id: selected,
         }),
       })
