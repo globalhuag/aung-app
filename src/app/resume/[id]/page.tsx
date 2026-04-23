@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 
 type Resume = {
   id: string; user_id: string; name: string; birthday: string; gender: string; race: string; province: string;
+  contact_phone: string | null;
   smart_card: string; bank_account: string; drive_car: string; car_license: string; drive_moto: string; moto_license: string;
   thai_listen: string; thai_read: string; eng_listen: string; eng_read: string;
   skills: string; w1_name: string; w1_duration: string; w1_salary: string;
@@ -106,8 +107,15 @@ export default function ResumeDetailPage() {
     const { data, error } = await supabase.from('resumes').select('*').eq('id', id).single()
     if (error || !data) { setNotFound(true); setLoading(false); return }
     setResume(data as Resume)
-    const { data: u } = await supabase.from('users').select('id, phone').eq('id', data.user_id).single()
-    if (u) setPhone((u as { id: string; phone: string }).phone)
+    // Prefer the resume's own contact_phone (each resume can have its own).
+    // Fall back to the user's legacy phone for resumes created before the
+    // contact_phone column existed.
+    if (data.contact_phone) {
+      setPhone(data.contact_phone)
+    } else {
+      const { data: u } = await supabase.from('users').select('id, phone').eq('id', data.user_id).single()
+      if (u) setPhone((u as { id: string; phone: string | null }).phone || '')
+    }
     setLoading(false)
     if ((data.suit_status === 'pending' || data.suit_status === 'error') && data.photo_url && !hasTriedRef.current) {
       hasTriedRef.current = true

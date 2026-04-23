@@ -130,6 +130,7 @@ type FormData = {
   smart_card: string; bank_account: string
   drive_car: string; car_license: string
   drive_moto: string; moto_license: string
+  contact_phone: string
   thai_listen: string; thai_read: string
   eng_listen: string; eng_read: string
   skills: string[]; skill_other: string
@@ -147,6 +148,7 @@ const INIT: FormData = {
   name: '', bday: '', bmonth: '', byear: '',
   gender: '', race: '', race_other: '',
   province: '', province_other: '',
+  contact_phone: '',
   smart_card: '', bank_account: '',
   drive_car: '', car_license: '',
   drive_moto: '', moto_license: '',
@@ -332,6 +334,7 @@ export default function ResumeCreatePage() {
       gender: form.gender || null,
       race: raceVal || null,
       province: provinceVal || null,
+      contact_phone: form.contact_phone || null,
       smart_card: form.smart_card || null,
       bank_account: form.bank_account || null,
       drive_car: form.drive_car || null,
@@ -611,11 +614,22 @@ export default function ResumeCreatePage() {
           {/* ══ STEP 1: ส่วนตัว ══ */}
           {step === 1 && <>
             {/* ชื่อ */}
-            <QHeader num="ข้อ 1 / 25" th="ชื่อ-นามสกุล ภาษาอังกฤษ *" mm="အမည် အင်္ဂလိပ်ဘာသာ" />
+            <QHeader num="ข้อ 1 / 26" th="ชื่อ-นามสกุล ภาษาอังกฤษ *" mm="အမည် အင်္ဂလိပ်ဘာသာ" />
             <TxtInput value={form.name} onChange={v => set('name', v.toUpperCase())} placeholder="FIRSTNAME LASTNAME" />
 
+            {/* เบอร์ติดต่อ */}
+            <QHeader num="ข้อ 2 / 26" th="เบอร์โทรให้ผู้จ้างติดต่อ *" mm="အလုပ်ရှင်ဆက်သွယ်ရန် ဖုန်းနံပါတ်" />
+            <input
+              type="tel"
+              inputMode="tel"
+              value={form.contact_phone}
+              onChange={e => set('contact_phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
+              placeholder="08xxxxxxxx"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm tracking-widest focus:outline-none focus:border-[#C9A84C] bg-white"
+            />
+
             {/* วันเกิด */}
-            <QHeader num="ข้อ 2 / 25" th="วันเกิด" mm="မွေးသက္ကရာဇ်" />
+            <QHeader num="ข้อ 3 / 26" th="วันเกิด" mm="မွေးသက္ကရာဇ်" />
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <div className="text-xs font-bold text-gray-500 mb-1.5 ml-1">วัน / ရက်</div>
@@ -644,7 +658,7 @@ export default function ResumeCreatePage() {
             </div>
 
             {/* เพศ */}
-            <QHeader num="ข้อ 3 / 25" th="เพศ" mm="ကျား/မ" />
+            <QHeader num="ข้อ 4 / 26" th="เพศ" mm="ကျား/မ" />
             <div className="flex gap-3">
               {GENDER_OPTS.map(g => (
                 <button key={g.v} onClick={() => set('gender', g.v)} type="button"
@@ -657,7 +671,7 @@ export default function ResumeCreatePage() {
             </div>
 
             {/* เชื้อชาติ */}
-            <QHeader num="ข้อ 4 / 25" th="เชื้อชาติ?" mm="လူမျိုး?" />
+            <QHeader num="ข้อ 5 / 26" th="เชื้อชาติ?" mm="လူမျိုး?" />
             <div className="grid grid-cols-2 gap-2">
               {RACE_OPTS.map(r => {
                 const isSel = form.race === r.v
@@ -683,7 +697,7 @@ export default function ResumeCreatePage() {
             )}
 
             {/* จังหวัด */}
-            <QHeader num="ข้อ 5 / 25" th="จังหวัดที่อยู่ปัจจุบัน?" mm="လက်ရှိနေထိုင်သည့် ခရိုင်?" />
+            <QHeader num="ข้อ 6 / 26" th="จังหวัดที่อยู่ปัจจุบัน?" mm="လက်ရှိနေထိုင်သည့် ခရိုင်?" />
             <div className="flex flex-wrap gap-2">
               {QUICK_PROVINCES.map(p => (
                 <button key={p.th} onClick={() => set('province', p.th)} type="button"
@@ -741,7 +755,7 @@ export default function ResumeCreatePage() {
             ))}
 
             {/* ทักษะพิเศษ */}
-            <QHeader num="ข้อ 16 / 25" th="ทักษะพิเศษ?" mm="ထူးချွန်သည့်ကျွမ်းကျင်မှုများ (တစ်ခုထက်ပိုရွေးနိုင်)" />
+            <QHeader num="ข้อ 16 / 26" th="ทักษะพิเศษ?" mm="ထူးချွန်သည့်ကျွမ်းကျင်မှုများ (တစ်ခုထက်ပိုရွေးနိုင်)" />
             <div className="flex flex-wrap gap-2">
               {SKILL_OPTS.map(s => {
                 const isSel = form.skills.includes(s.v)
@@ -800,7 +814,7 @@ export default function ResumeCreatePage() {
           {/* ══ STEP 5: ต้องการ ══ */}
           {step === 5 && <>
             {/* งานที่ต้องการ */}
-            <QHeader num="ข้อ 20 / 25" th="ประเภทงานที่ต้องการ?" mm="ဘယ်လိုအလုပ်အမျိုးအစားလုပ်ချင်လဲ?" />
+            <QHeader num="ข้อ 20 / 26" th="ประเภทงานที่ต้องการ?" mm="ဘယ်လိုအလုပ်အမျိုးအစားလုပ်ချင်လဲ?" />
             <div className="flex flex-wrap gap-2">
               {JOB_OPTS.map(j => (
                 <button key={j.v} onClick={() => set('want_job', j.v)} type="button"
@@ -817,7 +831,7 @@ export default function ResumeCreatePage() {
             )}
 
             {/* พื้นที่ต้องการ */}
-            <QHeader num="ข้อ 21 / 25" th="บริเวณที่ต้องการทำงาน?" mm="အလုပ်လုပ်လိုသည့် နေရာ?" />
+            <QHeader num="ข้อ 21 / 26" th="บริเวณที่ต้องการทำงาน?" mm="အလုပ်လုပ်လိုသည့် နေရာ?" />
             <div className="flex flex-wrap gap-2">
               {QUICK_PROVINCES.map(p => (
                 <button key={p.th} onClick={() => set('want_area', p.th)} type="button"
@@ -842,11 +856,11 @@ export default function ResumeCreatePage() {
             )}
 
             {/* เงินเดือน */}
-            <QHeader num="ข้อ 22 / 25" th="รายได้ที่คาดหวัง (บาท/เดือน)" mm="မျှော်မှန်းထားသည့် လစဉ်ဝင်ငွေ" />
+            <QHeader num="ข้อ 22 / 26" th="รายได้ที่คาดหวัง (บาท/เดือน)" mm="မျှော်မှန်းထားသည့် လစဉ်ဝင်ငွေ" />
             <TxtInput value={form.want_salary} onChange={v => set('want_salary', v)} placeholder="เช่น 15000" />
 
             {/* จุดเด่น */}
-            <QHeader num="ข้อ 23 / 25" th="จุดเด่นของคุณ (เลือกได้หลายข้อ)" mm="သင်၏ ထူးချွန်ချက်" />
+            <QHeader num="ข้อ 23 / 26" th="จุดเด่นของคุณ (เลือกได้หลายข้อ)" mm="သင်၏ ထူးချွန်ချက်" />
             <div className="flex flex-wrap gap-2">
               {STRENGTH_OPTS.map(s => {
                 const isSel = form.strengths.includes(s.v)
@@ -864,7 +878,7 @@ export default function ResumeCreatePage() {
 
           {/* ══ STEP 6: รูปถ่าย ══ */}
           {step === 6 && <>
-            <QHeader num="ข้อ 24 / 25" th="รูปถ่ายหน้าตรง" mm="မျက်နှာတည့်တည့် ဓာတ်ပုံ" />
+            <QHeader num="ข้อ 24 / 26" th="รูปถ่ายหน้าตรง" mm="မျက်နှာတည့်တည့် ဓာတ်ပုံ" />
             <label className={`w-full rounded-2xl border-2 border-dashed px-4 py-8 flex flex-col items-center gap-2 cursor-pointer transition-colors ${photoFile ? 'border-[#C9A84C] bg-amber-50' : 'border-gray-300 bg-white'}`}>
               <input type="file" accept="image/*" className="hidden" onChange={e => setPhotoFile(e.target.files?.[0] || null)} />
               {photoPreview ? (
@@ -876,7 +890,7 @@ export default function ResumeCreatePage() {
               <div className="text-xs text-gray-400" style={{ fontFamily: 'Noto Sans Myanmar' }}>ဓာတ်ပုံ တင်ရန် နှိပ်ပါ</div>
             </label>
 
-            <QHeader num="ข้อ 25 / 25" th="เอกสาร (พาสปอร์ต, Work Permit ฯลฯ)" mm="နိုင်ငံကူးလက်မှတ်၊ လုပ်ငန်းခွင့်လက်မှတ် စသည်" />
+            <QHeader num="ข้อ 25 / 26" th="เอกสาร (พาสปอร์ต, Work Permit ฯลฯ)" mm="နိုင်ငံကူးလက်မှတ်၊ လုပ်ငန်းခွင့်လက်မှတ် စသည်" />
             <label className={`w-full rounded-2xl border-2 border-dashed px-4 py-6 flex flex-col items-center gap-2 cursor-pointer transition-colors ${docFiles.length > 0 ? 'border-[#2B3FBE] bg-blue-50' : 'border-gray-300 bg-white'}`}>
               <input type="file" accept="image/*" multiple className="hidden" onChange={e => setDocFiles(Array.from(e.target.files || []))} />
               <div className="text-4xl">📄</div>
@@ -906,7 +920,7 @@ export default function ResumeCreatePage() {
 
               <div className="px-5 py-4 space-y-1 -mt-4 bg-white rounded-t-3xl">
                 <div className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">👤 ส่วนตัว</div>
-                <SummaryRow label="เบอร์โทร" value={formatPhone(user.phone) || '—'} />
+                <SummaryRow label="เบอร์โทร" value={formatPhone(form.contact_phone) || '—'} />
                 <SummaryRow label="วันเกิด" value={birthday} />
                 <SummaryRow label="เพศ / ကျား:" value={form.gender} />
                 <SummaryRow label="เชื้อชาติ" value={raceVal} />
