@@ -370,7 +370,9 @@ export default function ResumeCreatePage() {
 
   if (!user) return null
 
-  const canNext = step !== 1 || form.name.trim().length > 0
+  const canNext =
+    step !== 1 ||
+    (form.name.trim().length > 0 && form.contact_phone.length === 10)
   const canConfirmPdpa = pdpaMain && (!fillingForOther || pdpaProxy)
 
   // ── PDPA Gate Screen ──
