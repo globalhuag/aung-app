@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   try {
     const { user_id, phone, package_id } = await req.json()
 
-    if (!user_id || !phone || !package_id) {
+    if (!user_id || !package_id) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
@@ -38,8 +38,19 @@ export async function POST(req: Request) {
     const rand     = crypto.randomBytes(2).toString('hex').toUpperCase()
     const order_no = `WP${ts}${rand}`
 
-    // Clean phone — digits only
-    const phone_clean   = phone.replace(/\D/g, '').slice(0, 10) || '0812345678'
+    // Clean phone. LINE-only users have no phone on file, but ChillPay's
+    // checksum needs *something* in the PhoneNumber slot. Deriving 10 digits
+    // from the user_id keeps each user's ChillPay record distinct instead of
+    // collapsing everyone onto one shared dummy number.
+    const rawPhone = typeof phone === 'string' ? phone.replace(/\D/g, '').slice(0, 10) : ''
+    const fallback = '09' + crypto
+      .createHash('sha256')
+      .update(String(user_id))
+      .digest('hex')
+      .replace(/\D/g, '')
+      .slice(0, 8)
+      .padEnd(8, '0')
+    const phone_clean = rawPhone || fallback
     const customer_id   = phone_clean
     const amount_str    = String(pkg.amount)  // e.g. "2000"
     const description   = 'Aung Credit'
