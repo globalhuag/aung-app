@@ -143,9 +143,21 @@ async function handleReturn(req: Request): Promise<Response> {
           orderNo = params.get('OrderNo') || params.get('order_no') || ''
         } catch { /* ignore */ }
       }
-    } else {
+    }
+
+    // URL query fallback (works for both GET and POST: if ChillPay stripped the
+    // body fields but kept the query)
+    if (!orderNo) {
       const url = new URL(req.url)
       orderNo = url.searchParams.get('OrderNo') || url.searchParams.get('order_no') || ''
+    }
+
+    // Cookie fallback (set by /api/chillpay/create before redirecting). This
+    // is the most reliable source because ChillPay can't strip our own cookies.
+    if (!orderNo) {
+      const cookieHeader = req.headers.get('cookie') || ''
+      const match = cookieHeader.match(/(?:^|;\s*)aung_pending_order=([^;]+)/)
+      if (match) orderNo = decodeURIComponent(match[1])
     }
 
     console.log('[ChillPay return] method:', method, 'OrderNo:', orderNo)
