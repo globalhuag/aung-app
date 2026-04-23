@@ -37,7 +37,17 @@ export default function LoginPage() {
           </div>
 
           <button
-            onClick={() => (window.location.href = '/line-login')}
+            onClick={() => {
+              const liffId = process.env.NEXT_PUBLIC_LIFF_ID
+              // liff.line.me is the canonical entry point. On mobile with LINE
+              // installed it hops into the LINE app (auto-login from the app
+              // session). On desktop / mobile-without-LINE it falls back to
+              // LINE's web OAuth. Going straight to /line-login instead skips
+              // the app-launch step and always forces the web OAuth flow.
+              window.location.href = liffId
+                ? `https://liff.line.me/${liffId}`
+                : '/line-login'
+            }}
             className="w-full bg-[#06C755] hover:bg-[#05b04b] text-white rounded-xl py-4 text-base font-bold flex items-center justify-center gap-3 shadow-lg active:scale-[0.98] transition"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
