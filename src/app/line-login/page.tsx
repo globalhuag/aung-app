@@ -19,14 +19,21 @@ export default function LineLoginPage() {
 
     let cancelled = false
     ;(async () => {
+      // LIFF idTokens last ~1 hour. If we returned from a previous login yesterday,
+      // the cached session still looks "logged in" but the idToken is expired.
+      // Flag below forces a fresh OAuth when the server rejects our token.
+      const forceFresh = new URLSearchParams(window.location.search).has('fresh')
+
       try {
         const { default: liff } = await import('@line/liff')
         await liff.init({ liffId })
         if (cancelled) return
 
+        if (forceFresh && liff.isLoggedIn()) liff.logout()
+
         if (!liff.isLoggedIn()) {
-          // Desktop browser → redirect into LINE OAuth; inside LINE client this is a no-op
-          liff.login({ redirectUri: window.location.href })
+          const redirectUri = window.location.origin + window.location.pathname
+          liff.login({ redirectUri })
           return
         }
 
@@ -42,7 +49,18 @@ export default function LineLoginPage() {
           body: JSON.stringify({ idToken }),
         })
         const data = await res.json()
-        if (!res.ok || !data.user) throw new Error(data.error || 'login failed')
+        if (!res.ok || !data.user) {
+          // Stale / expired idToken in LIFF cache: log out and bounce through
+          // a fresh OAuth. The ?fresh flag survives the redirect so we know to
+          // skip the cached session once we land back here.
+          if (res.status === 401) {
+            try { liff.logout() } catch {}
+            const fresh = window.location.origin + window.location.pathname + '?fresh=1'
+            window.location.replace(fresh)
+            return
+          }
+          throw new Error(data.error || 'login failed')
+        }
 
         localStorage.setItem('aung_user', JSON.stringify(data.user))
         router.replace('/dashboard')
@@ -72,7 +90,10 @@ export default function LineLoginPage() {
             <div className="text-red-600 text-sm font-bold mb-2">เข้าสู่ระบบไม่สำเร็จ</div>
             <div className="text-gray-500 text-xs break-words mb-4">{msg}</div>
             <button
-              onClick={() => location.reload()}
+              onClick={() => {
+                const fresh = window.location.origin + window.location.pathname + '?fresh=1'
+                window.location.replace(fresh)
+              }}
               className="w-full bg-[#2B3FBE] text-white rounded-xl py-3 text-sm font-bold"
             >
               ลองใหม่ · ပြန်လည်ကြိုးစား
