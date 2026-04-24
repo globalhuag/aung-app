@@ -327,7 +327,7 @@ export default function ResumeCreatePage() {
       }
     }
 
-    const { data: insertedResume } = await supabase.from('resumes').insert({
+    const { data: insertedResume, error: insertErr } = await supabase.from('resumes').insert({
       user_id: user.id,
       name: form.name,
       birthday: birthday || null,
@@ -360,12 +360,23 @@ export default function ResumeCreatePage() {
       is_public: isPublic,
     }).select('id').single()
 
+    if (insertErr || !insertedResume?.id) {
+      console.error('[resume/create] insert failed:', insertErr)
+      setSaving(false)
+      alert(
+        'บันทึกเรซูเม่ไม่สำเร็จ กรุณาลองใหม่\n' +
+        'Resume မသိမ်းဆည်းနိုင်ပါ ထပ်ကြိုးစားပါ\n\n' +
+        (insertErr?.message || 'unknown error'),
+      )
+      return
+    }
+
     await supabase.from('users').update({ credits: user.credits - 1 }).eq('id', user.id)
     localStorage.setItem('aung_user', JSON.stringify({ ...user, credits: user.credits - 1 }))
 
     setSaving(false)
     // ไปหน้า resume โดยตรง — resume page จะ auto-generate suit เอง
-    router.push(`/resume/${insertedResume?.id}`)
+    router.push(`/resume/${insertedResume.id}`)
   }
 
   if (!user) return null
