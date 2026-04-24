@@ -134,13 +134,19 @@ export async function POST(req: Request) {
 
     // Cookie fallback: ChillPay sometimes strips the query string on return
     // and doesn't always include OrderNo in the POST body either (seen on
-    // mobile flows). Stashing order_no in a same-site cookie means the
-    // browser carries it back to /api/chillpay/return no matter what
-    // ChillPay forwards in the request.
+    // mobile flows). Stashing order_no in a cookie means the browser
+    // carries it back to /api/chillpay/return regardless of what ChillPay
+    // forwards.
+    //
+    // Must be SameSite=None; Secure — ChillPay returns to our domain via a
+    // cross-site POST (an auto-submitted form), and SameSite=Lax cookies
+    // are stripped from cross-site POSTs. None+Secure is the only combo
+    // that survives the round-trip. Safe here because the cookie value is
+    // just a public order number, not a session token.
     const res = Response.json({ payment_url, order_no, transaction_id })
     res.headers.append(
       'Set-Cookie',
-      `aung_pending_order=${order_no}; Path=/; Max-Age=1800; SameSite=Lax`,
+      `aung_pending_order=${order_no}; Path=/; Max-Age=1800; SameSite=None; Secure`,
     )
     return res
   } catch (err: unknown) {
