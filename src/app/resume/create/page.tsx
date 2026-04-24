@@ -265,7 +265,7 @@ export default function ResumeCreatePage() {
   const [photoPreview, setPhotoPreview] = useState<string>('')
   const [docFiles, setDocFiles] = useState<File[]>([])
   const [pdpaConfirmed, setPdpaConfirmed] = useState(false)
-  const [fillingForOther, setFillingForOther] = useState(false)
+  const [fillingForOther, setFillingForOther] = useState<boolean | null>(null)
   const [pdpaMain, setPdpaMain] = useState(false)
   const [pdpaProxy, setPdpaProxy] = useState(false)
   const scrollTop = () => window.scrollTo(0, 0)
@@ -384,7 +384,7 @@ export default function ResumeCreatePage() {
   const canNext =
     step !== 1 ||
     (form.name.trim().length > 0 && form.contact_phone.length === 10)
-  const canConfirmPdpa = pdpaMain && (!fillingForOther || pdpaProxy)
+  const canConfirmPdpa = fillingForOther !== null && pdpaMain && (!fillingForOther || pdpaProxy)
 
   // ── PDPA Gate Screen ──
   if (!pdpaConfirmed) return (
@@ -508,13 +508,13 @@ export default function ResumeCreatePage() {
             <div className="flex gap-2">
               <button onClick={() => { setFillingForOther(false); setPdpaProxy(false) }}
                 className={`flex-1 rounded-xl border-2 py-3 text-sm font-bold transition-all
-                  ${!fillingForOther ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
+                  ${fillingForOther === false ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
                 ตัวเอง
                 <span className="block text-xs font-normal opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>ကိုယ်တိုင်</span>
               </button>
               <button onClick={() => setFillingForOther(true)}
                 className={`flex-1 rounded-xl border-2 py-3 text-sm font-bold transition-all
-                  ${fillingForOther ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
+                  ${fillingForOther === true ? 'bg-[#2B3FBE] border-[#2B3FBE] text-white' : 'bg-white border-gray-200 text-gray-700'}`}>
                 แทนผู้อื่น
                 <span className="block text-xs font-normal opacity-80 mt-0.5" style={{fontFamily:'Noto Sans Myanmar'}}>သူများအတွက်</span>
               </button>
@@ -528,7 +528,10 @@ export default function ResumeCreatePage() {
             )}
           </div>
 
-          {/* Consent checkboxes */}
+          {/* Consent checkboxes — only shown once the user has picked self/other
+              so the wording ("ข้าพเจ้ายินยอม" vs "เจ้าของข้อมูลยินยอมแล้ว")
+              isn't defaulted before they chose. */}
+          {fillingForOther !== null && (
           <div className="space-y-3">
             {/* Main consent */}
             <label className="flex items-start gap-3 bg-white rounded-2xl p-4 shadow-sm cursor-pointer active:bg-gray-50">
@@ -570,6 +573,7 @@ export default function ResumeCreatePage() {
               </label>
             )}
           </div>
+          )}
 
         </div>
 
@@ -1000,16 +1004,18 @@ export default function ResumeCreatePage() {
             </div>
           ) : (
             <div className="flex flex-col gap-2">
+              {/* Both actions are equal — no pre-selected default.
+                  The user picks public vs private consciously. */}
               <div className="flex gap-3">
                 <button onClick={() => handleSubmit(false)} disabled={saving}
-                  className="flex-1 rounded-full border-2 border-gray-300 bg-white text-gray-600 py-3.5 font-extrabold text-sm disabled:opacity-40">
+                  className="flex-1 rounded-full border-2 border-gray-400 bg-white text-gray-700 py-3.5 font-extrabold text-sm disabled:opacity-40">
                   🔒 เก็บไว้ส่วนตัว
-                  <span className="block text-xs font-normal opacity-60 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ကိုယ်ပိုင်သိမ်းမည်</span>
+                  <span className="block text-xs font-normal opacity-70 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>ကိုယ်ပိုင်သိမ်းမည်</span>
                 </button>
                 <button onClick={() => handleSubmit(true)} disabled={saving}
-                  className="flex-1 rounded-full bg-[#C9A84C] disabled:bg-gray-200 disabled:text-gray-400 text-white py-3.5 font-extrabold text-sm transition-colors">
-                  {saving ? '...' : '✅ ยืนยันเผยแพร่'}
-                  {!saving && <span className="block text-xs font-normal opacity-80 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>အတည်ပြု</span>}
+                  className="flex-1 rounded-full border-2 border-[#2B3FBE] bg-white text-[#2B3FBE] py-3.5 font-extrabold text-sm disabled:opacity-40">
+                  {saving ? '...' : '📢 เผยแพร่'}
+                  {!saving && <span className="block text-xs font-normal opacity-70 mt-0.5" style={{ fontFamily: 'Noto Sans Myanmar' }}>အများမြင်</span>}
                 </button>
               </div>
               <button onClick={() => { setStep(s => s - 1); scrollTop() }} disabled={saving}
